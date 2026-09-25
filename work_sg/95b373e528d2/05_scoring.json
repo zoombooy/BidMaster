@@ -1,0 +1,1832 @@
+{
+  "scores": [
+    {
+      "score_id": "T-001",
+      "category": "technical",
+      "name": "±800kV及以上换流站项目",
+      "max_score": 60.0,
+      "rule_type": "binary",
+      "rule_text": "土建A包",
+      "parsed_rule": {
+        "lot": "换流站土建施工累计积分制原则"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01095"
+      ],
+      "confidence": 0.9,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-003",
+      "category": "technical",
+      "name": "±800kV及以上换流站项目",
+      "max_score": 30.0,
+      "rule_type": "binary",
+      "rule_text": "土建B或C包-不含阀厅",
+      "parsed_rule": {
+        "lot": "换流站土建施工累计积分制原则"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01097"
+      ],
+      "confidence": 0.9,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-004",
+      "category": "technical",
+      "name": "±400kV及以上、±800kV以下换流站项目",
+      "max_score": 30.0,
+      "rule_type": "binary",
+      "rule_text": "土建A包",
+      "parsed_rule": {
+        "lot": "换流站土建施工累计积分制原则"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01098"
+      ],
+      "confidence": 0.9,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-005",
+      "category": "technical",
+      "name": "±400kV及以上、±800kV以下换流站项目",
+      "max_score": 10.0,
+      "rule_type": "binary",
+      "rule_text": "土建B、C包",
+      "parsed_rule": {
+        "lot": "换流站土建施工累计积分制原则"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01099"
+      ],
+      "confidence": 0.9,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-006",
+      "category": "technical",
+      "name": "1000kV变电站",
+      "max_score": 10.0,
+      "rule_type": "binary",
+      "rule_text": "总计30分封顶，仅累计开标日前5年内业绩",
+      "parsed_rule": {
+        "lot": "换流站土建施工累计积分制原则"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01100"
+      ],
+      "confidence": 0.9,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-007",
+      "category": "technical",
+      "name": "750kV变电站",
+      "max_score": 5.0,
+      "rule_type": "binary",
+      "rule_text": "总计30分封顶，仅累计开标日前5年内业绩",
+      "parsed_rule": {
+        "lot": "换流站土建施工累计积分制原则"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01101"
+      ],
+      "confidence": 0.9,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-008",
+      "category": "technical",
+      "name": "500kV变电站",
+      "max_score": 3.0,
+      "rule_type": "binary",
+      "rule_text": "总计30分封顶，仅累计开标日前5年内业绩",
+      "parsed_rule": {
+        "lot": "换流站土建施工累计积分制原则"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01102"
+      ],
+      "confidence": 0.9,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-009",
+      "category": "technical",
+      "name": "330kV变电站",
+      "max_score": 1.0,
+      "rule_type": "binary",
+      "rule_text": "总计30分封顶，仅累计开标日前5年内业绩",
+      "parsed_rule": {
+        "lot": "换流站土建施工累计积分制原则"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01103"
+      ],
+      "confidence": 0.9,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-010",
+      "category": "technical",
+      "name": "600MW及以上火电机组主厂房项目",
+      "max_score": 10.0,
+      "rule_type": "binary",
+      "rule_text": "总计30分封顶，仅累计开标日前5年内业绩",
+      "parsed_rule": {
+        "lot": "换流站土建施工累计积分制原则"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01104"
+      ],
+      "confidence": 0.9,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-014",
+      "category": "technical",
+      "name": "±260kV及以上、±800kV以下换流站项目",
+      "max_score": 30.0,
+      "rule_type": "binary",
+      "rule_text": "土建A包",
+      "parsed_rule": {
+        "lot": "换流站土建施工累计积分制原则"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01108"
+      ],
+      "confidence": 0.9,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-015",
+      "category": "technical",
+      "name": "±260kV及以上、±800kV以下换流站项目",
+      "max_score": 10.0,
+      "rule_type": "binary",
+      "rule_text": "土建B、C包",
+      "parsed_rule": {
+        "lot": "换流站土建施工累计积分制原则"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01109"
+      ],
+      "confidence": 0.9,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "C-001",
+      "category": "commercial",
+      "name": "信誉评价",
+      "max_score": 18.0,
+      "rule_type": "graded",
+      "rule_text": "企业信誉及业主单位评价优秀。（18分） 企业信誉及业主单位评价良好。（16分） 企业信誉及业主单位评价一般。（14分）",
+      "parsed_rule": {
+        "group": "企业实力",
+        "lot": "（适用于施工类分标）"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01115"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "C-002",
+      "category": "commercial",
+      "name": "获奖",
+      "max_score": 10.0,
+      "rule_type": "binary",
+      "rule_text": "获奖情况：500kV及以上，或±400kV及以上同类工程在开标截止日前三年内每获国家级奖5分；每获省部级（行业级）奖2分。同一工程只计一次获奖，得满为止。（10分）",
+      "parsed_rule": {
+        "group": "企业实力",
+        "lot": "（适用于施工类分标）"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01116"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "C-003",
+      "category": "commercial",
+      "name": "企业创新获奖",
+      "max_score": 5.0,
+      "rule_type": "binary",
+      "rule_text": "投标截止日近3年企业取得过国家级科技创新成果的，得5分； 投标截止日近3年企业取得过省级科技创新成果的，得3分； 投标截止日近3年企业取得过其他级别创新成果的，得1分； 投标截止日近3年企业未取得任何级别创新成果的，得0分。",
+      "parsed_rule": {
+        "years": 3,
+        "group": "企业实力",
+        "lot": "（适用于施工类分标）"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01117"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "C-004",
+      "category": "commercial",
+      "name": "报价质量评价",
+      "max_score": 40.0,
+      "rule_type": "binary",
+      "rule_text": "符合国家现行有关规定和招标文件规定，报价清晰、数据完整。（39-40分） 符合国家现行有关规定和招标文件规定，报价较清晰、数据较完整。（37-38分） 符合国家现行有关规定和招标文件规定，提供报价及数据。（36分）",
+      "parsed_rule": {
+        "group": "报价评价",
+        "lot": "（适用于施工类分标）"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [
+        "R-009"
+      ],
+      "evidence_ids": [
+        "e--01118"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "C-005",
+      "category": "commercial",
+      "name": "对招标文件的响应程度",
+      "max_score": 20.0,
+      "rule_type": "graded",
+      "rule_text": "完全响应：提交了完整的商务投标文件且整体情况优秀。（20分） 基本响应：提交了基本完整的商务投标文件且整体情况较好。（19分） 部分响应：提交的商务投标文件且整体情况一般。（18分）",
+      "parsed_rule": {
+        "group": "综合评价",
+        "lot": "（适用于施工类分标）"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01119"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "C-006",
+      "category": "commercial",
+      "name": "绿色发展规划及管理体系认证",
+      "max_score": 3.0,
+      "rule_type": "binary",
+      "rule_text": "对绿色发展规划及管理体系认证情况进行评价： 1.投标人建立绿色发展规划制度的得（0.5分）； 2.取得经国家认证认可监督管理委员会（CNCA）批准的认证机构认证通过的能源管理体系证书的得（1分），无得（0分）； 3.取得国家认证认可监督管理委员会（CNCA）批准的认证机构认证通过的质量管理体系、职业健康安全管理体系及环境管理体系证书3项的得（1.5分），取得2项的得（1分）,取得1项的得（0.5分）,未取得的得（0分）。",
+      "parsed_rule": {
+        "count_min": 3,
+        "group": "综合评价",
+        "lot": "（适用于施工类分标）"
+      },
+      "formula": null,
+      "evidence_required": [
+        "证书"
+      ],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01120"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "C-007",
+      "category": "commercial",
+      "name": "环境影响评价",
+      "max_score": 2.0,
+      "rule_type": "binary",
+      "rule_text": "对投标人三类环境影响报告进行评价，包括①通过企业官网、权威媒体、公共平台等途径发布的ESG（环境、社会和公司治理）报告，②由具有资质能力机构出具且经环保监管部门审核通过的环评/能评报告③由具有资质能力机构出具且经环保监管部门审核通过的废水/废气/废固报告。具有三类报告的得（2分）；具有一至两类报告的得（1分）；未取得的得（0分）。",
+      "parsed_rule": {
+        "group": "综合评价",
+        "lot": "（适用于施工类分标）"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01121"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "C-008",
+      "category": "commercial",
+      "name": "绿电绿证",
+      "max_score": 2.0,
+      "rule_type": "binary",
+      "rule_text": "对投标人取得绿色电力证书情况进行评价，取得证书或凭证的得（2分）；未取得的得（0分）。",
+      "parsed_rule": {
+        "group": "综合评价",
+        "lot": "（适用于施工类分标）"
+      },
+      "formula": null,
+      "evidence_required": [
+        "证书"
+      ],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01122"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "C-009",
+      "category": "commercial",
+      "name": "质量管理与保证（仅适用施工、监理分标）",
+      "max_score": 30.0,
+      "rule_type": "graded",
+      "rule_text": "安全事故指标考核（15分）。一年内发生一般人身、设备及电网事故（四级人身、设备、电网安全事件），每次扣5分；二年内发生较大人身、设备及电网事故（三级人身、设备、电网安全事件），每次扣10分，封顶15分。 / 质量事件指标考核（15分）。一年内发生一般质量事故（四级质量事件），每次扣5分；二年内发生较大质量事故（三级质量事件），扣10分，封顶15分。",
+      "parsed_rule": {
+        "group": "诚信评价",
+        "lot": "（适用于施工类分标）",
+        "penalty": true
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01123"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "C-010",
+      "category": "commercial",
+      "name": "失信行为（-10-0）",
+      "max_score": 5.0,
+      "rule_type": "binary",
+      "rule_text": "不存在失信行为相关行政处罚的【不扣分】； 存在属质量、诚信问题以外的行政处罚，例如环境行政处罚，扣5分； 存在属质量、诚信问题的行政处罚，且未纳入失信黑名单；扣10分。",
+      "parsed_rule": {
+        "group": "诚信评价",
+        "lot": "（适用于施工类分标）",
+        "penalty": true
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01124"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "C-011",
+      "category": "commercial",
+      "name": "违规行为（-20-0）",
+      "max_score": 20.0,
+      "rule_type": "binary",
+      "rule_text": "投标截止日近一年内，经招标人查证核实，投标人存在可能影响招投标工作公正性行为的，扣20分；无上述行为的，不扣分。",
+      "parsed_rule": {
+        "group": "诚信评价",
+        "lot": "（适用于施工类分标）",
+        "penalty": true
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01125"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-021",
+      "category": "technical",
+      "name": "技术业绩",
+      "max_score": 15.0,
+      "rule_type": "binary",
+      "rule_text": "开标前5年内： 1.换流站土建A包： 企业具有±800kV换流站土建A包业绩的，如有业绩得3分，如无得0分； 换流站土建B、C包： 企业具有±800kV换流站土建B包或±800kV换流站土建C包业绩的，如有业绩得3分，如无得0分； 2.（a）企业具有±800kV及以上换流站或1000kV变电站工程土建施工或600MW及以上火电机组主厂房土建施工业绩的，每项业绩得2分； （b）企业具有±400kV及以上、±800kV以下换流站或500kV及以上、1000kV以下变电站工程土建施工业绩的，每项业绩得1分。 备注：条件a和b总得分不得超过12分。",
+      "parsed_rule": {
+        "unit_score": 2.0,
+        "group": "技术水平",
+        "lot": "换流站土建施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [
+        "R-001"
+      ],
+      "evidence_ids": [
+        "e--01126"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-022",
+      "category": "technical",
+      "name": "工程实施条件分析",
+      "max_score": 5.0,
+      "rule_type": "binary",
+      "rule_text": "工程概况与工程实施条件调查及分析（2分）：工程概况、工程性质、工程规模、工期要求、布置形式描述正确，工程涉及的主要单位、施工内容、施工依据。（论述齐全无错漏，2分；每1项论述不充分描述不合理，扣0.5分，扣完为止。） / 对工程特点、难点的理解与把握（3分）（特点、难点理解分析描述正确说明详实，3分；每1项描述不充分，说明不详实，扣1分，扣完为止。）",
+      "parsed_rule": {
+        "count_min": 1,
+        "group": "技术水平",
+        "lot": "换流站土建施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01127"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-023",
+      "category": "technical",
+      "name": "施工方案与资源配置",
+      "max_score": 11.0,
+      "rule_type": "binary",
+      "rule_text": "施工方案（8分）（主要工序和特殊工序的施工方法选用合理、结合工程所在地分析针对性强，施工力量配置、材料准备、施工机具配置、进度计划满足要求、内容详实得8分，主要工序施工方法描述不详实、不合理扣2分，季节性施工、特殊施工未结合工程所在地分析扣2分，施工资源投入计划不满足进度计划及招标文件要求扣1分。） / 施工机具配置及技术导向响应（3分）（未针对工程特点及承包范围编制全过程机械化施工方案扣1分，未提供施工设备表、工器具及试验检测仪器设备表扣1分，提供的机械、设备仪器信息不全、未结合实际扣1分）",
+      "parsed_rule": {
+        "group": "技术水平",
+        "lot": "换流站土建施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01128"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-024",
+      "category": "technical",
+      "name": "工期与进度计划",
+      "max_score": 4.0,
+      "rule_type": "binary",
+      "rule_text": "目标与进度计划（2分）（有针对性提供工程目标、进度计划的，2分，所提供工程目标、进度计划不齐全，扣1分） / 工程综合进度保证措施（2分）（有针对性提供进度保证措施内容，2分；所提供进度保证措施不齐全，扣1分。）",
+      "parsed_rule": {
+        "group": "技术水平",
+        "lot": "换流站土建施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01129"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-025",
+      "category": "technical",
+      "name": "施工项目管理组织机构",
+      "max_score": 12.0,
+      "rule_type": "binary",
+      "rule_text": "项目组织机构（2分）（机构职责齐全、人员配置高于招标文件要求，2分；机构职责齐全、人员配置齐全、满足招标文件要求，1分。） 项目团队履责能力（10分）（可累计积分，最高10分） 1）项目经理具有±800kV及以上换流站或1000kV变电站或600MW及以上火电机组主厂房自开工至工程竣工整个工程项目经理业绩，一级建造师证书所涉及专业与招标承包范围内容专业相符的，每项得5分； 2）项目经理具有±800kV 及以上换流站或1000kV变电站或600MW及以上火电机组主厂房自开工至工程竣工整个工程项目副经理或项目总工业绩的，每项得4分； 3）项目经理具有±400kV及以上、±800kV以下换流站或500kV及以上、1000kV以下变电站工程工程自开工至工程竣工整个工程项目经理（项目副经理或项目总工）业绩，每项得2分；",
+      "parsed_rule": {
+        "unit_score": 5.0,
+        "group": "团队配置",
+        "lot": "换流站土建施工"
+      },
+      "formula": null,
+      "evidence_required": [
+        "证书"
+      ],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01130"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-026",
+      "category": "technical",
+      "name": "分包管理",
+      "max_score": 3.0,
+      "rule_type": "binary",
+      "rule_text": "分包计划与分包管理的措施（3分）（明确提出分包计划、分包类型、分包内容、分包金额及相应管理措施，3分；分包计划、范围、管理措施有漏项的，扣1分。）",
+      "parsed_rule": {
+        "group": "团队配置",
+        "lot": "换流站土建施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01131"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-027",
+      "category": "technical",
+      "name": "安全管控措施",
+      "max_score": 5.0,
+      "rule_type": "binary",
+      "rule_text": "安全管理组织机构、职责及管理制度（2分） （目标合理，机构健全，职责清晰，制度完备，2分，每1项论述不充分，扣1分。） / 安全组织技术措施、实施方案、考核办法、管理方法（2分） （措施全面可靠、考核办法及管理办法完备，2分；每1项论述不充分，扣1分。） / 重要施工方案及特殊施工工序的安全过程控制（1分） （编制专项安全过程控制措施，措施合理可靠，1分；每1项论述不充分，扣0.5分。）",
+      "parsed_rule": {
+        "count_min": 1,
+        "group": "安全质量控制",
+        "lot": "换流站土建施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01132"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-028",
+      "category": "technical",
+      "name": "质量管控措施",
+      "max_score": 5.0,
+      "rule_type": "binary",
+      "rule_text": "质量目标及管理体系（2分） （目标合理，机构健全，质量体系完善，措施有针对性得2分；目标合理，机构健全，质量体系较完善，措施有针对性得1分；目标不合理，机构不健全，管理组织机构不健全，质量体系不完善，措施无针对性得0分。） / 针对性的质量控制措施与质量提升（1分）（质量管理措施齐全有效，有针对性得1分；质量管理措施不齐全，针对性不强得0分。） / 成品保护措施（1分）（成品保护措施编制不合理，针对性不强扣1分） / 标准工艺应用（1分）（标准工艺应用计划编制不合理，针对性不强扣1分）",
+      "parsed_rule": {
+        "group": "安全质量控制",
+        "lot": "换流站土建施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01133"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-029",
+      "category": "technical",
+      "name": "绿色施工方案",
+      "max_score": 3.0,
+      "rule_type": "graded",
+      "rule_text": "对建立绿色施工管理体系，制定绿色施工方案，在施工过程中统筹考虑环境保护措施，节能减排措施，节地与施工用地保护措施、绿色施工工艺等情况进行评价： 优：科学、可行、针对性强得3分； 良：合理、可行、细节待完善得2分； 一般：欠合理，可行性较差，基本满足工程需要得1分。",
+      "parsed_rule": {
+        "group": "安全质量控制",
+        "lot": "换流站土建施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01134"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-030",
+      "category": "technical",
+      "name": "环水保及文明施工措施",
+      "max_score": 2.0,
+      "rule_type": "binary",
+      "rule_text": "针对性的环水保控制、文明施工措施（1分）（措施具体、针对性不强扣1分） / 环境保护费、文明施工费等用途与计划（1分）（用途与计划不具体、针对性不强扣1分）",
+      "parsed_rule": {
+        "group": "安全质量控制",
+        "lot": "换流站土建施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01135"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-031",
+      "category": "technical",
+      "name": "综合管理",
+      "max_score": 4.0,
+      "rule_type": "binary",
+      "rule_text": "规范化开工（1分）（标准化开工清单及计划编制不具体、针对性不强扣1分） / 施工管理体系（1分）（管理体系编制不具体、针对性不强扣1分） / 施工科技创新（1分）（未编制五新技术、装配式技术、BIM技术应用内容，或编制针对性不详实、内容不具体扣1分） / 资料档案管理（1分）（措施具体，针对性强，1分）",
+      "parsed_rule": {
+        "group": "综合评价",
+        "lot": "换流站土建施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01136"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-032",
+      "category": "technical",
+      "name": "整体评价",
+      "max_score": 6.0,
+      "rule_type": "graded",
+      "rule_text": "类似工程经验（6分）（提供建设环境、系统条件与所招标工程相同或接近的工程的中标通知书、合同签署页及封面、业主评价书面意见）经验丰富的得6-5分，经验一般的得4-3分；经验较少的得2-1分。",
+      "parsed_rule": {
+        "group": "综合评价",
+        "lot": "换流站土建施工"
+      },
+      "formula": null,
+      "evidence_required": [
+        "中标通知书",
+        "合同"
+      ],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01137"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-033",
+      "category": "technical",
+      "name": "绩效评价",
+      "max_score": 25.0,
+      "rule_type": "binary",
+      "rule_text": "按综合绩效评价得分*0.25计算，对于无绩效评价的投标人，根据投标文件中资源实力等相关信息进行综合评价打分。（得分按四舍五入保留两位小数）",
+      "parsed_rule": {
+        "group": "绩效评价",
+        "lot": "换流站土建施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01138"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-034",
+      "category": "technical",
+      "name": "风险评价 （-20-0）",
+      "max_score": 20.0,
+      "rule_type": "binary",
+      "rule_text": "投标人因负面事件或其他情形，带来供应履约风险，对招标人生产经营、公司形象可能带来较大影响，根据严重程度扣10-20分； 无上述情形的，不扣分。",
+      "parsed_rule": {
+        "group": "风险评价",
+        "lot": "换流站土建施工",
+        "penalty": true
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01139"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-035",
+      "category": "technical",
+      "name": "技术业绩",
+      "max_score": 15.0,
+      "rule_type": "binary",
+      "rule_text": "开标前5年内： 1.企业具有1000kV变电站电气安装业绩的，得3分；如无得0分； 2.（a）企业具有±800kV及以上换流站或1000kV变电站工程电气安装业绩的，每项业绩得2分； （b）企业具有±400kV及以上、±800kV以下换流站或500kV及以上、1000kV以下变电站工程电气安装业绩的，每项业绩得1.5分。 备注：条件a和b总得分不得超过12分。",
+      "parsed_rule": {
+        "unit_score": 2.0,
+        "group": "技术水平",
+        "lot": "变电站土建及电气安装施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [
+        "R-001"
+      ],
+      "evidence_ids": [
+        "e--01140"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-036",
+      "category": "technical",
+      "name": "工程实施条件分析",
+      "max_score": 5.0,
+      "rule_type": "binary",
+      "rule_text": "工程概况与工程实施条件调查及分析（2分）：工程概况、工程性质、工程规模、工期要求、布置形式描述正确，工程涉及的主要单位、施工内容、施工依据。（论述齐全无错漏，2分；每1项论述不充分描述不合理，扣0.5分，扣完为止。） / 对工程特点、难点的理解与把握（3分）（特点、难点理解分析描述正确说明详实，3分；每1项描述不充分，说明不详实，扣1分，扣完为止。）",
+      "parsed_rule": {
+        "count_min": 1,
+        "group": "技术水平",
+        "lot": "变电站土建及电气安装施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01141"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-037",
+      "category": "technical",
+      "name": "施工方案与资源配置",
+      "max_score": 11.0,
+      "rule_type": "binary",
+      "rule_text": "施工方案（8分）（主要工序和特殊工序的施工方法选用合理、结合工程所在地分析针对性强，施工力量配置、材料准备、施工机具配置、进度计划满足要求、内容详实得8分，主要工序施工方法描述不详实、不合理扣2分，季节性施工、特殊施工未结合工程所在地分析扣2分，施工资源投入计划不满足进度计划及招标文件要求扣1分。） / 施工机具配置及技术导向响应（3分）（未针对工程特点及承包范围编制全过程机械化施工方案扣1分，未提供施工设备表、工器具及试验检测仪器设备表扣1分，提供的机械、设备仪器信息不全、未结合实际扣1分）",
+      "parsed_rule": {
+        "group": "技术水平",
+        "lot": "变电站土建及电气安装施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01142"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-038",
+      "category": "technical",
+      "name": "工期与进度计划",
+      "max_score": 4.0,
+      "rule_type": "binary",
+      "rule_text": "目标与进度计划（2分）（有针对性提供工程目标、进度计划的，2分，所提供工程目标、进度计划不齐全，扣1分） / 工程综合进度保证措施（2分）（有针对性提供进度保证措施内容，2分；所提供进度保证措施不齐全，扣1分。）",
+      "parsed_rule": {
+        "group": "技术水平",
+        "lot": "变电站土建及电气安装施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01143"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-039",
+      "category": "technical",
+      "name": "施工项目管理组织机构",
+      "max_score": 12.0,
+      "rule_type": "binary",
+      "rule_text": "项目组织机构（2分）（机构职责齐全、人员配置高于招标文件要求，2分；机构职责齐全、人员配置齐全、满足招标文件要求，1分。） 项目团队履责能力（10分）（按照以下规则累计积分，最高10分） 1）项目经理具有±800kV及以上换流站或1000kV变电站自开工至工程竣工整个工程项目经理业绩，一级建造师证书所涉及专业与招标承包范围内容专业相符的，每项得5分； 2）项目经理具有±800kV 及以上换流站或1000kV变电站自开工至工程竣工整个工程项目副经理或项目总工业绩的，每项得4分； 3）项目经理具有±400kV及以上、±800kV以下换流站或500kV及以上、1000kV以下变电站工程工程自开工至工程竣工整个工程项目经理（项目副经理或项目总工）业绩，每项得2分；",
+      "parsed_rule": {
+        "unit_score": 5.0,
+        "group": "团队配置",
+        "lot": "变电站土建及电气安装施工"
+      },
+      "formula": null,
+      "evidence_required": [
+        "证书"
+      ],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01144"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-040",
+      "category": "technical",
+      "name": "分包管理",
+      "max_score": 3.0,
+      "rule_type": "binary",
+      "rule_text": "分包计划与分包管理的措施（3分）（明确提出分包计划、分包类型、分包内容、分包金额及相应管理措施，3分；分包计划、范围、管理措施有漏项的，扣1分。）",
+      "parsed_rule": {
+        "group": "团队配置",
+        "lot": "变电站土建及电气安装施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01145"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-041",
+      "category": "technical",
+      "name": "安全管控措施",
+      "max_score": 5.0,
+      "rule_type": "binary",
+      "rule_text": "安全管理组织机构、职责及管理制度（2分） （目标合理，机构健全，职责清晰，制度完备，2分，每1项论述不充分，扣1分。） / 安全组织技术措施、实施方案、考核办法、管理方法（2分） （措施全面可靠、考核办法及管理办法完备，2分；每1项论述不充分，扣1分。） / 重要施工方案及特殊施工工序的安全过程控制（1分） （编制专项安全过程控制措施，措施合理可靠，1分；每1项论述不充分，扣0.5分。）",
+      "parsed_rule": {
+        "count_min": 1,
+        "group": "安全质量控制",
+        "lot": "变电站土建及电气安装施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01146"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-042",
+      "category": "technical",
+      "name": "质量管控措施",
+      "max_score": 5.0,
+      "rule_type": "binary",
+      "rule_text": "质量目标及管理体系（2分） （目标合理，机构健全，质量体系完善，措施有针对性得2分；目标合理，机构健全，质量体系较完善，措施有针对性得1分；目标不合理，机构不健全，管理组织机构不健全，质量体系不完善，措施无针对性得0分。） / 针对性的质量控制措施与质量提升（1分）（质量管理措施齐全有效，有针对性得1分；质量管理措施不齐全，针对性不强得0分。） / 成品保护措施（1分）（成品保护措施编制不合理，针对性不强扣1分） / 标准工艺应用（1分）（标准工艺应用计划编制不合理，针对性不强扣1分）",
+      "parsed_rule": {
+        "group": "安全质量控制",
+        "lot": "变电站土建及电气安装施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01147"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-043",
+      "category": "technical",
+      "name": "绿色施工方案",
+      "max_score": 3.0,
+      "rule_type": "graded",
+      "rule_text": "对建立绿色施工管理体系，制定绿色施工方案，在施工过程中统筹考虑环境保护措施，节能减排措施，节地与施工用地保护措施、绿色施工工艺等情况进行评价： 优：科学、可行、针对性强得3分； 良：合理、可行、细节待完善得2分； 一般：欠合理，可行性较差，基本满足工程需要得1分。",
+      "parsed_rule": {
+        "group": "安全质量控制",
+        "lot": "变电站土建及电气安装施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01148"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-044",
+      "category": "technical",
+      "name": "环水保及文明施工措施",
+      "max_score": 2.0,
+      "rule_type": "binary",
+      "rule_text": "针对性的环水保控制、文明施工措施（1分）（措施具体、针对性不强扣1分） / 环境保护费、文明施工费等用途与计划（1分）（用途与计划不具体、针对性不强扣1分）",
+      "parsed_rule": {
+        "group": "安全质量控制",
+        "lot": "变电站土建及电气安装施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01149"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-045",
+      "category": "technical",
+      "name": "综合管理",
+      "max_score": 4.0,
+      "rule_type": "binary",
+      "rule_text": "规范化开工（1分）（标准化开工清单及计划编制不具体、针对性不强扣1分） / 施工管理体系（1分）（管理体系编制不具体、针对性不强扣1分） / 施工科技创新（1分）（未编制五新技术、装配式技术、BIM技术应用内容，或编制针对性不详实、内容不具体扣1分） / 资料档案管理（1分）（措施具体，针对性强，1分）",
+      "parsed_rule": {
+        "group": "综合评价",
+        "lot": "变电站土建及电气安装施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01150"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-046",
+      "category": "technical",
+      "name": "整体评价",
+      "max_score": 6.0,
+      "rule_type": "graded",
+      "rule_text": "类似工程经验（6分）（提供建设环境、系统条件与所招标工程相同或接近的工程的中标通知书、合同签署页及封面、业主评价书面意见）经验丰富的得6-5分，经验一般的得4-3分；经验较少的得2-1分。",
+      "parsed_rule": {
+        "group": "综合评价",
+        "lot": "变电站土建及电气安装施工"
+      },
+      "formula": null,
+      "evidence_required": [
+        "中标通知书",
+        "合同"
+      ],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01151"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-047",
+      "category": "technical",
+      "name": "按综合绩效评价得分*0.25计算，对于无绩效评价的投标人，根据投标文件中资源实力",
+      "max_score": 25.0,
+      "rule_type": "binary",
+      "rule_text": "",
+      "parsed_rule": {
+        "group": "绩效评价",
+        "lot": "变电站土建及电气安装施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01152"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-048",
+      "category": "technical",
+      "name": "风险评价 （-20-0）",
+      "max_score": 20.0,
+      "rule_type": "binary",
+      "rule_text": "投标人因负面事件或其他情形，带来供应履约风险，对招标人生产经营、公司形象可能带来较大影响，根据严重程度扣10-20分； 无上述情形的，不扣分。",
+      "parsed_rule": {
+        "group": "风险评价",
+        "lot": "变电站土建及电气安装施工",
+        "penalty": true
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01153"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-049",
+      "category": "technical",
+      "name": "技术业绩",
+      "max_score": 15.0,
+      "rule_type": "binary",
+      "rule_text": "开标前5年内： 1.企业具有±800kV及以上换流站或1000kV变电站工程桩基施工业绩的，如有业绩得3分；如无得0分； 2.（a）企业具有±800kV及以上换流站或1000kV变电站工程桩基施工业绩的，每项业绩得2分； （b）企业具有±400kV及以上、±800kV以下换流站或500kV及以上、1000kV以下变电站工程桩基施工业绩的，每项业绩得1.5分。 备注：条件a和b总得分不得超过12分。",
+      "parsed_rule": {
+        "unit_score": 2.0,
+        "group": "技术水平",
+        "lot": "变电站桩基施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [
+        "R-001"
+      ],
+      "evidence_ids": [
+        "e--01154"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-050",
+      "category": "technical",
+      "name": "工程实施条件分析",
+      "max_score": 5.0,
+      "rule_type": "binary",
+      "rule_text": "工程概况与工程实施条件调查及分析（2分）：工程概况、工程性质、工程规模、工期要求、布置形式描述正确，工程涉及的主要单位、施工内容、施工依据。（论述齐全无错漏，2分；每1项论述不充分描述不合理，扣0.5分，扣完为止。） / 对工程特点、难点的理解与把握（3分）（特点、难点理解分析描述正确说明详实，3分；每1项描述不充分，说明不详实，扣1分，扣完为止。）",
+      "parsed_rule": {
+        "count_min": 1,
+        "group": "技术水平",
+        "lot": "变电站桩基施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01155"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-051",
+      "category": "technical",
+      "name": "施工方案与资源配置",
+      "max_score": 11.0,
+      "rule_type": "binary",
+      "rule_text": "施工方案（8分）（主要工序和特殊工序的施工方法选用合理、结合工程所在地分析针对性强，施工力量配置、材料准备、施工机具配置、进度计划满足要求、内容详实得8分，主要工序施工方法描述不详实、不合理扣2分，季节性施工、特殊施工未结合工程所在地分析扣2分，施工资源投入计划不满足进度计划及招标文件要求扣1分。） / 施工机具配置及技术导向响应（3分）（未针对工程特点及承包范围编制全过程机械化施工方案扣1分，未提供施工设备表、工器具及试验检测仪器设备表扣1分，提供的机械、设备仪器信息不全、未结合实际扣1分）",
+      "parsed_rule": {
+        "group": "技术水平",
+        "lot": "变电站桩基施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01156"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-052",
+      "category": "technical",
+      "name": "工期与进度计划",
+      "max_score": 4.0,
+      "rule_type": "binary",
+      "rule_text": "目标与进度计划（2分）（有针对性提供工程目标、进度计划的，2分，所提供工程目标、进度计划不齐全，扣1分） / 工程综合进度保证措施（2分）（有针对性提供进度保证措施内容，2分；所提供进度保证措施不齐全，扣1分。）",
+      "parsed_rule": {
+        "group": "技术水平",
+        "lot": "变电站桩基施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01157"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-053",
+      "category": "technical",
+      "name": "施工项目管理组织机构",
+      "max_score": 12.0,
+      "rule_type": "binary",
+      "rule_text": "项目组织机构（2分）（机构职责齐全、人员配置高于招标文件要求，2分；机构职责齐全、人员配置齐全、满足招标文件要求，1分。） 项目团队履责能力（10分）（按照以下规则累计积分，最高10分） 1）项目经理具有800kV及以上换流站或1000kV变电站或单台容量300MW及以上发电厂自开工至工程竣工整个工程项目经理业绩，一级建造师证书所涉及专业与招标承包范围内容专业相符的，每项得5分； 2）项目经理具有800kV 及以上换流站或1000kV变电站或单台容量300MW及以上发电厂自开工至工程竣工整个工程项目副经理或项目总工业绩的，每项得4分； 3）项目经理具有±400kV及以上、±800kV以下换流站或500kV及以上、1000kV以下变电站工程工程自开工至工程竣工整个工程项目经理（项目副经理或项目总工）业绩，每项得2分；",
+      "parsed_rule": {
+        "unit_score": 5.0,
+        "group": "团队配置",
+        "lot": "变电站桩基施工"
+      },
+      "formula": null,
+      "evidence_required": [
+        "证书"
+      ],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01158"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-054",
+      "category": "technical",
+      "name": "分包管理",
+      "max_score": 3.0,
+      "rule_type": "binary",
+      "rule_text": "分包计划与分包管理的措施（3分）（明确提出分包计划、分包类型、分包内容、分包金额及相应管理措施，3分；分包计划、范围、管理措施有漏项的，扣1分。）",
+      "parsed_rule": {
+        "group": "团队配置",
+        "lot": "变电站桩基施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01159"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-055",
+      "category": "technical",
+      "name": "安全管控措施",
+      "max_score": 5.0,
+      "rule_type": "binary",
+      "rule_text": "安全管理组织机构、职责及管理制度（2分） （目标合理，机构健全，职责清晰，制度完备，2分，每1项论述不充分，扣1分。） / 安全组织技术措施、实施方案、考核办法、管理方法（2分） （措施全面可靠、考核办法及管理办法完备，2分；每1项论述不充分，扣1分。） / 重要施工方案及特殊施工工序的安全过程控制（1分） （编制专项安全过程控制措施，措施合理可靠，1分；每1项论述不充分，扣0.5分。）",
+      "parsed_rule": {
+        "count_min": 1,
+        "group": "安全质量控制",
+        "lot": "变电站桩基施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01160"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-056",
+      "category": "technical",
+      "name": "质量管控措施",
+      "max_score": 5.0,
+      "rule_type": "binary",
+      "rule_text": "质量目标及管理体系（2分） （目标合理，机构健全，质量体系完善，措施有针对性得2分；目标合理，机构健全，质量体系较完善，措施有针对性得1分；目标不合理，机构不健全，管理组织机构不健全，质量体系不完善，措施无针对性得0分。） / 针对性的质量控制措施与质量提升（1分）（质量管理措施齐全有效，有针对性得1分；质量管理措施不齐全，针对性不强得0分。） / 成品保护措施（1分）（成品保护措施编制不合理，针对性不强扣1分） / 标准工艺应用（1分）（标准工艺应用计划编制不合理，针对性不强扣1分）",
+      "parsed_rule": {
+        "group": "安全质量控制",
+        "lot": "变电站桩基施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01161"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-057",
+      "category": "technical",
+      "name": "绿色施工方案",
+      "max_score": 3.0,
+      "rule_type": "graded",
+      "rule_text": "对建立绿色施工管理体系，制定绿色施工方案，在施工过程中统筹考虑环境保护措施，节能减排措施，节地与施工用地保护措施、绿色施工工艺等情况进行评价： 优：科学、可行、针对性强得3分； 良：合理、可行、细节待完善得2分； 一般：欠合理，可行性较差，基本满足工程需要得1分。",
+      "parsed_rule": {
+        "group": "安全质量控制",
+        "lot": "变电站桩基施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01162"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-058",
+      "category": "technical",
+      "name": "环水保及文明施工措施",
+      "max_score": 2.0,
+      "rule_type": "binary",
+      "rule_text": "针对性的环水保控制、文明施工措施（1分）（措施具体、针对性不强扣1分） / 环境保护费、文明施工费等用途与计划（1分）（用途与计划不具体、针对性不强扣1分）",
+      "parsed_rule": {
+        "group": "安全质量控制",
+        "lot": "变电站桩基施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01163"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-059",
+      "category": "technical",
+      "name": "综合管理",
+      "max_score": 4.0,
+      "rule_type": "binary",
+      "rule_text": "规范化开工（1分）（标准化开工清单及计划编制不具体、针对性不强扣1分） / 施工管理体系（1分）（管理体系编制不具体、针对性不强扣1分） / 施工科技创新（1分）（未编制五新技术、装配式技术、BIM技术应用内容，或编制针对性不详实、内容不具体扣1分） / 资料档案管理（1分）（措施具体，针对性强，1分）",
+      "parsed_rule": {
+        "group": "综合评价",
+        "lot": "变电站桩基施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01164"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-060",
+      "category": "technical",
+      "name": "整体评价",
+      "max_score": 6.0,
+      "rule_type": "graded",
+      "rule_text": "类似工程经验（6分）（提供建设环境、系统条件与所招标工程相同或接近的工程的中标通知书、合同签署页及封面、业主评价书面意见）经验丰富的得6-5分，经验一般的得4-3分；经验较少的得2-1分。",
+      "parsed_rule": {
+        "group": "综合评价",
+        "lot": "变电站桩基施工"
+      },
+      "formula": null,
+      "evidence_required": [
+        "中标通知书",
+        "合同"
+      ],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01165"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-061",
+      "category": "technical",
+      "name": "按综合绩效评价得分*0.25计算，对于无绩效评价的投标人，根据投标文件中资源实力",
+      "max_score": 25.0,
+      "rule_type": "binary",
+      "rule_text": "",
+      "parsed_rule": {
+        "group": "绩效评价",
+        "lot": "变电站桩基施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01166"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-062",
+      "category": "technical",
+      "name": "风险评价 （-20-0）",
+      "max_score": 20.0,
+      "rule_type": "binary",
+      "rule_text": "投标人因负面事件或其他情形，带来供应履约风险，对招标人生产经营、公司形象可能带来较大影响，根据严重程度扣10-20分； 无上述情形的，不扣分。",
+      "parsed_rule": {
+        "group": "风险评价",
+        "lot": "变电站桩基施工",
+        "penalty": true
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01167"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-063",
+      "category": "technical",
+      "name": "工程实施条件分析",
+      "max_score": 4.0,
+      "rule_type": "binary",
+      "rule_text": "工程概述（2分）。工程规模及工期、布置形式描述正确，工程涉及的主要单位、施工依据及内容。 （论述齐全无错漏，2分；每一项论述不充分描述不合理，扣0.5分。） / 工程性质及特点分析，自然环境分析及现场调查情况说明（2分）。 （描述正确说明详实，2分；每一项描述不充分，说明不详实，扣0.5分。）",
+      "parsed_rule": {
+        "group": "技术水平",
+        "lot": "光纤通信施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01168"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-064",
+      "category": "technical",
+      "name": "施工方案与资源配置",
+      "max_score": 24.0,
+      "rule_type": "binary",
+      "rule_text": "施工方案（16分）。 （施工方案合理、结合属地分析针对性强，进度计划满足工期要求得16分。未结合属地分析，扣6分；进度计划不满足工期要求，扣4分；未结合属地分析，扣4分；施工方案不详实合理，扣2分。） / 施工机具配置及技术导向响应（8分） （光纤通信施工）提供5台2M表，5套SDH分析仪，4套光源、高灵敏光功率计（动态范围70-90dB），4套光纤端面识别仪，8分，每少一台（套）扣1分，扣完为止。 （光缆接续施工）提供4台动态范围在45dB及以上的光时域反射仪，以及10套及以上光纤熔接机，8分；提供的光时域反射仪动态范围不足45dB,高于40dB（含），每台扣0.5分；每少一台（套）扣1分，扣完为止。",
+      "parsed_rule": {
+        "group": "技术水平",
+        "lot": "光纤通信施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01169"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-065",
+      "category": "technical",
+      "name": "技术业绩",
+      "max_score": 12.0,
+      "rule_type": "binary",
+      "rule_text": "技术业绩（12分） （光纤通信施工） 1．开标日前5年内，有1000kV或±800kV或±1100kV输变电工程电力通信工程施工业绩。每项业绩得3分； 2．开标日前5年内，有500kV或750kV交流输变电工程或±400kV及以上、±800kV以下直流输电工程通信工程施工业绩，或上述电压等级变电站、换流站、通信站，以及通信中心站的扩建或技改通信工程施工业绩，每项业绩得2分，最高10分。 以上条件1、2最高12分 （光缆接续施工） 1.开标日前5年内，有1000kV或±800kV或±1100kV新建输电线路工程OPGW测量与接续施工业绩。每项业绩得3分； 2.开标日前5年内，有500kV及以上、1000kV以下或±400kV及以上、±800kV以下新建输电线路工程的OPGW测量与接续施工业绩，业绩累计每200公里得2分，最高10分。 以上条件1、2最高12分",
+      "parsed_rule": {
+        "unit_score": 3.0,
+        "group": "技术水平",
+        "lot": "光纤通信施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [
+        "R-001"
+      ],
+      "evidence_ids": [
+        "e--01170"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-066",
+      "category": "technical",
+      "name": "分包管控措施",
+      "max_score": 2.0,
+      "rule_type": "binary",
+      "rule_text": "分包计划与分包范围（1分） （无分包或分包计划和范围符合要求，1分；分包计划和范围不符合要求，0分。） / 强化分包管理的措施（1分） （无分包或有明确分包管理方案，1分；不符合，0分。）",
+      "parsed_rule": {
+        "group": "技术水平",
+        "lot": "光纤通信施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01171"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-067",
+      "category": "technical",
+      "name": "项目管理总体策划",
+      "max_score": 19.0,
+      "rule_type": "binary",
+      "rule_text": "项目组织机构（3分） （机构职责齐全，项目经理、技术负责人、安全员、技经专责、档案专责、劳资专责齐全，3分；每少一项扣0.5分，扣完为止。） / 项目团队履责能力（10分）。 （光纤通信施工）项目经理具有两项及以上800kV及以上通信工程或通信中心站工程经验，积10分。 具有一项800kV及以上通信工程或通信中心站工程经验，积5分；每具有一项500kV工程施工经验，积3分；每具有一项500kV以下工程施工经验，积2分；每具有一项电网常规通信站工程施工经验，积1分；最高8分。 （光缆接续施工）项目经理具有两项及以上1000kV或±800kV或士1100kV OPGW测量与接续工程经验，积10分。 具有一项1000kV或±800kV或士1100kV OPGW测量与接续工程经验积，积5分；每具有一项500kV及以上、1000kV以下或±400kV及以上、±800kV以下新建输电线路工程的OPGW测量与接续工程施工经验，积2分；最高8分。 / 施工力量组织（6分） （光纤通信施工）具备组织3支及以上施工队伍6分，2支施工队伍4分，1支施工队伍2分。（施工队伍含工作负责人、安全员、技术员、质检员",
+      "parsed_rule": {
+        "group": "团队配置",
+        "lot": "光纤通信施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01172"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-068",
+      "category": "technical",
+      "name": "安全管控措施",
+      "max_score": 6.0,
+      "rule_type": "binary",
+      "rule_text": "安全管理组织机构、职责及管理制度（2分） （目标合理，机构健全，职责清晰，制度完备，2分；目标不合理，机构不健全，职责不清晰，制度不完备，0分。） / 安全组织技术措施、实施方案、考核办法、管理方法（2分） （措施全面可靠、考核办法及管理办法完备，2分；每一项论述不充分，扣1分。） / 重要施工方案及特殊施工工序的安全过程控制（2分） （编制专项安全过程控制措施，措施合理可靠，2分；每一项论述不充分，扣1分。）",
+      "parsed_rule": {
+        "group": "质量控制",
+        "lot": "光纤通信施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01173"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-069",
+      "category": "technical",
+      "name": "质量管控措施",
+      "max_score": 5.0,
+      "rule_type": "binary",
+      "rule_text": "质量目标及管理体系（3分） （目标合理，机构健全，质量体系完善，措施有针对性，3分；目标合理，机构健全，质量体系较完善，措施有针对性，2分；目标合理，机构较健全，质量体系较完善，措施无针对性，1分；目标不合理，机构不健全，管理组织机构不健全，质量体系不完善，措施无针对性，0分。） / 质量管理措施（2分） （质量管理措施齐全有效，有针对性，2分；质量管理措施齐全有效，针对性不强，1分；质量管理措施不齐全，针对性不强，0分。）",
+      "parsed_rule": {
+        "group": "质量控制",
+        "lot": "光纤通信施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01174"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-070",
+      "category": "technical",
+      "name": "绿色施工方案",
+      "max_score": 3.0,
+      "rule_type": "graded",
+      "rule_text": "对建立绿色施工管理体系，制定绿色施工方案，在施工过程中统筹考虑环境保护措施，节能减排措施，节地与施工用地保护措施、绿色施工工艺等情况进行评价： 优：科学、可行、针对性强得3分； 良：合理、可行、细节待完善得2分； 一般：欠合理，可行性较差，基本满足工程需要得1分。",
+      "parsed_rule": {
+        "group": "质量控制",
+        "lot": "光纤通信施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01175"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-071",
+      "category": "technical",
+      "name": "综合管理",
+      "max_score": 3.0,
+      "rule_type": "binary",
+      "rule_text": "施工进度保证措施（1分） （措施具体，针对性强，1分；措施不详，针对不强，0分。） / 施工科技创新（1分） （计划明确，响应要求，措施有针对性，1分；计划较明确，响应要求，措施针对性不强，0分。） / 资料档案管理（1分） （措施具体，针对性强，1分；措施及针对性不强，0分。）",
+      "parsed_rule": {
+        "group": "综合评价",
+        "lot": "光纤通信施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01176"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-072",
+      "category": "technical",
+      "name": "整体评价",
+      "max_score": 2.0,
+      "rule_type": "binary",
+      "rule_text": "投标重要信息简表真实准确（1分） （投标重要信息简表真实准确，0.5分；重要信息错误扣1分，扣完为止。） / 全面响应招标文件要求等（1分） （全面响应无漏项，0.5分；编制顺序不响应扣1分，漏项扣1分，扣完为止。）",
+      "parsed_rule": {
+        "group": "综合评价",
+        "lot": "光纤通信施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01177"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-073",
+      "category": "technical",
+      "name": "绩效评价",
+      "max_score": 20.0,
+      "rule_type": "binary",
+      "rule_text": "按绩效评价得分*0.20计算，对于无绩效评价的投标人，根据投标文件中资源实力等相关信息进行综合评价打分。（得分按四舍五入保留两位小数）未开展绩效评价阶段，绩效评价得分按100分计列。",
+      "parsed_rule": {
+        "group": "综合评价",
+        "lot": "光纤通信施工"
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01178"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "T-074",
+      "category": "technical",
+      "name": "风险评价 （-20-0）",
+      "max_score": 20.0,
+      "rule_type": "binary",
+      "rule_text": "投标人因负面事件或其他情形，带来供应履约风险，对招标人生产经营、公司形象可能带来较大影响，根据严重程度扣10-20分； 无上述情形的，不扣分。",
+      "parsed_rule": {
+        "group": "风险评价",
+        "lot": "光纤通信施工",
+        "penalty": true
+      },
+      "formula": null,
+      "evidence_required": [],
+      "requirement_refs": [],
+      "evidence_ids": [
+        "e--01179"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "score_id": "P-001",
+      "category": "price",
+      "name": "投标报价评分",
+      "max_score": 0.0,
+      "rule_type": "formula",
+      "rule_text": "2.2.4（3） 投标报价评分标准",
+      "parsed_rule": {
+        "formula_blob": true
+      },
+      "formula": "2.2.4（3） 投标报价评分标准",
+      "evidence_required": [],
+      "requirement_refs": [
+        "R-009"
+      ],
+      "evidence_ids": [
+        "e--01180"
+      ],
+      "confidence": 0.7,
+      "status": "pending_review"
+    }
+  ],
+  "requirements": [
+    {
+      "req_id": "R-001",
+      "type": "performance",
+      "subject": "投标人",
+      "constraint": "3.5.3\t近年完成的类似项目情况要求\t按照第一章招标公告投标人业绩要求和第三章评标办法前附表“评分标准”要求，按照第八章投标文件格式要求填写",
+      "parsed": {},
+      "scoring_refs": [
+        "T-021",
+        "T-035",
+        "T-049",
+        "T-065"
+      ],
+      "evidence_ids": [
+        "e--01182"
+      ],
+      "confidence": 0.85,
+      "status": "confirmed"
+    },
+    {
+      "req_id": "R-002",
+      "type": "team",
+      "subject": "安全员",
+      "constraint": "项目部安全员 满足条件1和条件2 条件1 政府部门颁发 专职安全生产管理人员安全生产考核合格证书 C证 条件1或条件2或条件3 条件1 / 1 500kV及以上 新建变电站 土建施工管理",
+      "parsed": {
+        "position": "安全员",
+        "certificates": [
+          "安全生产考核合格",
+          "C证"
+        ]
+      },
+      "scoring_refs": [],
+      "evidence_ids": [
+        "e--01183",
+        "e--01184",
+        "e--01185",
+        "e--01186",
+        "e--01187",
+        "e--01188",
+        "e--01189",
+        "e--01190",
+        "e--01194",
+        "e--01195",
+        "e--01196",
+        "e--01197",
+        "e--01198",
+        "e--01199",
+        "e--01200",
+        "e--01201",
+        "e--01205",
+        "e--01206",
+        "e--01207",
+        "e--01208",
+        "e--01209",
+        "e--01210",
+        "e--01213",
+        "e--01214",
+        "e--01215",
+        "e--01220",
+        "e--01221"
+      ],
+      "confidence": 0.88,
+      "status": "confirmed"
+    },
+    {
+      "req_id": "R-003",
+      "type": "team",
+      "subject": "质检员",
+      "constraint": "项目部质检员 满足条件1和条件2 条件1 / 具有电力工程建设相应质量培训合格证书 / 条件1或条件2或条件3 条件1 / 1 500kV及以上 新建变电站 土建施工管理",
+      "parsed": {
+        "position": "质检员"
+      },
+      "scoring_refs": [],
+      "evidence_ids": [
+        "e--01191",
+        "e--01192",
+        "e--01193",
+        "e--01202",
+        "e--01203",
+        "e--01204",
+        "e--01211",
+        "e--01212",
+        "e--01216",
+        "e--01217",
+        "e--01218",
+        "e--01222"
+      ],
+      "confidence": 0.88,
+      "status": "confirmed"
+    },
+    {
+      "req_id": "R-004",
+      "type": "team",
+      "subject": "技术负责人",
+      "constraint": "技术负责人\t姓名\t\t技术职称\t\t电话",
+      "parsed": {
+        "position": "技术负责人",
+        "certificates": [
+          "职称"
+        ]
+      },
+      "scoring_refs": [],
+      "evidence_ids": [
+        "e--01219",
+        "e--01223"
+      ],
+      "confidence": 0.75,
+      "status": "confirmed"
+    },
+    {
+      "req_id": "R-005",
+      "type": "finance",
+      "subject": "finance",
+      "constraint": "授标将考虑投标人的财务状况和履约能力等方面，其基础是对投标人按照投标人须知规定提交的资格证明文件和其他招标人认为必要的、合适的资料进行综合评价，根据评标结果确定最终中标人，并履行合同；（2）近年财务状况；投标人需提供第二章投标人须知前附表第3.5.2条规定年份的财务会计报表审计报告、资产负债表、利润表及现金流量表，其他报表无需提供；如因国家重大政策（机构）调整造成无法提供的，可提供上级单位出具的关于投标人财务状况的证明文件，并附国家相关政策文件；投标人的成立时间少于投标人须知前附表规定年份的，应提供成立以来的财务状况",
+      "parsed": {
+        "items": [
+          "授标将考虑投标人的财务状况和履约能力等方面，其基础是对投标人按照投标人须知规定提交的资格证明文件和其他招标人认为必要的、合适的资料进行综合评价，根据评标结果确定最终中标人，并履行合同",
+          "（2）近年财务状况",
+          "投标人需提供第二章投标人须知前附表第3.5.2条规定年份的财务会计报表审计报告、资产负债表、利润表及现金流量表，其他报表无需提供",
+          "如因国家重大政策（机构）调整造成无法提供的，可提供上级单位出具的关于投标人财务状况的证明文件，并附国家相关政策文件",
+          "投标人的成立时间少于投标人须知前附表规定年份的，应提供成立以来的财务状况",
+          "●未参加XX年国网财务信息专项核实的投标人，仅需提供XX年的财务会计报表审计报告、资产负债表、利润表及现金流量表，其他报表无需提供",
+          "3.5.2 “近年财务状况表”应附经会计师事务所或审计机构审计的财务会计报表，包括资产负债表、现金流量表、利润表和财务情况说明书的复印件，具体年份要求见投标人须知前附表"
+        ]
+      },
+      "scoring_refs": [],
+      "evidence_ids": [
+        "e--01224",
+        "e--01225",
+        "e--01226",
+        "e--01227",
+        "e--01228"
+      ],
+      "confidence": 0.8,
+      "status": "confirmed"
+    },
+    {
+      "req_id": "R-006",
+      "type": "credit",
+      "subject": "credit",
+      "constraint": "补充： （13）投标人被市场监督管理机关在国家企业信用信息公示系统中列入市场监督管理严重违法失信名单或列入经营异常名录信息的",
+      "parsed": {
+        "items": [
+          "补充： （13）投标人被市场监督管理机关在国家企业信用信息公示系统中列入市场监督管理严重违法失信名单或列入经营异常名录信息的"
+        ]
+      },
+      "scoring_refs": [],
+      "evidence_ids": [
+        "e--01231"
+      ],
+      "confidence": 0.8,
+      "status": "confirmed"
+    },
+    {
+      "req_id": "R-007",
+      "type": "honor",
+      "subject": "honor",
+      "constraint": "商务评分细则逐条逐项应答\t1.企业获奖 （1）优质工程获奖情况 （2）企业创新获奖情况\t例：商务文件第二册第X页-第X页\t工程量清单；（1）优质工程获奖情况；优质工程获奖情况表；获奖项目名称\t等  级\t颁发机构\t颁发时间；获奖项目名称\t奖项名称\t颁发机构\t颁发时间",
+      "parsed": {
+        "items": [
+          "商务评分细则逐条逐项应答\t1.企业获奖 （1）优质工程获奖情况 （2）企业创新获奖情况\t例：商务文件第二册第X页-第X页\t工程量清单",
+          "（1）优质工程获奖情况",
+          "优质工程获奖情况表",
+          "获奖项目名称\t等  级\t颁发机构\t颁发时间",
+          "获奖项目名称\t奖项名称\t颁发机构\t颁发时间"
+        ]
+      },
+      "scoring_refs": [],
+      "evidence_ids": [
+        "e--01232",
+        "e--01233",
+        "e--01234",
+        "e--01235",
+        "e--01236"
+      ],
+      "confidence": 0.8,
+      "status": "confirmed"
+    },
+    {
+      "req_id": "R-008",
+      "type": "commitment",
+      "subject": "commitment",
+      "constraint": "如招标文件中商务部分与技术规范书中的内容有差异，技术标准、工程规模、招标范围及工期/服务期要求以技术规范书为准，投标人资格要求、质保期以商务部分为准",
+      "parsed": {
+        "items": [
+          "如招标文件中商务部分与技术规范书中的内容有差异，技术标准、工程规模、招标范围及工期/服务期要求以技术规范书为准，投标人资格要求、质保期以商务部分为准"
+        ]
+      },
+      "scoring_refs": [],
+      "evidence_ids": [
+        "e--01237"
+      ],
+      "confidence": 0.8,
+      "status": "confirmed"
+    },
+    {
+      "req_id": "R-009",
+      "type": "price",
+      "subject": "投标报价",
+      "constraint": "2.2.4（3） 投标报价评分标准",
+      "parsed": {
+        "formula": "2.2.4（3） 投标报价评分标准"
+      },
+      "scoring_refs": [
+        "P-001",
+        "C-004"
+      ],
+      "evidence_ids": [
+        "e--01238"
+      ],
+      "confidence": 0.85,
+      "status": "confirmed"
+    }
+  ],
+  "stars": [],
+  "declared": [
+    {
+      "category": "commercial",
+      "total": 100.0,
+      "source": "t-0069 大类标签",
+      "lot": "（适用于施工类分标）"
+    },
+    {
+      "category": "technical",
+      "total": 100.0,
+      "source": "t-0071 大类标签",
+      "lot": "换流站土建施工"
+    },
+    {
+      "category": "technical",
+      "total": 100.0,
+      "source": "t-0072 大类标签",
+      "lot": "变电站土建及电气安装施工"
+    },
+    {
+      "category": "technical",
+      "total": 100.0,
+      "source": "t-0073 大类标签",
+      "lot": "变电站桩基施工"
+    },
+    {
+      "category": "technical",
+      "total": 100.0,
+      "source": "t-0074 大类标签",
+      "lot": "光纤通信施工"
+    }
+  ]
+}

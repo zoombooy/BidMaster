@@ -54,10 +54,12 @@ class Pipeline:
         self.settings = get_settings()
 
     # ---------- 对外 ----------
-    def run(self, file_path: str, *, force: bool = False,
+    def run(self, file_paths: str | list[str], *, force: bool = False,
             use_llm: bool = True) -> TenderReport:
-        ws, doc_id = self._ensure_workspace(file_path, force)
-        meta = self._stage_intake(ws, doc_id, file_path, force)
+        """支持单文件或多个文件（如 第一章公告 + 第2-8章正文 合并解析）。"""
+        files = [file_paths] if isinstance(file_paths, str) else list(file_paths)
+        ws, doc_id = self._ensure_workspace(files, force)
+        meta = self._stage_intake(ws, doc_id, files, force)
         parsed = self._stage_parse(ws, meta, force)
         struct = self._stage_structure(ws, parsed, force)
         fields, conflicts = self._stage_fields(ws, parsed, struct, use_llm, force)
@@ -73,46 +75,108 @@ class Pipeline:
         return TenderReport.model_validate(read_json(p))
 
     # ---------- 工作区 ----------
-    def _ensure_workspace(self, file_path: str, force: bool):
-        # doc_id 由内容 SHA + 文件名决定 → 同一文件重跑复用工作区
-        info = intake_mod.intake(Path(file_path))
-        doc_id = info["sha256"][:12]
+    def _ensure_workspace(self, file_paths: list[str], force: bool):
+        infos = [intake_mod.intake(Path(f)) for f in file_paths]
+        import hashlib
+        combined = hashlib.sha256(
+            "|".join(i["sha256"] for i in infos).encode()).hexdigest()
+        doc_id = combined[:12]
         ws = workspace_for(self.work_root, doc_id)
         if force:
             for stage in ("parse", "structure", "fields", "scoring", "report"):
                 f = ws / STAGE_FILES[stage]
                 if f.exists():
                     f.unlink()
-        # 保存源文件副本（供 API 页面渲染）
-        src = ws / f"source{Path(file_path).suffix.lower()}"
-        if not src.exists():
-            shutil.copy(file_path, src)
+        for i, info in enumerate(infos):
+            src = ws / f"source_{i}{Path(file_paths[i]).suffix.lower()}"
+            if not src.exists():
+                shutil.copy(file_paths[i], src)
         return ws, doc_id
 
     # ---------- 各阶段 ----------
-    def _stage_intake(self, ws: Path, doc_id: str, file_path: str, force: bool) -> dict:
+    def _stage_intake(self, ws: Path, doc_id: str, file_paths: list[str],
+                      force: bool) -> dict:
         f = ws / STAGE_FILES["intake"]
         if f.exists() and not force:
             return read_json(f)
-        info = intake_mod.intake(Path(file_path))
-        info["doc_id"] = doc_id
-        write_json(f, info)
-        return info
+        infos = [intake_mod.intake(Path(p)) for p in file_paths]
+        for info, p in zip(infos, file_paths):
+            info["doc_id"] = doc_id
+            info["path"] = str(Path(p).resolve())
+        meta = {
+            "doc_id": doc_id,
+            "file_name": " + ".join(Path(p).name for p in file_paths),
+            "files": infos,
+            "sha256": infos[0]["sha256"] if len(infos) == 1 else "",
+        }
+        write_json(f, meta)
+        return meta
 
     def _stage_parse(self, ws: Path, meta: dict, force: bool) -> ParsedDocument:
         f = ws / STAGE_FILES["parse"]
         if f.exists() and not force:
             return ParsedDocument.model_validate(read_json(f))
         ledger = ProcessingLedger(doc_id=meta["doc_id"])
-        probe = meta.get("probe") or {}
-        parsed = route_and_parse(meta["path"], meta["doc_id"], meta["routed_type"],
-                                 ledger, empty_pages=probe.get("empty_pages"))
+        docs: list[ParsedDocument] = []
+        for i, info in enumerate(meta["files"]):
+            probe = info.get("probe") or {}
+            doc = route_and_parse(info["path"], info["doc_id"],
+                                  info["routed_type"], ledger,
+                                  empty_pages=probe.get("empty_pages"))
+            doc.quality.warnings.extend(self._quality_warnings(info))
+            docs.append(doc)
+        parsed = docs[0] if len(docs) == 1 else self._merge_parsed(meta, docs)
         parsed.sha256 = meta.get("sha256", "")
-        parsed.quality.warnings.extend(self._quality_warnings(meta))
         write_json(ws / "ledger.json",
                    {**ledger.model_dump(mode="json"), "summary": ledger.summary()})
         write_json(f, parsed.model_dump(mode="json"))
         return parsed
+
+    @staticmethod
+    def _merge_parsed(meta: dict, docs: list[ParsedDocument]) -> ParsedDocument:
+        """多文件合并：块顺序拼接（字符偏移顺延）、表格重编号、文件名标注。"""
+        from bidmaster.schemas.document import Block, ParsedDocument, TableModel
+        blocks: list[Block] = []
+        tables = []
+        char_base = 0
+        t_seq = 0
+        b_seq = 0
+        id_map: dict[str, str] = {}
+        for i, doc in enumerate(docs):
+            tag = f"[文件{i + 1}:{doc.file_name}]"
+            b = doc.blocks[0].model_copy(update={
+                "block_id": f"b-{b_seq + 1:05d}", "type": "heading",
+                "style": doc.blocks[0].style.model_copy(update={"heading_level": 1}),
+                "char_start": char_base, "char_end": char_base + len(tag)})
+            b_seq += 1
+            blocks.append(b)
+            char_base += len(tag) + 1
+            for blk in doc.blocks:
+                new_ref = blk.table_ref
+                if blk.table_ref:
+                    t_seq += 1
+                    new_ref = f"t-{t_seq:04d}"
+                    id_map[(i, blk.table_ref)] = new_ref
+                b_seq += 1
+                blocks.append(blk.model_copy(update={
+                    "block_id": f"b-{b_seq:05d}",
+                    "char_start": blk.char_start + char_base,
+                    "char_end": blk.char_end + char_base,
+                    "table_ref": new_ref}))
+                char_base += (blk.char_end - blk.char_start) + 1
+            for t in doc.tables:
+                t_seq += 1
+                new_id = id_map.get((i, t.table_id), t.table_id)
+                tables.append(t.model_copy(update={"table_id": new_id}))
+        merged = ParsedDocument(
+            doc_id=meta["doc_id"], file_name=meta["file_name"],
+            file_type="multi", pages=[p for d in docs for p in d.pages],
+            blocks=blocks, tables=tables,
+            full_text="\n".join(b.text for b in blocks),
+        )
+        merged.quality.warnings.append(
+            "多文件合并解析：page_no 为各文件内页码；字段冲突可能来自不同文件（按优先级合并）")
+        return merged
 
     def _stage_structure(self, ws: Path, parsed: ParsedDocument,
                          force: bool) -> dict:
@@ -155,7 +219,9 @@ class Pipeline:
             return read_json(f)
         store = self._load_store(ws)
         zones = [AnchorZone.model_validate(z) for z in struct["zones"]]
-        scores, declared = extract_score_items(parsed, zones, store)
+        from bidmaster.schemas.report import SectionNode
+        sections = [SectionNode.model_validate(s) for s in struct.get("sections", [])]
+        scores, declared = extract_score_items(parsed, zones, store, sections=sections)
         builder = RequirementBuilder(parsed, zones, scores, store)
         reqs, stars = builder.build()
         write_json(ws / "evidence.json", store.model_dump(mode="json"))

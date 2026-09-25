@@ -54,9 +54,9 @@ class TestScoreTable:
         items, declared = extract_score_items(parsed, ZONES, store)
 
         assert len(items) == 10
-        assert declared == [{"category": "technical", "total": 60.0, "source": "t-0001 r1"},
-                            {"category": "commercial", "total": 30.0, "source": "t-0001 r7"},
-                            {"category": "price", "total": 10.0, "source": "t-0001 r12"}]
+        assert declared == [{"category": "technical", "total": 60.0, "source": "t-0001 r1", "lot": "-"},
+                            {"category": "commercial", "total": 30.0, "source": "t-0001 r7", "lot": "-"},
+                            {"category": "price", "total": 10.0, "source": "t-0001 r12", "lot": "-"}]
         perf = next(i for i in items if i.name == "类似工程业绩")
         assert perf.score_id == "T-001" and perf.max_score == 6
         assert perf.parsed_rule.get("years") == 5

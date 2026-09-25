@@ -16,59 +16,56 @@ _CATEGORY_LABEL = {CAT_TECHNICAL: "技术标", CAT_COMMERCIAL: "商务标", CAT_
 def validate_scores(scores: list, declared: list[dict],
                     field_values: dict[str, str] | None = None,
                     issues: list[str] | None = None) -> list[ScoreSumCheck]:
+    """分值机械校验。多分标文件（同一类别多张评分表）按 lot 分组校验：
+    每个分标内部"评分项合计 == 该表大类标签合计"；权重字段作为参考线单列。"""
     issues = issues if issues is not None else []
-    # 兼容 dict（阶段产物）与 ScoreItem 两种入参
     from bidmaster.schemas.scoring import ScoreItem as _SI
     scores = [_SI.model_validate(s) if isinstance(s, dict) else s for s in scores]
     checks: list[ScoreSumCheck] = []
 
-    declared_map = {d["category"]: d["total"] for d in declared}
-    # 字段抽取到的权重作为声明的第二来源（交叉验证）
-    fw = field_values or {}
-    field_declared = {
-        CAT_TECHNICAL: _to_float(fw.get("technical_weight")),
-        CAT_COMMERCIAL: _to_float(fw.get("commercial_weight")),
-        CAT_PRICE: _to_float(fw.get("price_weight")),
-    }
+    def lot_of(s: ScoreItem) -> str:
+        return (s.parsed_rule or {}).get("lot", "-")
 
-    grand_computed = 0.0
-    grand_declared = 0.0
-    for cat in (CAT_TECHNICAL, CAT_COMMERCIAL, CAT_PRICE):
-        items = [s for s in scores if s.category == cat]
-        computed = round(sum(s.max_score for s in items), 2)
-        grand_computed += computed
-        dec = declared_map.get(cat)
-        fd = field_declared.get(cat)
-        if dec is None and fd is not None:
-            dec = fd
-        if dec is not None:
-            grand_declared += dec
+    # ---- 分组1：按 (category, lot) 校验该分标内部自洽（大类标签 vs 子项合计）----
+    lots = sorted({(s.category, lot_of(s)) for s in scores})
+    for cat, lot in lots:
+        group = [s for s in scores if s.category == cat and lot_of(s) == lot]
+        group_declared = [d for d in declared
+                          if d.get("category") == cat and d.get("lot", "-") == lot]
+        computed = round(sum(s.max_score for s in group if s.status == "confirmed"
+                             and not (s.parsed_rule or {}).get("penalty")), 2)
+        dec = group_declared[0]["total"] if group_declared else None
         ok = True
         notes: list[str] = []
         if dec is not None and abs(computed - dec) > 0.01:
             ok = False
-            notes.append(f"评分项合计 {computed} ≠ 声明总分 {dec}")
-        bad = [s.score_id for s in items if s.max_score <= 0]
+            notes.append(f"评分项合计 {computed} ≠ 大类标签合计 {dec}")
+        bad = [s.score_id for s in group
+               if s.max_score <= 0 and s.status == "confirmed"]
         if bad:
             ok = False
             notes.append(f"分值异常项: {bad}")
+        label = f"{_CATEGORY_LABEL.get(cat, cat)}/{lot}"
         checks.append(ScoreSumCheck(
             category=cat, declared_total=dec, computed_total=computed,
-            item_count=len(items), ok=ok, note="；".join(notes)))
+            item_count=len(group), ok=ok,
+            note=("；".join(notes) if notes else "") + (f" [lot={lot}]" if lot else "")))
+        if not ok and notes:
+            issues.append(f"{label}：{'；'.join(notes)}")
 
-    # 大类合计 = 100（有权重声明时）
-    if grand_declared > 0 and abs(grand_declared - 100) > 0.01:
-        issues.append(f"评标办法声明的大类权重合计为 {grand_declared}，不等于 100，请人工确认")
-    if grand_computed > 0 and grand_declared > 0 and abs(grand_computed - grand_declared) > 0.01:
-        issues.append(f"评分项总分合计 {grand_computed} ≠ 声明权重合计 {grand_declared}，"
-                      f"可能存在漏行/解析错位（已保留全部条目供人工核对）")
+    # ---- 分组2：权重字段（技:商:价）合计参考线 ----
+    fw = field_values or {}
+    weights = {CAT_TECHNICAL: _to_float(fw.get("technical_weight")),
+               CAT_COMMERCIAL: _to_float(fw.get("commercial_weight")),
+               CAT_PRICE: _to_float(fw.get("price_weight"))}
+    if any(v is not None for v in weights.values()):
+        grand_w = sum(v for v in weights.values() if v is not None)
+        if abs(grand_w - 100) > 0.01:
+            issues.append(f"权重（技:商:价）合计 {grand_w} ≠ 100，可能取到了其他分标的行，请人工确认")
     # 评分项 id 唯一性
     ids = [s.score_id for s in scores]
     if len(ids) != len(set(ids)):
         issues.append("评分项编号存在重复")
-    for c in checks:
-        if not c.ok and c.note:
-            issues.append(f"{_CATEGORY_LABEL[c.category]}：{c.note}")
     return checks
 
 

@@ -1,0 +1,23 @@
+{
+  "doc_id": "95b373e528d2",
+  "file_name": "第一章招标公告SG2682.docx + （第2-8章）2026特高压工程施工公开招标采购文件-四次服务.docx",
+  "files": [
+    {
+      "doc_id": "95b373e528d2",
+      "file_name": "第一章招标公告SG2682.docx",
+      "path": "C:\\Users\\张博艺\\Desktop\\标书文件\\extracted\\包1\\第一章招标公告SG2682.docx",
+      "sha256": "43b3c5e52a1c8fe879a86cb35a0316c98e90b05e194773500530a4305f07d126",
+      "routed_type": "docx",
+      "probe": {}
+    },
+    {
+      "doc_id": "95b373e528d2",
+      "file_name": "（第2-8章）2026特高压工程施工公开招标采购文件-四次服务.docx",
+      "path": "C:\\Users\\张博艺\\Desktop\\标书文件\\extracted\\包1\\主招标文件\\（第2-8章）2026特高压工程施工公开招标采购文件-四次服务.docx",
+      "sha256": "63cbe7b7d7c26d5244368adec63895282997335e19fe0422dccb31e6ede2a5f4",
+      "routed_type": "docx",
+      "probe": {}
+    }
+  ],
+  "sha256": ""
+}

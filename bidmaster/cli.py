@@ -75,8 +75,8 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(prog="bidmaster", description="招标文件解析 Agent（一期）")
     sub = parser.add_subparsers(dest="cmd", required=True)
 
-    p_an = sub.add_parser("analyze", help="解析招标文件并输出结构化报告")
-    p_an.add_argument("file", help="招标文件路径（.docx/.pdf）")
+    p_an = sub.add_parser("analyze", help="解析招标文件并输出结构化报告（支持多个文件合并，如 公告+正文）")
+    p_an.add_argument("file", nargs="+", help="招标文件路径（.docx/.pdf）")
     p_an.add_argument("--workdir", default="work")
     p_an.add_argument("--force", action="store_true", help="忽略缓存强制重跑（级联失效下游）")
     p_an.add_argument("--no-llm", action="store_true", help="禁用 LLM 兜底（纯规则模式）")

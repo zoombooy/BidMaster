@@ -1,0 +1,2937 @@
+{
+  "fields": {
+    "project_name": {
+      "field_key": "project_name",
+      "field_label": "项目名称",
+      "group": "项目信息",
+      "required": true,
+      "status": "found",
+      "value_raw": "招标编号：",
+      "value_normalized": "招标编号：",
+      "value_unit": "text",
+      "confidence": 0.95,
+      "evidence_ids": [
+        "e--00001"
+      ],
+      "candidates": [
+        {
+          "value_raw": "招标编号：",
+          "value_normalized": "招标编号：",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00001",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "招标编号：",
+          "value_normalized": "招标编号：",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00002",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "招标编号：",
+          "value_normalized": "招标编号：",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00003",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "分标 名称",
+          "value_normalized": "分标 名称",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00004",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "分标 名称",
+          "value_normalized": "分标 名称",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00005",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "工程电压等级",
+          "value_normalized": "工程电压等级",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00006",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "工程电压等级",
+          "value_normalized": "工程电压等级",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00007",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "工程电压等级",
+          "value_normalized": "工程电压等级",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00008",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "工程电压等级",
+          "value_normalized": "工程电压等级",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00009",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "工程规模",
+          "value_normalized": "工程规模",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00010",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "工程规模",
+          "value_normalized": "工程规模",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00011",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "工程规模",
+          "value_normalized": "工程规模",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00012",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "工程规模",
+          "value_normalized": "工程规模",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00013",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "工程规模",
+          "value_normalized": "工程规模",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00014",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "工程规模",
+          "value_normalized": "工程规模",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00015",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "工程规模",
+          "value_normalized": "工程规模",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00016",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "工程规模",
+          "value_normalized": "工程规模",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00017",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "见招标公告",
+          "value_normalized": "见招标公告",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00018",
+          "zone": "instructions"
+        },
+        {
+          "value_raw": "见投标人须知前附表",
+          "value_normalized": "见投标人须知前附表",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00019",
+          "zone": "instructions"
+        },
+        {
+          "value_raw": "、投标保证金的递交情况、投标报价、质量目标、工期及其他内容",
+          "value_normalized": "、投标保证金的递交情况、投标报价、质量目标、工期及其他内容",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00020",
+          "zone": "instructions"
+        },
+        {
+          "value_raw": "）评标委员会",
+          "value_normalized": "）评标委员会",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00021",
+          "zone": "instructions"
+        },
+        {
+          "value_raw": "）评标委员会",
+          "value_normalized": "）评标委员会",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00022",
+          "zone": "instructions"
+        },
+        {
+          "value_raw": "）评标委员会：",
+          "value_normalized": "）评标委员会：",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00023",
+          "zone": "instructions"
+        },
+        {
+          "value_raw": "招标编号：",
+          "value_normalized": "招标编号：",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00024",
+          "zone": "instructions"
+        },
+        {
+          "value_raw": "招标编号：",
+          "value_normalized": "招标编号：",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00025",
+          "zone": "instructions"
+        },
+        {
+          "value_raw": "招标编号：",
+          "value_normalized": "招标编号：",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00026",
+          "zone": "instructions"
+        },
+        {
+          "value_raw": "见招标公告",
+          "value_normalized": "见招标公告",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00027",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "见投标人须知前附表",
+          "value_normalized": "见投标人须知前附表",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00028",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "、投标保证金的递交情况、投标报价、质量目标、工期及其他内容",
+          "value_normalized": "、投标保证金的递交情况、投标报价、质量目标、工期及其他内容",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00029",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "）评标委员会",
+          "value_normalized": "）评标委员会",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00030",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "）评标委员会",
+          "value_normalized": "）评标委员会",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00031",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "）评标委员会：",
+          "value_normalized": "）评标委员会：",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00032",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "招标编号：",
+          "value_normalized": "招标编号：",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00033",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "招标编号：",
+          "value_normalized": "招标编号：",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00034",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "招标编号：",
+          "value_normalized": "招标编号：",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00035",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "见招标公告",
+          "value_normalized": "见招标公告",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00036",
+          "zone": ""
+        },
+        {
+          "value_raw": "见投标人须知前附表",
+          "value_normalized": "见投标人须知前附表",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00037",
+          "zone": ""
+        },
+        {
+          "value_raw": "、投标保证金的递交情况、投标报价、质量目标、工期及其他内容",
+          "value_normalized": "、投标保证金的递交情况、投标报价、质量目标、工期及其他内容",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00038",
+          "zone": ""
+        },
+        {
+          "value_raw": "）评标委员会",
+          "value_normalized": "）评标委员会",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00039",
+          "zone": ""
+        },
+        {
+          "value_raw": "）评标委员会",
+          "value_normalized": "）评标委员会",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00040",
+          "zone": ""
+        },
+        {
+          "value_raw": "）评标委员会：",
+          "value_normalized": "）评标委员会：",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00041",
+          "zone": ""
+        },
+        {
+          "value_raw": "招标编号：",
+          "value_normalized": "招标编号：",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00042",
+          "zone": ""
+        },
+        {
+          "value_raw": "招标编号：",
+          "value_normalized": "招标编号：",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00043",
+          "zone": ""
+        },
+        {
+          "value_raw": "招标编号：",
+          "value_normalized": "招标编号：",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00044",
+          "zone": ""
+        },
+        {
+          "value_raw": "分标 名称\t权重设置 技:商:价\t价格计分算法\t同时中标最多数量",
+          "value_normalized": "分标 名称\t权重设置 技:商:价\t价格计分算法\t同时中标最多数量",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00045",
+          "zone": ""
+        },
+        {
+          "value_raw": "）招标项目投标",
+          "value_normalized": "）招标项目投标",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00046",
+          "zone": ""
+        },
+        {
+          "value_raw": "］的投标保证金银行保函",
+          "value_normalized": "］的投标保证金银行保函",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00047",
+          "zone": ""
+        },
+        {
+          "value_raw": "和招标项目编号（年度保单除外）",
+          "value_normalized": "和招标项目编号（年度保单除外）",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00048",
+          "zone": ""
+        },
+        {
+          "value_raw": "）投标中承诺：",
+          "value_normalized": "）投标中承诺：",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00049",
+          "zone": ""
+        },
+        {
+          "value_raw": "等  级\t颁发机构\t颁发时间",
+          "value_normalized": "等  级\t颁发机构\t颁发时间",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00050",
+          "zone": ""
+        },
+        {
+          "value_raw": "奖项名称\t颁发机构\t颁发时间",
+          "value_normalized": "奖项名称\t颁发机构\t颁发时间",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00051",
+          "zone": ""
+        },
+        {
+          "value_raw": "、关键时间、电压等级等关键信息",
+          "value_normalized": "、关键时间、电压等级等关键信息",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00052",
+          "zone": ""
+        },
+        {
+          "value_raw": "工程电压等级\t工程规模\t竣工 时间\t承包范围\t业主单位 （项目法人）\t业主单位联系方式",
+          "value_normalized": "工程电压等级\t工程规模\t竣工 时间\t承包范围\t业主单位 （项目法人）\t业主单位联系方式",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00053",
+          "zone": ""
+        },
+        {
+          "value_raw": "工程电压等级\t工程规模\t合同签订时间\t承包范围\t业主单位 （项目法人）\t业主单位联系方式",
+          "value_normalized": "工程电压等级\t工程规模\t合同签订时间\t承包范围\t业主单位 （项目法人）\t业主单位联系方式",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00054",
+          "zone": ""
+        },
+        {
+          "value_raw": "工程规模\t工作内容\t担任职务",
+          "value_normalized": "工程规模\t工作内容\t担任职务",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00055",
+          "zone": ""
+        },
+        {
+          "value_raw": "工程规模\t工作内容\t担任职务",
+          "value_normalized": "工程规模\t工作内容\t担任职务",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00056",
+          "zone": ""
+        },
+        {
+          "value_raw": "工程规模\t工作内容\t担任职务",
+          "value_normalized": "工程规模\t工作内容\t担任职务",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00057",
+          "zone": ""
+        },
+        {
+          "value_raw": "工程规模\t工作内容\t担任职务",
+          "value_normalized": "工程规模\t工作内容\t担任职务",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00058",
+          "zone": ""
+        },
+        {
+          "value_raw": "工程规模\t工作内容\t担任职务",
+          "value_normalized": "工程规模\t工作内容\t担任职务",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00059",
+          "zone": ""
+        },
+        {
+          "value_raw": "工程规模\t工作内容\t担任职务",
+          "value_normalized": "工程规模\t工作内容\t担任职务",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00060",
+          "zone": ""
+        },
+        {
+          "value_raw": "）招标",
+          "value_normalized": "）招标",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00061",
+          "zone": ""
+        }
+      ],
+      "note": ""
+    },
+    "tender_no": {
+      "field_key": "tender_no",
+      "field_label": "招标编号",
+      "group": "项目信息",
+      "required": true,
+      "status": "found",
+      "value_raw": "异议人类型： □潜在投标人□其他利害关系人",
+      "value_normalized": "异议人类型： □潜在投标人□其他利害关系人",
+      "value_unit": "text",
+      "confidence": 0.95,
+      "evidence_ids": [
+        "e--00062"
+      ],
+      "candidates": [
+        {
+          "value_raw": "异议人类型： □潜在投标人□其他利害关系人",
+          "value_normalized": "异议人类型： □潜在投标人□其他利害关系人",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00062",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "异议人类型： □投标人□其他利害关系人",
+          "value_normalized": "异议人类型： □投标人□其他利害关系人",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00063",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "分标编号",
+          "value_normalized": "分标编号",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00064",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "分标编号",
+          "value_normalized": "分标编号",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00065",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "0711-26OTL11013056",
+          "value_normalized": "0711-26OTL11013056",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00066",
+          "zone": ""
+        }
+      ],
+      "note": ""
+    },
+    "tenderer": {
+      "field_key": "tenderer",
+      "field_label": "招标人",
+      "group": "项目信息",
+      "required": false,
+      "status": "found",
+      "value_raw": "名称：见招标公告 地址：见招标公告",
+      "value_normalized": "名称：见招标公告 地址：见招标公告",
+      "value_unit": "text",
+      "confidence": 0.9,
+      "evidence_ids": [
+        "e--00067"
+      ],
+      "candidates": [
+        {
+          "value_raw": "名称：见招标公告 地址：见招标公告",
+          "value_normalized": "名称：见招标公告 地址：见招标公告",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00067",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "见投标人须知前附表",
+          "value_normalized": "见投标人须知前附表",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00068",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "不具有独立法人资格的附属机构（单位）",
+          "value_normalized": "不具有独立法人资格的附属机构（单位）",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00069",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "按投标人须知前附表规定的时间、地点组织投标人踏勘项目现场",
+          "value_normalized": "按投标人须知前附表规定的时间、地点组织投标人踏勘项目现场",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00070",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "的原因外",
+          "value_normalized": "的原因外",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00071",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "在踏勘现场中介绍的工程场地和相关的周边环境情况",
+          "value_normalized": "在踏勘现场中介绍的工程场地和相关的周边环境情况",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00072",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "按投标人须知前附表规定的时间和地点召开投标预备会",
+          "value_normalized": "按投标人须知前附表规定的时间和地点召开投标预备会",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00073",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "在会议期间澄清",
+          "value_normalized": "在会议期间澄清",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00074",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "在投标人须知前附表规定的时间内",
+          "value_normalized": "在投标人须知前附表规定的时间内",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00075",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "提出",
+          "value_normalized": "提出",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00076",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "可以书面形式修改招标文件",
+          "value_normalized": "可以书面形式修改招标文件",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00077",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "以书面形式通知所有投标人延长投标有效期",
+          "value_normalized": "以书面形式通知所有投标人延长投标有效期",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00078",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "与中标人签订合同后5个工作日内",
+          "value_normalized": "与中标人签订合同后5个工作日内",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00079",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "可以接受该备选投标方案",
+          "value_normalized": "可以接受该备选投标方案",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00080",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "的承诺",
+          "value_normalized": "的承诺",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00081",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "不予受理",
+          "value_normalized": "不予受理",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00082",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "收到投标文件后",
+          "value_normalized": "收到投标文件后",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00083",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "不予受理",
+          "value_normalized": "不予受理",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00084",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "收到书面通知后",
+          "value_normalized": "收到书面通知后",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00085",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "在本章第2.2.2项规定的投标截止时间（开标时间）和投标人须知前附表规定的地点公开开标",
+          "value_normalized": "在本章第2.2.2项规定的投标截止时间（开标时间）和投标人须知前附表规定的地点公开开标",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00086",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "代表、监标人、记录人等有关人员在开标记录上签字确认",
+          "value_normalized": "代表、监标人、记录人等有关人员在开标记录上签字确认",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00087",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "依法组建的评标委员会负责",
+          "value_normalized": "依法组建的评标委员会负责",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00088",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "或投标人的主要负责人的近亲属",
+          "value_normalized": "或投标人的主要负责人的近亲属",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00089",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "依据评标委员会推荐的中标候选人确定中标人",
+          "value_normalized": "依据评标委员会推荐的中标候选人确定中标人",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00090",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "在投标人须知前附表规定的媒介公示中标候选人",
+          "value_normalized": "在投标人须知前附表规定的媒介公示中标候选人",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00091",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "以书面形式向中标人发出中标通知书",
+          "value_normalized": "以书面形式向中标人发出中标通知书",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00092",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "提交履约担保",
+          "value_normalized": "提交履约担保",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00093",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "造成的损失超过投标保证金数额的",
+          "value_normalized": "造成的损失超过投标保证金数额的",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00094",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "和中标人应当自中标通知书发出之日起30天内",
+          "value_normalized": "和中标人应当自中标通知书发出之日起30天内",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00095",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "无正当理由拒签合同的",
+          "value_normalized": "无正当理由拒签合同的",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00096",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "将重新招标：",
+          "value_normalized": "将重新招标：",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00097",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "的纪律要求",
+          "value_normalized": "的纪律要求",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00098",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "不得泄漏招标投标活动中应当保密的情况和资料",
+          "value_normalized": "不得泄漏招标投标活动中应当保密的情况和资料",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00099",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "串通投标",
+          "value_normalized": "串通投标",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00100",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "招投标交易平台信息系统对该澄清单进行回复",
+          "value_normalized": "招投标交易平台信息系统对该澄清单进行回复",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00101",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "招投标交易平台信息系统上传",
+          "value_normalized": "招投标交易平台信息系统上传",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00102",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "代表签字或盖章：",
+          "value_normalized": "代表签字或盖章：",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00103",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "名称：见招标公告 地址：见招标公告",
+          "value_normalized": "名称：见招标公告 地址：见招标公告",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00104",
+          "zone": ""
+        },
+        {
+          "value_raw": "见投标人须知前附表",
+          "value_normalized": "见投标人须知前附表",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00105",
+          "zone": ""
+        },
+        {
+          "value_raw": "不具有独立法人资格的附属机构（单位）",
+          "value_normalized": "不具有独立法人资格的附属机构（单位）",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00106",
+          "zone": ""
+        },
+        {
+          "value_raw": "按投标人须知前附表规定的时间、地点组织投标人踏勘项目现场",
+          "value_normalized": "按投标人须知前附表规定的时间、地点组织投标人踏勘项目现场",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00107",
+          "zone": ""
+        },
+        {
+          "value_raw": "的原因外",
+          "value_normalized": "的原因外",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00108",
+          "zone": ""
+        },
+        {
+          "value_raw": "在踏勘现场中介绍的工程场地和相关的周边环境情况",
+          "value_normalized": "在踏勘现场中介绍的工程场地和相关的周边环境情况",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00109",
+          "zone": ""
+        },
+        {
+          "value_raw": "按投标人须知前附表规定的时间和地点召开投标预备会",
+          "value_normalized": "按投标人须知前附表规定的时间和地点召开投标预备会",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00110",
+          "zone": ""
+        },
+        {
+          "value_raw": "在会议期间澄清",
+          "value_normalized": "在会议期间澄清",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00111",
+          "zone": ""
+        },
+        {
+          "value_raw": "在投标人须知前附表规定的时间内",
+          "value_normalized": "在投标人须知前附表规定的时间内",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00112",
+          "zone": ""
+        },
+        {
+          "value_raw": "提出",
+          "value_normalized": "提出",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00113",
+          "zone": ""
+        },
+        {
+          "value_raw": "可以书面形式修改招标文件",
+          "value_normalized": "可以书面形式修改招标文件",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00114",
+          "zone": ""
+        },
+        {
+          "value_raw": "以书面形式通知所有投标人延长投标有效期",
+          "value_normalized": "以书面形式通知所有投标人延长投标有效期",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00115",
+          "zone": ""
+        },
+        {
+          "value_raw": "与中标人签订合同后5个工作日内",
+          "value_normalized": "与中标人签订合同后5个工作日内",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00116",
+          "zone": ""
+        },
+        {
+          "value_raw": "可以接受该备选投标方案",
+          "value_normalized": "可以接受该备选投标方案",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00117",
+          "zone": ""
+        },
+        {
+          "value_raw": "的承诺",
+          "value_normalized": "的承诺",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00118",
+          "zone": ""
+        },
+        {
+          "value_raw": "不予受理",
+          "value_normalized": "不予受理",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00119",
+          "zone": ""
+        },
+        {
+          "value_raw": "收到投标文件后",
+          "value_normalized": "收到投标文件后",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00120",
+          "zone": ""
+        },
+        {
+          "value_raw": "不予受理",
+          "value_normalized": "不予受理",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00121",
+          "zone": ""
+        },
+        {
+          "value_raw": "收到书面通知后",
+          "value_normalized": "收到书面通知后",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00122",
+          "zone": ""
+        },
+        {
+          "value_raw": "在本章第2.2.2项规定的投标截止时间（开标时间）和投标人须知前附表规定的地点公开开标",
+          "value_normalized": "在本章第2.2.2项规定的投标截止时间（开标时间）和投标人须知前附表规定的地点公开开标",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00123",
+          "zone": ""
+        },
+        {
+          "value_raw": "代表、监标人、记录人等有关人员在开标记录上签字确认",
+          "value_normalized": "代表、监标人、记录人等有关人员在开标记录上签字确认",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00124",
+          "zone": ""
+        },
+        {
+          "value_raw": "依法组建的评标委员会负责",
+          "value_normalized": "依法组建的评标委员会负责",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00125",
+          "zone": ""
+        },
+        {
+          "value_raw": "或投标人的主要负责人的近亲属",
+          "value_normalized": "或投标人的主要负责人的近亲属",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00126",
+          "zone": ""
+        },
+        {
+          "value_raw": "依据评标委员会推荐的中标候选人确定中标人",
+          "value_normalized": "依据评标委员会推荐的中标候选人确定中标人",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00127",
+          "zone": ""
+        },
+        {
+          "value_raw": "在投标人须知前附表规定的媒介公示中标候选人",
+          "value_normalized": "在投标人须知前附表规定的媒介公示中标候选人",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00128",
+          "zone": ""
+        },
+        {
+          "value_raw": "以书面形式向中标人发出中标通知书",
+          "value_normalized": "以书面形式向中标人发出中标通知书",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00129",
+          "zone": ""
+        },
+        {
+          "value_raw": "提交履约担保",
+          "value_normalized": "提交履约担保",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00130",
+          "zone": ""
+        },
+        {
+          "value_raw": "造成的损失超过投标保证金数额的",
+          "value_normalized": "造成的损失超过投标保证金数额的",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00131",
+          "zone": ""
+        },
+        {
+          "value_raw": "和中标人应当自中标通知书发出之日起30天内",
+          "value_normalized": "和中标人应当自中标通知书发出之日起30天内",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00132",
+          "zone": ""
+        },
+        {
+          "value_raw": "无正当理由拒签合同的",
+          "value_normalized": "无正当理由拒签合同的",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00133",
+          "zone": ""
+        },
+        {
+          "value_raw": "将重新招标：",
+          "value_normalized": "将重新招标：",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00134",
+          "zone": ""
+        },
+        {
+          "value_raw": "的纪律要求",
+          "value_normalized": "的纪律要求",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00135",
+          "zone": ""
+        },
+        {
+          "value_raw": "不得泄漏招标投标活动中应当保密的情况和资料",
+          "value_normalized": "不得泄漏招标投标活动中应当保密的情况和资料",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00136",
+          "zone": ""
+        },
+        {
+          "value_raw": "串通投标",
+          "value_normalized": "串通投标",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00137",
+          "zone": ""
+        },
+        {
+          "value_raw": "招投标交易平台信息系统对该澄清单进行回复",
+          "value_normalized": "招投标交易平台信息系统对该澄清单进行回复",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00138",
+          "zone": ""
+        },
+        {
+          "value_raw": "招投标交易平台信息系统上传",
+          "value_normalized": "招投标交易平台信息系统上传",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00139",
+          "zone": ""
+        },
+        {
+          "value_raw": "代表签字或盖章：",
+          "value_normalized": "代表签字或盖章：",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00140",
+          "zone": ""
+        },
+        {
+          "value_raw": "确定",
+          "value_normalized": "确定",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00141",
+          "zone": ""
+        },
+        {
+          "value_raw": "不具备独立法人资格的附属机构（单位）",
+          "value_normalized": "不具备独立法人资格的附属机构（单位）",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00142",
+          "zone": ""
+        },
+        {
+          "value_raw": "查证核实",
+          "value_normalized": "查证核实",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00143",
+          "zone": ""
+        },
+        {
+          "value_raw": "生产经营、公司形象可能带来较大影响",
+          "value_normalized": "生产经营、公司形象可能带来较大影响",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00144",
+          "zone": ""
+        },
+        {
+          "value_raw": "生产经营、公司形象可能带来较大影响",
+          "value_normalized": "生产经营、公司形象可能带来较大影响",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00145",
+          "zone": ""
+        },
+        {
+          "value_raw": "生产经营、公司形象可能带来较大影响",
+          "value_normalized": "生产经营、公司形象可能带来较大影响",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00146",
+          "zone": ""
+        },
+        {
+          "value_raw": "生产经营、公司形象可能带来较大影响",
+          "value_normalized": "生产经营、公司形象可能带来较大影响",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00147",
+          "zone": ""
+        },
+        {
+          "value_raw": "授权直接确定中标人",
+          "value_normalized": "授权直接确定中标人",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00148",
+          "zone": ""
+        },
+        {
+          "value_raw": "提交书面评标报告",
+          "value_normalized": "提交书面评标报告",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00149",
+          "zone": ""
+        },
+        {
+          "value_raw": "承担连带责任",
+          "value_normalized": "承担连带责任",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00150",
+          "zone": ""
+        },
+        {
+          "value_raw": "各执一份",
+          "value_normalized": "各执一份",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00151",
+          "zone": ""
+        },
+        {
+          "value_raw": "将按照项目招标编号、分标编号、包号顺序核定",
+          "value_normalized": "将按照项目招标编号、分标编号、包号顺序核定",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00152",
+          "zone": ""
+        },
+        {
+          "value_raw": "事故快报/舆情通报文号\t政府调查报告或招标人调查结果通报文号",
+          "value_normalized": "事故快报/舆情通报文号\t政府调查报告或招标人调查结果通报文号",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00153",
+          "zone": ""
+        },
+        {
+          "value_raw": "事故快报/舆情通报及政府或招标人调查结果报告/通报全文",
+          "value_normalized": "事故快报/舆情通报及政府或招标人调查结果报告/通报全文",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00154",
+          "zone": ""
+        }
+      ],
+      "note": ""
+    },
+    "agency": {
+      "field_key": "agency",
+      "field_label": "招标代理机构",
+      "group": "项目信息",
+      "required": false,
+      "status": "found",
+      "value_raw": "名称：见招标公告 地址：见招标公告 联系人：见招标公告 电话：见招标公告",
+      "value_normalized": "名称：见招标公告 地址：见招标公告 联系人：见招标公告 电话：见招标公告",
+      "value_unit": "text",
+      "confidence": 0.9,
+      "evidence_ids": [
+        "e--00155"
+      ],
+      "candidates": [
+        {
+          "value_raw": "名称：见招标公告 地址：见招标公告 联系人：见招标公告 电话：见招标公告",
+          "value_normalized": "名称：见招标公告 地址：见招标公告 联系人：见招标公告 电话：见招标公告",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00155",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "见投标人须知前附表",
+          "value_normalized": "见投标人须知前附表",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00156",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "服务的",
+          "value_normalized": "服务的",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00157",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "同为一个法定代表人（单位负责人）的",
+          "value_normalized": "同为一个法定代表人（单位负责人）的",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00158",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "相互控股或参股的",
+          "value_normalized": "相互控股或参股的",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00159",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "相互任职或工作的",
+          "value_normalized": "相互任职或工作的",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00160",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "熟悉相关业务的代表",
+          "value_normalized": "熟悉相关业务的代表",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00161",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "名称：见招标公告 地址：见招标公告 联系人：见招标公告 电话：见招标公告",
+          "value_normalized": "名称：见招标公告 地址：见招标公告 联系人：见招标公告 电话：见招标公告",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00162",
+          "zone": ""
+        },
+        {
+          "value_raw": "见投标人须知前附表",
+          "value_normalized": "见投标人须知前附表",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00163",
+          "zone": ""
+        },
+        {
+          "value_raw": "服务的",
+          "value_normalized": "服务的",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00164",
+          "zone": ""
+        },
+        {
+          "value_raw": "同为一个法定代表人（单位负责人）的",
+          "value_normalized": "同为一个法定代表人（单位负责人）的",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00165",
+          "zone": ""
+        },
+        {
+          "value_raw": "相互控股或参股的",
+          "value_normalized": "相互控股或参股的",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00166",
+          "zone": ""
+        },
+        {
+          "value_raw": "相互任职或工作的",
+          "value_normalized": "相互任职或工作的",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00167",
+          "zone": ""
+        },
+        {
+          "value_raw": "熟悉相关业务的代表",
+          "value_normalized": "熟悉相关业务的代表",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00168",
+          "zone": ""
+        },
+        {
+          "value_raw": "不予解释",
+          "value_normalized": "不予解释",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00169",
+          "zone": ""
+        },
+        {
+          "value_raw": "服务的",
+          "value_normalized": "服务的",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00170",
+          "zone": ""
+        },
+        {
+          "value_raw": "机构］",
+          "value_normalized": "机构］",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00171",
+          "zone": ""
+        },
+        {
+          "value_raw": "］［招标编号］的投标邀请提供_______________［工程名称］的投标保证金银行保函",
+          "value_normalized": "］［招标编号］的投标邀请提供_______________［工程名称］的投标保证金银行保函",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00172",
+          "zone": ""
+        },
+        {
+          "value_raw": "服务费的",
+          "value_normalized": "服务费的",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00173",
+          "zone": ""
+        }
+      ],
+      "note": ""
+    },
+    "fund_source": {
+      "field_key": "fund_source",
+      "field_label": "资金来源",
+      "group": "项目信息",
+      "required": false,
+      "status": "found",
+      "value_raw": "见招标公告",
+      "value_normalized": "见招标公告",
+      "value_unit": "text",
+      "confidence": 0.9,
+      "evidence_ids": [
+        "e--00174"
+      ],
+      "candidates": [
+        {
+          "value_raw": "见招标公告",
+          "value_normalized": "见招标公告",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00174",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "和落实情况",
+          "value_normalized": "和落实情况",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00175",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "见投标人须知前附表",
+          "value_normalized": "见投标人须知前附表",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00176",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "见投标人须知前附表",
+          "value_normalized": "见投标人须知前附表",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00177",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "见招标公告",
+          "value_normalized": "见招标公告",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00178",
+          "zone": ""
+        },
+        {
+          "value_raw": "和落实情况",
+          "value_normalized": "和落实情况",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00179",
+          "zone": ""
+        },
+        {
+          "value_raw": "见投标人须知前附表",
+          "value_normalized": "见投标人须知前附表",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00180",
+          "zone": ""
+        },
+        {
+          "value_raw": "见投标人须知前附表",
+          "value_normalized": "见投标人须知前附表",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00181",
+          "zone": ""
+        }
+      ],
+      "note": ""
+    },
+    "site": {
+      "field_key": "site",
+      "field_label": "建设地点",
+      "group": "项目信息",
+      "required": false,
+      "status": "found",
+      "value_raw": "见招标公告",
+      "value_normalized": "见招标公告",
+      "value_unit": "text",
+      "confidence": 0.9,
+      "evidence_ids": [
+        "e--00182"
+      ],
+      "candidates": [
+        {
+          "value_raw": "见招标公告",
+          "value_normalized": "见招标公告",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00182",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "见投标人须知前附表",
+          "value_normalized": "见投标人须知前附表",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00183",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "见招标公告",
+          "value_normalized": "见招标公告",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00184",
+          "zone": ""
+        },
+        {
+          "value_raw": "见投标人须知前附表",
+          "value_normalized": "见投标人须知前附表",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00185",
+          "zone": ""
+        }
+      ],
+      "note": ""
+    },
+    "price_limit": {
+      "field_key": "price_limit",
+      "field_label": "最高限价",
+      "group": "价格",
+      "required": true,
+      "status": "not_found",
+      "value_raw": "",
+      "value_normalized": null,
+      "value_unit": "",
+      "confidence": 0.0,
+      "evidence_ids": [],
+      "candidates": [],
+      "note": "文档中未发现该字段（检索过表格标签、锚区与全文）"
+    },
+    "budget_amount": {
+      "field_key": "budget_amount",
+      "field_label": "预算金额",
+      "group": "价格",
+      "required": false,
+      "status": "not_found",
+      "value_raw": "",
+      "value_normalized": null,
+      "value_unit": "",
+      "confidence": 0.0,
+      "evidence_ids": [],
+      "candidates": [],
+      "note": "文档中未发现该字段（检索过表格标签、锚区与全文）"
+    },
+    "security_deposit": {
+      "field_key": "security_deposit",
+      "field_label": "投标保证金",
+      "group": "价格",
+      "required": false,
+      "status": "found",
+      "value_raw": "□本项目免收投标保证金，招标文件中保证金的相关要求均不适用。 ☑本次招标要求投标人递交投标保证金，投标保证金金额详见投标人须知前附表之附表一。 按以下方式递交投标保证金，具体要求如下： 投标人需登录BOSP2.0系统（https://bosp.sgm.sgcc.com.cn 国网物资业务运营服务平台），完成保证金支付、保证金明细的选定，并按招标文件要求上传相应材料至国家电网有限公司电子商务平台。 1.不限制投标保证金开具形式，可以银行汇款、银行保函（抬头：国网物资有限公司）、投标保证保险（被保险人：国网物资有限公司）、年度投标保证金（含年度投标保证保险）或现金等方式开具。 以电汇、银行保函、投标保证保险方式提交保证金的，同时随附投标保证金明细表。对于未提供保证金明细表或提供的明细表内容不全的、所提供的明细表内容表达模糊不清的，招标人将按照招标编号、分标编号、包号顺序核定。 2.对于没有年度投标保证金证明的投标人，必须按投标人提交保证金。 对于以电汇方式提交投标保证金的投标人，应从投标人基本账户转出，投标文件应附企业基本账户开户许可证扫描件或由投标人基本账户开户银行通过账户管理系统打印的《基本存款账户信息》扫描件、银行回单电子版扫描件、投标保证金明细表（按照第八章《投标保证金明细表（格式）》）（word版）编入商务投标文件，上传至电子商务平台。 对于以银行保函形式提交的投标保证金的投标人，银行保函应由信誉良好的具备开具保函资格的商业银行开出。投标保证金的有效期应与投标有效期一致。投标时提交保函扫描件、投标保证金明细表（word版）编入商务投标文件，上传至电子商务平台。 根据《国务院关于印发扎实稳住经济一揽子政策措施的通知》（国发[2022]12号），在招投标领域全面推行保函（保险）替代现金缴纳投标保证金的要求，鼓励投标人以投标保证保险形式提交的投标保证金。对于以投标保证保险形式提交的投标保证金，保险责任需满足招标人的要求，投标保证保险保单作为有效的投标文件依据，应由具备相应保险资质、信誉良好、且支持保单查询的保险公司开具，保单保费应从投标人基本账户转出，提交的保单上应体现保费是否由投标人基本账户支付的相关信息。投标保证保险的保险期限应与投标有效期一致。保险责任及相关要求见第八章投标文件格式。以投标保证保险形式提交投标保证金的投标人，须将保证金明细表上传至电子商务平台，并将清晰标注了线上或电话查询保单真伪性路径的纸制保单扫描件（电子保单）PDF格式文件按照“投标保证保险-XXX公司（全称）”命名后上传至供应商投标工具中商务文件的“商务部分（附加）”端口。保单保费未从投标人基本帐户转出、保单未体现保费是否由投标人基本账户支付的相关信息、未提供保单查询途径或提供的查询途径招标人无法查询的，视为提交的投标保证金无效。 推荐投标人使用银行保函、投标保证保险。 3.对于已提交年度投标保证金（含年度投标保证保险）的投标人，仅须提交加盖公章的有效年度投标保证金（含年度投标保证保险）的财务证明扫描件，编入商务投标文件，上传至电子商务平台。发生3.4.4投标保证金不予退还情形时，投标保证金将从年度投标保证金中直接扣减。年度投标保证金被扣减后，投标人应在参加下一次投标前主动补足其年度投标保证金不足部分，否则因年度投标保证金不足而引起的风险由投标人自行承担。 对于以年度投标保证保险形式提交的投标保证金，保单保费应从投标人基本账户转出，保单上应体现保费是否由投标人基本账户支付的相关信息，投标人应按照第八章投标文件格式要求递交年度投标保证保险保单，未提交年度投标保证保险保单、保单保费未从投标人基本帐户转出、保单未体现保费是否由投标人基本账户支付的相关信息，视为提交的投标保证金无效。 4.投标保证金的金额：投标人每个分标仅需交纳一份投标保证金，投标保证金金额为分标下投标人所投包的最大应交保证金金额。各包相应的投标保证金应交金额详见“应提交保证金一览表”。（各包保证金金额无需根据投标报价另行计算）。 当投标人投标多个分标，合并交纳一笔投标保证金时，若实交金额与应交金额不一致时，评标委员会将按照招标公告中分标先后顺序核定所投各分标实交投标保证金金额。当分标实交投标保证金金额不足时，评标委员会将否决应交投标保证金金额超出实交投标保证金金额的标包。举例说明如下：  5.保证金提交操作方式 银行汇款保证金专用账户操作： 投标人需登录BOSP2.0系统（https://bosp.sgm.sgcc.com.cn 国网物资业务运营服务平台），生成《银行汇款说明》。在系统首页中依次点击单批次保证金-选择项目-保证金支付（银行汇款）-保证金明细（选择分标及所投应交保证金金额最大包，如金额最大包有多个，则选择其中自然序号最小的包，并填写应交保证金金额，其他包无需填写）去结算-汇款确认-生成《银行汇款说明》）。根据《银行汇款说明》提供的账号及金额，方可缴纳本批次保证金。详见BOSP操作手册。 提示：请严格根据每个订单对应的账号汇款足额保证金。 年度保证金操作： \t投标人需登录BOSP2.0系统（https://bosp.sgm.sgcc.com.cn 国网物资业务运营服务平台），在系统首页中依次点击单批次保证金-选择项目-保证金支付（年度保证金）-保证金明细（选择分标及所投应交保证金金额最大包，如金额最大包有多个，则选择其中自然序号最小的包，并填写应交保证金金额，其他包无需填写）-去结算-保证金确认-选择年度保证金证书-确定。操作完成后页面会跳转到单批次保证金支付查询页面，可选择项目查看订单内容。详见BOSP操作手册。 保险、保函操作： 投标人需登录BOSP系统（https://bosp.sgm.sgcc.com.cn 国网物资业务运营服务平台），在系统首页中依次点击单批次保证金-选择项目-保证金支付（线下保函、保险）保证金明细（选择分标及所投应交保证金金额最大包，如金额最大包有多个，则选择其中自然序号最小的包，并填写应交保证金金额，其他包无需填写）-去结算-保函确认。操作完成后页面会跳转到单批次保证金支付查询页面，可选择项目查看订单内容。详见BOSP操作手册。”",
+      "value_normalized": "1",
+      "value_unit": "元",
+      "confidence": 0.95,
+      "evidence_ids": [
+        "e--00186"
+      ],
+      "candidates": [
+        {
+          "value_raw": "□本项目免收投标保证金，招标文件中保证金的相关要求均不适用。 ☑本次招标要求投标人递交投标保证金，投标保证金金额详见投标人须知前附表之附表一。 按以下方式递交投标保证金，具体要求如下： 投标人需登录BOSP2.0系统（https://bosp.sgm.sgcc.com.cn 国网物资业务运营服务平台），完成保证金支付、保证金明细的选定，并按招标文件要求上传相应材料至国家电网有限公司电子商务平台。 1.不限制投标保证金开具形式，可以银行汇款、银行保函（抬头：国网物资有限公司）、投标保证保险（被保险人：国网物资有限公司）、年度投标保证金（含年度投标保证保险）或现金等方式开具。 以电汇、银行保函、投标保证保险方式提交保证金的，同时随附投标保证金明细表。对于未提供保证金明细表或提供的明细表内容不全的、所提供的明细表内容表达模糊不清的，招标人将按照招标编号、分标编号、包号顺序核定。 2.对于没有年度投标保证金证明的投标人，必须按投标人提交保证金。 对于以电汇方式提交投标保证金的投标人，应从投标人基本账户转出，投标文件应附企业基本账户开户许可证扫描件或由投标人基本账户开户银行通过账户管理系统打印的《基本存款账户信息》扫描件、银行回单电子版扫描件、投标保证金明细表（按照第八章《投标保证金明细表（格式）》）（word版）编入商务投标文件，上传至电子商务平台。 对于以银行保函形式提交的投标保证金的投标人，银行保函应由信誉良好的具备开具保函资格的商业银行开出。投标保证金的有效期应与投标有效期一致。投标时提交保函扫描件、投标保证金明细表（word版）编入商务投标文件，上传至电子商务平台。 根据《国务院关于印发扎实稳住经济一揽子政策措施的通知》（国发[2022]12号），在招投标领域全面推行保函（保险）替代现金缴纳投标保证金的要求，鼓励投标人以投标保证保险形式提交的投标保证金。对于以投标保证保险形式提交的投标保证金，保险责任需满足招标人的要求，投标保证保险保单作为有效的投标文件依据，应由具备相应保险资质、信誉良好、且支持保单查询的保险公司开具，保单保费应从投标人基本账户转出，提交的保单上应体现保费是否由投标人基本账户支付的相关信息。投标保证保险的保险期限应与投标有效期一致。保险责任及相关要求见第八章投标文件格式。以投标保证保险形式提交投标保证金的投标人，须将保证金明细表上传至电子商务平台，并将清晰标注了线上或电话查询保单真伪性路径的纸制保单扫描件（电子保单）PDF格式文件按照“投标保证保险-XXX公司（全称）”命名后上传至供应商投标工具中商务文件的“商务部分（附加）”端口。保单保费未从投标人基本帐户转出、保单未体现保费是否由投标人基本账户支付的相关信息、未提供保单查询途径或提供的查询途径招标人无法查询的，视为提交的投标保证金无效。 推荐投标人使用银行保函、投标保证保险。 3.对于已提交年度投标保证金（含年度投标保证保险）的投标人，仅须提交加盖公章的有效年度投标保证金（含年度投标保证保险）的财务证明扫描件，编入商务投标文件，上传至电子商务平台。发生3.4.4投标保证金不予退还情形时，投标保证金将从年度投标保证金中直接扣减。年度投标保证金被扣减后，投标人应在参加下一次投标前主动补足其年度投标保证金不足部分，否则因年度投标保证金不足而引起的风险由投标人自行承担。 对于以年度投标保证保险形式提交的投标保证金，保单保费应从投标人基本账户转出，保单上应体现保费是否由投标人基本账户支付的相关信息，投标人应按照第八章投标文件格式要求递交年度投标保证保险保单，未提交年度投标保证保险保单、保单保费未从投标人基本帐户转出、保单未体现保费是否由投标人基本账户支付的相关信息，视为提交的投标保证金无效。 4.投标保证金的金额：投标人每个分标仅需交纳一份投标保证金，投标保证金金额为分标下投标人所投包的最大应交保证金金额。各包相应的投标保证金应交金额详见“应提交保证金一览表”。（各包保证金金额无需根据投标报价另行计算）。 当投标人投标多个分标，合并交纳一笔投标保证金时，若实交金额与应交金额不一致时，评标委员会将按照招标公告中分标先后顺序核定所投各分标实交投标保证金金额。当分标实交投标保证金金额不足时，评标委员会将否决应交投标保证金金额超出实交投标保证金金额的标包。举例说明如下：  5.保证金提交操作方式 银行汇款保证金专用账户操作： 投标人需登录BOSP2.0系统（https://bosp.sgm.sgcc.com.cn 国网物资业务运营服务平台），生成《银行汇款说明》。在系统首页中依次点击单批次保证金-选择项目-保证金支付（银行汇款）-保证金明细（选择分标及所投应交保证金金额最大包，如金额最大包有多个，则选择其中自然序号最小的包，并填写应交保证金金额，其他包无需填写）去结算-汇款确认-生成《银行汇款说明》）。根据《银行汇款说明》提供的账号及金额，方可缴纳本批次保证金。详见BOSP操作手册。 提示：请严格根据每个订单对应的账号汇款足额保证金。 年度保证金操作： \t投标人需登录BOSP2.0系统（https://bosp.sgm.sgcc.com.cn 国网物资业务运营服务平台），在系统首页中依次点击单批次保证金-选择项目-保证金支付（年度保证金）-保证金明细（选择分标及所投应交保证金金额最大包，如金额最大包有多个，则选择其中自然序号最小的包，并填写应交保证金金额，其他包无需填写）-去结算-保证金确认-选择年度保证金证书-确定。操作完成后页面会跳转到单批次保证金支付查询页面，可选择项目查看订单内容。详见BOSP操作手册。 保险、保函操作： 投标人需登录BOSP系统（https://bosp.sgm.sgcc.com.cn 国网物资业务运营服务平台），在系统首页中依次点击单批次保证金-选择项目-保证金支付（线下保函、保险）保证金明细（选择分标及所投应交保证金金额最大包，如金额最大包有多个，则选择其中自然序号最小的包，并填写应交保证金金额，其他包无需填写）-去结算-保函确认。操作完成后页面会跳转到单批次保证金支付查询页面，可选择项目查看订单内容。详见BOSP操作手册。”",
+          "value_normalized": "1",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00186",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "5.投标保证金 （1）投标保证金（年度保证金扫描件/电汇底联扫描件/保函正本扫描件/投标保证保险保单扫描件） （2）基本账户证明（企业基本账户开户许可证扫描件或由投标人基本账户开户银行通过账户管理系统打印的《基本存款账户信息》扫描件（如采用电汇、保险方式）） （3）投标保证金明细表",
+          "value_normalized": "5",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00187",
+          "zone": "instructions_front"
+        }
+      ],
+      "note": ""
+    },
+    "bid_deadline": {
+      "field_key": "bid_deadline",
+      "field_label": "投标截止/开标时间",
+      "group": "时间",
+      "required": true,
+      "status": "found",
+      "value_raw": "2022.6.30退休",
+      "value_normalized": "2022-06-30",
+      "value_unit": "datetime",
+      "confidence": 0.78,
+      "evidence_ids": [
+        "e--00188"
+      ],
+      "candidates": [
+        {
+          "value_raw": "2022.6.30退休",
+          "value_normalized": "2022-06-30",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00188",
+          "zone": ""
+        }
+      ],
+      "note": ""
+    },
+    "bid_validity": {
+      "field_key": "bid_validity",
+      "field_label": "投标有效期",
+      "group": "时间",
+      "required": false,
+      "status": "found",
+      "value_raw": "自投标截止日起90日",
+      "value_normalized": "90日",
+      "value_unit": "天",
+      "confidence": 0.95,
+      "evidence_ids": [
+        "e--00189"
+      ],
+      "candidates": [
+        {
+          "value_raw": "自投标截止日起90日",
+          "value_normalized": "90日",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00189",
+          "zone": "instructions_front"
+        }
+      ],
+      "note": ""
+    },
+    "duration": {
+      "field_key": "duration",
+      "field_label": "计划工期/服务期",
+      "group": "工期质量",
+      "required": true,
+      "status": "not_found",
+      "value_raw": "",
+      "value_normalized": null,
+      "value_unit": "",
+      "confidence": 0.0,
+      "evidence_ids": [],
+      "candidates": [],
+      "note": "文档中未发现该字段（检索过表格标签、锚区与全文）"
+    },
+    "quality_standard": {
+      "field_key": "quality_standard",
+      "field_label": "质量标准",
+      "group": "工期质量",
+      "required": false,
+      "status": "found",
+      "value_raw": "见投标人须知前附表",
+      "value_normalized": "见投标人须知前附表",
+      "value_unit": "text",
+      "confidence": 0.9,
+      "evidence_ids": [
+        "e--00190"
+      ],
+      "candidates": [
+        {
+          "value_raw": "见投标人须知前附表",
+          "value_normalized": "见投标人须知前附表",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00190",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "、技术标准和要求、招标范围等实质性内容作出响应",
+          "value_normalized": "、技术标准和要求、招标范围等实质性内容作出响应",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00191",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "见投标人须知前附表",
+          "value_normalized": "见投标人须知前附表",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00192",
+          "zone": ""
+        },
+        {
+          "value_raw": "、技术标准和要求、招标范围等实质性内容作出响应",
+          "value_normalized": "、技术标准和要求、招标范围等实质性内容作出响应",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00193",
+          "zone": ""
+        },
+        {
+          "value_raw": "达到招标文件要求",
+          "value_normalized": "达到招标文件要求",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00194",
+          "zone": ""
+        }
+      ],
+      "note": ""
+    },
+    "evaluation_method": {
+      "field_key": "evaluation_method",
+      "field_label": "评标办法",
+      "group": "评标总纲",
+      "required": false,
+      "status": "found",
+      "value_raw": "所涵盖的内容",
+      "value_normalized": "所涵盖的内容",
+      "value_unit": "text",
+      "confidence": 0.9,
+      "evidence_ids": [
+        "e--00195"
+      ],
+      "candidates": [
+        {
+          "value_raw": "所涵盖的内容",
+          "value_normalized": "所涵盖的内容",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00195",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "”规定的方法、评审因素、标准和程序对投标文件进行评审",
+          "value_normalized": "”规定的方法、评审因素、标准和程序对投标文件进行评审",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00196",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "”没有规定的评审因素和标准进行评标",
+          "value_normalized": "”没有规定的评审因素和标准进行评标",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00197",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "前附表之一",
+          "value_normalized": "前附表之一",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00198",
+          "zone": "evaluation_method"
+        },
+        {
+          "value_raw": "前附表之二：初步评审标准",
+          "value_normalized": "前附表之二：初步评审标准",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00199",
+          "zone": "evaluation_method"
+        },
+        {
+          "value_raw": "（综合评估法）",
+          "value_normalized": "（综合评估法）",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00200",
+          "zone": ""
+        },
+        {
+          "value_raw": "所涵盖的内容",
+          "value_normalized": "所涵盖的内容",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00201",
+          "zone": ""
+        },
+        {
+          "value_raw": "”规定的方法、评审因素、标准和程序对投标文件进行评审",
+          "value_normalized": "”规定的方法、评审因素、标准和程序对投标文件进行评审",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00202",
+          "zone": ""
+        },
+        {
+          "value_raw": "”没有规定的评审因素和标准进行评标",
+          "value_normalized": "”没有规定的评审因素和标准进行评标",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00203",
+          "zone": ""
+        },
+        {
+          "value_raw": "（综合评估法）",
+          "value_normalized": "（综合评估法）",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00204",
+          "zone": ""
+        },
+        {
+          "value_raw": "前附表之一",
+          "value_normalized": "前附表之一",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00205",
+          "zone": ""
+        },
+        {
+          "value_raw": "前附表之二：初步评审标准",
+          "value_normalized": "前附表之二：初步评审标准",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00206",
+          "zone": ""
+        },
+        {
+          "value_raw": "前附表之二：初步评审标准",
+          "value_normalized": "前附表之二：初步评审标准",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00207",
+          "zone": ""
+        },
+        {
+          "value_raw": "前附表之三：商务评分标准",
+          "value_normalized": "前附表之三：商务评分标准",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00208",
+          "zone": ""
+        },
+        {
+          "value_raw": "前附表之四：技术评分标准",
+          "value_normalized": "前附表之四：技术评分标准",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00209",
+          "zone": ""
+        },
+        {
+          "value_raw": "前附表之五：价格评分标准",
+          "value_normalized": "前附表之五：价格评分标准",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00210",
+          "zone": ""
+        },
+        {
+          "value_raw": "前附表之六",
+          "value_normalized": "前附表之六",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00211",
+          "zone": ""
+        },
+        {
+          "value_raw": "前附表（适用于未进行资格预审的）",
+          "value_normalized": "前附表（适用于未进行资格预审的）",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00212",
+          "zone": ""
+        }
+      ],
+      "note": ""
+    },
+    "technical_weight": {
+      "field_key": "technical_weight",
+      "field_label": "技术标分值",
+      "group": "评标总纲",
+      "required": false,
+      "status": "found",
+      "value_raw": "35",
+      "value_normalized": "35",
+      "value_unit": "text",
+      "confidence": 0.78,
+      "evidence_ids": [
+        "e--00213"
+      ],
+      "candidates": [
+        {
+          "value_raw": "35",
+          "value_normalized": "35",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00213",
+          "zone": ""
+        },
+        {
+          "value_raw": "35",
+          "value_normalized": "35",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00214",
+          "zone": ""
+        },
+        {
+          "value_raw": "35",
+          "value_normalized": "35",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00215",
+          "zone": ""
+        },
+        {
+          "value_raw": "42",
+          "value_normalized": "42",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00216",
+          "zone": ""
+        }
+      ],
+      "note": ""
+    },
+    "commercial_weight": {
+      "field_key": "commercial_weight",
+      "field_label": "商务标分值",
+      "group": "评标总纲",
+      "required": false,
+      "status": "not_found",
+      "value_raw": "",
+      "value_normalized": null,
+      "value_unit": "",
+      "confidence": 0.0,
+      "evidence_ids": [],
+      "candidates": [],
+      "note": "文档中未发现该字段（检索过表格标签、锚区与全文）"
+    },
+    "price_weight": {
+      "field_key": "price_weight",
+      "field_label": "价格标分值",
+      "group": "评标总纲",
+      "required": false,
+      "status": "found",
+      "value_raw": "40",
+      "value_normalized": "40",
+      "value_unit": "text",
+      "confidence": 0.78,
+      "evidence_ids": [
+        "e--00217"
+      ],
+      "candidates": [
+        {
+          "value_raw": "40",
+          "value_normalized": "40",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00217",
+          "zone": ""
+        }
+      ],
+      "note": ""
+    }
+  },
+  "conflicts": [
+    {
+      "field_key": "project_name",
+      "chosen": "招标编号：",
+      "alternatives": [
+        {
+          "value_raw": "招标编号：",
+          "value_normalized": "招标编号：",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00001",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "分标 名称",
+          "value_normalized": "分标 名称",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00004",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "工程电压等级",
+          "value_normalized": "工程电压等级",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00006",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "工程规模",
+          "value_normalized": "工程规模",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00010",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "见招标公告",
+          "value_normalized": "见招标公告",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00018",
+          "zone": "instructions"
+        },
+        {
+          "value_raw": "见投标人须知前附表",
+          "value_normalized": "见投标人须知前附表",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00019",
+          "zone": "instructions"
+        },
+        {
+          "value_raw": "、投标保证金的递交情况、投标报价、质量目标、工期及其他内容",
+          "value_normalized": "、投标保证金的递交情况、投标报价、质量目标、工期及其他内容",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00020",
+          "zone": "instructions"
+        },
+        {
+          "value_raw": "）评标委员会",
+          "value_normalized": "）评标委员会",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00021",
+          "zone": "instructions"
+        },
+        {
+          "value_raw": "）评标委员会：",
+          "value_normalized": "）评标委员会：",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00023",
+          "zone": "instructions"
+        },
+        {
+          "value_raw": "分标 名称\t权重设置 技:商:价\t价格计分算法\t同时中标最多数量",
+          "value_normalized": "分标 名称\t权重设置 技:商:价\t价格计分算法\t同时中标最多数量",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00045",
+          "zone": ""
+        },
+        {
+          "value_raw": "）招标项目投标",
+          "value_normalized": "）招标项目投标",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00046",
+          "zone": ""
+        },
+        {
+          "value_raw": "］的投标保证金银行保函",
+          "value_normalized": "］的投标保证金银行保函",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00047",
+          "zone": ""
+        },
+        {
+          "value_raw": "和招标项目编号（年度保单除外）",
+          "value_normalized": "和招标项目编号（年度保单除外）",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00048",
+          "zone": ""
+        },
+        {
+          "value_raw": "）投标中承诺：",
+          "value_normalized": "）投标中承诺：",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00049",
+          "zone": ""
+        },
+        {
+          "value_raw": "等  级\t颁发机构\t颁发时间",
+          "value_normalized": "等  级\t颁发机构\t颁发时间",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00050",
+          "zone": ""
+        },
+        {
+          "value_raw": "奖项名称\t颁发机构\t颁发时间",
+          "value_normalized": "奖项名称\t颁发机构\t颁发时间",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00051",
+          "zone": ""
+        },
+        {
+          "value_raw": "、关键时间、电压等级等关键信息",
+          "value_normalized": "、关键时间、电压等级等关键信息",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00052",
+          "zone": ""
+        },
+        {
+          "value_raw": "工程电压等级\t工程规模\t竣工 时间\t承包范围\t业主单位 （项目法人）\t业主单位联系方式",
+          "value_normalized": "工程电压等级\t工程规模\t竣工 时间\t承包范围\t业主单位 （项目法人）\t业主单位联系方式",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00053",
+          "zone": ""
+        },
+        {
+          "value_raw": "工程电压等级\t工程规模\t合同签订时间\t承包范围\t业主单位 （项目法人）\t业主单位联系方式",
+          "value_normalized": "工程电压等级\t工程规模\t合同签订时间\t承包范围\t业主单位 （项目法人）\t业主单位联系方式",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00054",
+          "zone": ""
+        },
+        {
+          "value_raw": "工程规模\t工作内容\t担任职务",
+          "value_normalized": "工程规模\t工作内容\t担任职务",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00055",
+          "zone": ""
+        },
+        {
+          "value_raw": "）招标",
+          "value_normalized": "）招标",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00061",
+          "zone": ""
+        }
+      ],
+      "note": "多个来源取值不一致：已按置信度取值，请人工确认"
+    },
+    {
+      "field_key": "tender_no",
+      "chosen": "异议人类型： □潜在投标人□其他利害关系人",
+      "alternatives": [
+        {
+          "value_raw": "异议人类型： □潜在投标人□其他利害关系人",
+          "value_normalized": "异议人类型： □潜在投标人□其他利害关系人",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00062",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "异议人类型： □投标人□其他利害关系人",
+          "value_normalized": "异议人类型： □投标人□其他利害关系人",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00063",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "分标编号",
+          "value_normalized": "分标编号",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00064",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "0711-26OTL11013056",
+          "value_normalized": "0711-26OTL11013056",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00066",
+          "zone": ""
+        }
+      ],
+      "note": "多个来源取值不一致：已按置信度取值，请人工确认"
+    },
+    {
+      "field_key": "tenderer",
+      "chosen": "名称：见招标公告 地址：见招标公告",
+      "alternatives": [
+        {
+          "value_raw": "名称：见招标公告 地址：见招标公告",
+          "value_normalized": "名称：见招标公告 地址：见招标公告",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00067",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "见投标人须知前附表",
+          "value_normalized": "见投标人须知前附表",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00068",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "不具有独立法人资格的附属机构（单位）",
+          "value_normalized": "不具有独立法人资格的附属机构（单位）",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00069",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "按投标人须知前附表规定的时间、地点组织投标人踏勘项目现场",
+          "value_normalized": "按投标人须知前附表规定的时间、地点组织投标人踏勘项目现场",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00070",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "的原因外",
+          "value_normalized": "的原因外",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00071",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "在踏勘现场中介绍的工程场地和相关的周边环境情况",
+          "value_normalized": "在踏勘现场中介绍的工程场地和相关的周边环境情况",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00072",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "按投标人须知前附表规定的时间和地点召开投标预备会",
+          "value_normalized": "按投标人须知前附表规定的时间和地点召开投标预备会",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00073",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "在会议期间澄清",
+          "value_normalized": "在会议期间澄清",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00074",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "在投标人须知前附表规定的时间内",
+          "value_normalized": "在投标人须知前附表规定的时间内",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00075",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "提出",
+          "value_normalized": "提出",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00076",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "可以书面形式修改招标文件",
+          "value_normalized": "可以书面形式修改招标文件",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00077",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "以书面形式通知所有投标人延长投标有效期",
+          "value_normalized": "以书面形式通知所有投标人延长投标有效期",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00078",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "与中标人签订合同后5个工作日内",
+          "value_normalized": "与中标人签订合同后5个工作日内",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00079",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "可以接受该备选投标方案",
+          "value_normalized": "可以接受该备选投标方案",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00080",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "的承诺",
+          "value_normalized": "的承诺",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00081",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "不予受理",
+          "value_normalized": "不予受理",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00082",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "收到投标文件后",
+          "value_normalized": "收到投标文件后",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00083",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "收到书面通知后",
+          "value_normalized": "收到书面通知后",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00085",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "在本章第2.2.2项规定的投标截止时间（开标时间）和投标人须知前附表规定的地点公开开标",
+          "value_normalized": "在本章第2.2.2项规定的投标截止时间（开标时间）和投标人须知前附表规定的地点公开开标",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00086",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "代表、监标人、记录人等有关人员在开标记录上签字确认",
+          "value_normalized": "代表、监标人、记录人等有关人员在开标记录上签字确认",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00087",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "依法组建的评标委员会负责",
+          "value_normalized": "依法组建的评标委员会负责",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00088",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "或投标人的主要负责人的近亲属",
+          "value_normalized": "或投标人的主要负责人的近亲属",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00089",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "依据评标委员会推荐的中标候选人确定中标人",
+          "value_normalized": "依据评标委员会推荐的中标候选人确定中标人",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00090",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "在投标人须知前附表规定的媒介公示中标候选人",
+          "value_normalized": "在投标人须知前附表规定的媒介公示中标候选人",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00091",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "以书面形式向中标人发出中标通知书",
+          "value_normalized": "以书面形式向中标人发出中标通知书",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00092",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "提交履约担保",
+          "value_normalized": "提交履约担保",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00093",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "造成的损失超过投标保证金数额的",
+          "value_normalized": "造成的损失超过投标保证金数额的",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00094",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "和中标人应当自中标通知书发出之日起30天内",
+          "value_normalized": "和中标人应当自中标通知书发出之日起30天内",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00095",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "无正当理由拒签合同的",
+          "value_normalized": "无正当理由拒签合同的",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00096",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "将重新招标：",
+          "value_normalized": "将重新招标：",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00097",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "的纪律要求",
+          "value_normalized": "的纪律要求",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00098",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "不得泄漏招标投标活动中应当保密的情况和资料",
+          "value_normalized": "不得泄漏招标投标活动中应当保密的情况和资料",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00099",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "串通投标",
+          "value_normalized": "串通投标",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00100",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "招投标交易平台信息系统对该澄清单进行回复",
+          "value_normalized": "招投标交易平台信息系统对该澄清单进行回复",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00101",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "招投标交易平台信息系统上传",
+          "value_normalized": "招投标交易平台信息系统上传",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00102",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "代表签字或盖章：",
+          "value_normalized": "代表签字或盖章：",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00103",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "确定",
+          "value_normalized": "确定",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00141",
+          "zone": ""
+        },
+        {
+          "value_raw": "不具备独立法人资格的附属机构（单位）",
+          "value_normalized": "不具备独立法人资格的附属机构（单位）",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00142",
+          "zone": ""
+        },
+        {
+          "value_raw": "查证核实",
+          "value_normalized": "查证核实",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00143",
+          "zone": ""
+        },
+        {
+          "value_raw": "生产经营、公司形象可能带来较大影响",
+          "value_normalized": "生产经营、公司形象可能带来较大影响",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00144",
+          "zone": ""
+        },
+        {
+          "value_raw": "授权直接确定中标人",
+          "value_normalized": "授权直接确定中标人",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00148",
+          "zone": ""
+        },
+        {
+          "value_raw": "提交书面评标报告",
+          "value_normalized": "提交书面评标报告",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00149",
+          "zone": ""
+        },
+        {
+          "value_raw": "承担连带责任",
+          "value_normalized": "承担连带责任",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00150",
+          "zone": ""
+        },
+        {
+          "value_raw": "各执一份",
+          "value_normalized": "各执一份",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00151",
+          "zone": ""
+        },
+        {
+          "value_raw": "将按照项目招标编号、分标编号、包号顺序核定",
+          "value_normalized": "将按照项目招标编号、分标编号、包号顺序核定",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00152",
+          "zone": ""
+        },
+        {
+          "value_raw": "事故快报/舆情通报文号\t政府调查报告或招标人调查结果通报文号",
+          "value_normalized": "事故快报/舆情通报文号\t政府调查报告或招标人调查结果通报文号",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00153",
+          "zone": ""
+        },
+        {
+          "value_raw": "事故快报/舆情通报及政府或招标人调查结果报告/通报全文",
+          "value_normalized": "事故快报/舆情通报及政府或招标人调查结果报告/通报全文",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00154",
+          "zone": ""
+        }
+      ],
+      "note": "多个来源取值不一致：已按置信度取值，请人工确认"
+    },
+    {
+      "field_key": "agency",
+      "chosen": "名称：见招标公告 地址：见招标公告 联系人：见招标公告 电话：见招标公告",
+      "alternatives": [
+        {
+          "value_raw": "名称：见招标公告 地址：见招标公告 联系人：见招标公告 电话：见招标公告",
+          "value_normalized": "名称：见招标公告 地址：见招标公告 联系人：见招标公告 电话：见招标公告",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00155",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "见投标人须知前附表",
+          "value_normalized": "见投标人须知前附表",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00156",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "服务的",
+          "value_normalized": "服务的",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00157",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "同为一个法定代表人（单位负责人）的",
+          "value_normalized": "同为一个法定代表人（单位负责人）的",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00158",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "相互控股或参股的",
+          "value_normalized": "相互控股或参股的",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00159",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "相互任职或工作的",
+          "value_normalized": "相互任职或工作的",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00160",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "熟悉相关业务的代表",
+          "value_normalized": "熟悉相关业务的代表",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00161",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "不予解释",
+          "value_normalized": "不予解释",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00169",
+          "zone": ""
+        },
+        {
+          "value_raw": "机构］",
+          "value_normalized": "机构］",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00171",
+          "zone": ""
+        },
+        {
+          "value_raw": "］［招标编号］的投标邀请提供_______________［工程名称］的投标保证金银行保函",
+          "value_normalized": "］［招标编号］的投标邀请提供_______________［工程名称］的投标保证金银行保函",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00172",
+          "zone": ""
+        },
+        {
+          "value_raw": "服务费的",
+          "value_normalized": "服务费的",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00173",
+          "zone": ""
+        }
+      ],
+      "note": "多个来源取值不一致：已按置信度取值，请人工确认"
+    },
+    {
+      "field_key": "fund_source",
+      "chosen": "见招标公告",
+      "alternatives": [
+        {
+          "value_raw": "见招标公告",
+          "value_normalized": "见招标公告",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00174",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "和落实情况",
+          "value_normalized": "和落实情况",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00175",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "见投标人须知前附表",
+          "value_normalized": "见投标人须知前附表",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00176",
+          "zone": "instructions_front"
+        }
+      ],
+      "note": "多个来源取值不一致：已按置信度取值，请人工确认"
+    },
+    {
+      "field_key": "site",
+      "chosen": "见招标公告",
+      "alternatives": [
+        {
+          "value_raw": "见招标公告",
+          "value_normalized": "见招标公告",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00182",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "见投标人须知前附表",
+          "value_normalized": "见投标人须知前附表",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00183",
+          "zone": "instructions_front"
+        }
+      ],
+      "note": "多个来源取值不一致：已按置信度取值，请人工确认"
+    },
+    {
+      "field_key": "security_deposit",
+      "chosen": "1",
+      "alternatives": [
+        {
+          "value_raw": "□本项目免收投标保证金，招标文件中保证金的相关要求均不适用。 ☑本次招标要求投标人递交投标保证金，投标保证金金额详见投标人须知前附表之附表一。 按以下方式递交投标保证金，具体要求如下： 投标人需登录BOSP2.0系统（https://bosp.sgm.sgcc.com.cn 国网物资业务运营服务平台），完成保证金支付、保证金明细的选定，并按招标文件要求上传相应材料至国家电网有限公司电子商务平台。 1.不限制投标保证金开具形式，可以银行汇款、银行保函（抬头：国网物资有限公司）、投标保证保险（被保险人：国网物资有限公司）、年度投标保证金（含年度投标保证保险）或现金等方式开具。 以电汇、银行保函、投标保证保险方式提交保证金的，同时随附投标保证金明细表。对于未提供保证金明细表或提供的明细表内容不全的、所提供的明细表内容表达模糊不清的，招标人将按照招标编号、分标编号、包号顺序核定。 2.对于没有年度投标保证金证明的投标人，必须按投标人提交保证金。 对于以电汇方式提交投标保证金的投标人，应从投标人基本账户转出，投标文件应附企业基本账户开户许可证扫描件或由投标人基本账户开户银行通过账户管理系统打印的《基本存款账户信息》扫描件、银行回单电子版扫描件、投标保证金明细表（按照第八章《投标保证金明细表（格式）》）（word版）编入商务投标文件，上传至电子商务平台。 对于以银行保函形式提交的投标保证金的投标人，银行保函应由信誉良好的具备开具保函资格的商业银行开出。投标保证金的有效期应与投标有效期一致。投标时提交保函扫描件、投标保证金明细表（word版）编入商务投标文件，上传至电子商务平台。 根据《国务院关于印发扎实稳住经济一揽子政策措施的通知》（国发[2022]12号），在招投标领域全面推行保函（保险）替代现金缴纳投标保证金的要求，鼓励投标人以投标保证保险形式提交的投标保证金。对于以投标保证保险形式提交的投标保证金，保险责任需满足招标人的要求，投标保证保险保单作为有效的投标文件依据，应由具备相应保险资质、信誉良好、且支持保单查询的保险公司开具，保单保费应从投标人基本账户转出，提交的保单上应体现保费是否由投标人基本账户支付的相关信息。投标保证保险的保险期限应与投标有效期一致。保险责任及相关要求见第八章投标文件格式。以投标保证保险形式提交投标保证金的投标人，须将保证金明细表上传至电子商务平台，并将清晰标注了线上或电话查询保单真伪性路径的纸制保单扫描件（电子保单）PDF格式文件按照“投标保证保险-XXX公司（全称）”命名后上传至供应商投标工具中商务文件的“商务部分（附加）”端口。保单保费未从投标人基本帐户转出、保单未体现保费是否由投标人基本账户支付的相关信息、未提供保单查询途径或提供的查询途径招标人无法查询的，视为提交的投标保证金无效。 推荐投标人使用银行保函、投标保证保险。 3.对于已提交年度投标保证金（含年度投标保证保险）的投标人，仅须提交加盖公章的有效年度投标保证金（含年度投标保证保险）的财务证明扫描件，编入商务投标文件，上传至电子商务平台。发生3.4.4投标保证金不予退还情形时，投标保证金将从年度投标保证金中直接扣减。年度投标保证金被扣减后，投标人应在参加下一次投标前主动补足其年度投标保证金不足部分，否则因年度投标保证金不足而引起的风险由投标人自行承担。 对于以年度投标保证保险形式提交的投标保证金，保单保费应从投标人基本账户转出，保单上应体现保费是否由投标人基本账户支付的相关信息，投标人应按照第八章投标文件格式要求递交年度投标保证保险保单，未提交年度投标保证保险保单、保单保费未从投标人基本帐户转出、保单未体现保费是否由投标人基本账户支付的相关信息，视为提交的投标保证金无效。 4.投标保证金的金额：投标人每个分标仅需交纳一份投标保证金，投标保证金金额为分标下投标人所投包的最大应交保证金金额。各包相应的投标保证金应交金额详见“应提交保证金一览表”。（各包保证金金额无需根据投标报价另行计算）。 当投标人投标多个分标，合并交纳一笔投标保证金时，若实交金额与应交金额不一致时，评标委员会将按照招标公告中分标先后顺序核定所投各分标实交投标保证金金额。当分标实交投标保证金金额不足时，评标委员会将否决应交投标保证金金额超出实交投标保证金金额的标包。举例说明如下：  5.保证金提交操作方式 银行汇款保证金专用账户操作： 投标人需登录BOSP2.0系统（https://bosp.sgm.sgcc.com.cn 国网物资业务运营服务平台），生成《银行汇款说明》。在系统首页中依次点击单批次保证金-选择项目-保证金支付（银行汇款）-保证金明细（选择分标及所投应交保证金金额最大包，如金额最大包有多个，则选择其中自然序号最小的包，并填写应交保证金金额，其他包无需填写）去结算-汇款确认-生成《银行汇款说明》）。根据《银行汇款说明》提供的账号及金额，方可缴纳本批次保证金。详见BOSP操作手册。 提示：请严格根据每个订单对应的账号汇款足额保证金。 年度保证金操作： \t投标人需登录BOSP2.0系统（https://bosp.sgm.sgcc.com.cn 国网物资业务运营服务平台），在系统首页中依次点击单批次保证金-选择项目-保证金支付（年度保证金）-保证金明细（选择分标及所投应交保证金金额最大包，如金额最大包有多个，则选择其中自然序号最小的包，并填写应交保证金金额，其他包无需填写）-去结算-保证金确认-选择年度保证金证书-确定。操作完成后页面会跳转到单批次保证金支付查询页面，可选择项目查看订单内容。详见BOSP操作手册。 保险、保函操作： 投标人需登录BOSP系统（https://bosp.sgm.sgcc.com.cn 国网物资业务运营服务平台），在系统首页中依次点击单批次保证金-选择项目-保证金支付（线下保函、保险）保证金明细（选择分标及所投应交保证金金额最大包，如金额最大包有多个，则选择其中自然序号最小的包，并填写应交保证金金额，其他包无需填写）-去结算-保函确认。操作完成后页面会跳转到单批次保证金支付查询页面，可选择项目查看订单内容。详见BOSP操作手册。”",
+          "value_normalized": "1",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00186",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "5.投标保证金 （1）投标保证金（年度保证金扫描件/电汇底联扫描件/保函正本扫描件/投标保证保险保单扫描件） （2）基本账户证明（企业基本账户开户许可证扫描件或由投标人基本账户开户银行通过账户管理系统打印的《基本存款账户信息》扫描件（如采用电汇、保险方式）） （3）投标保证金明细表",
+          "value_normalized": "5",
+          "source": "table",
+          "confidence": 0.95,
+          "evidence_id": "e--00187",
+          "zone": "instructions_front"
+        }
+      ],
+      "note": "多个来源取值不一致：已按置信度取值，请人工确认"
+    },
+    {
+      "field_key": "quality_standard",
+      "chosen": "见投标人须知前附表",
+      "alternatives": [
+        {
+          "value_raw": "见投标人须知前附表",
+          "value_normalized": "见投标人须知前附表",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00190",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "、技术标准和要求、招标范围等实质性内容作出响应",
+          "value_normalized": "、技术标准和要求、招标范围等实质性内容作出响应",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00191",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "达到招标文件要求",
+          "value_normalized": "达到招标文件要求",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00194",
+          "zone": ""
+        }
+      ],
+      "note": "多个来源取值不一致：已按置信度取值，请人工确认"
+    },
+    {
+      "field_key": "evaluation_method",
+      "chosen": "所涵盖的内容",
+      "alternatives": [
+        {
+          "value_raw": "所涵盖的内容",
+          "value_normalized": "所涵盖的内容",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00195",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "”规定的方法、评审因素、标准和程序对投标文件进行评审",
+          "value_normalized": "”规定的方法、评审因素、标准和程序对投标文件进行评审",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00196",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "”没有规定的评审因素和标准进行评标",
+          "value_normalized": "”没有规定的评审因素和标准进行评标",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00197",
+          "zone": "instructions_front"
+        },
+        {
+          "value_raw": "前附表之一",
+          "value_normalized": "前附表之一",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00198",
+          "zone": "evaluation_method"
+        },
+        {
+          "value_raw": "前附表之二：初步评审标准",
+          "value_normalized": "前附表之二：初步评审标准",
+          "source": "rules",
+          "confidence": 0.9,
+          "evidence_id": "e--00199",
+          "zone": "evaluation_method"
+        },
+        {
+          "value_raw": "（综合评估法）",
+          "value_normalized": "（综合评估法）",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00200",
+          "zone": ""
+        },
+        {
+          "value_raw": "前附表之三：商务评分标准",
+          "value_normalized": "前附表之三：商务评分标准",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00208",
+          "zone": ""
+        },
+        {
+          "value_raw": "前附表之四：技术评分标准",
+          "value_normalized": "前附表之四：技术评分标准",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00209",
+          "zone": ""
+        },
+        {
+          "value_raw": "前附表之五：价格评分标准",
+          "value_normalized": "前附表之五：价格评分标准",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00210",
+          "zone": ""
+        },
+        {
+          "value_raw": "前附表之六",
+          "value_normalized": "前附表之六",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00211",
+          "zone": ""
+        },
+        {
+          "value_raw": "前附表（适用于未进行资格预审的）",
+          "value_normalized": "前附表（适用于未进行资格预审的）",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00212",
+          "zone": ""
+        }
+      ],
+      "note": "多个来源取值不一致：已按置信度取值，请人工确认"
+    },
+    {
+      "field_key": "technical_weight",
+      "chosen": "35",
+      "alternatives": [
+        {
+          "value_raw": "35",
+          "value_normalized": "35",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00213",
+          "zone": ""
+        },
+        {
+          "value_raw": "42",
+          "value_normalized": "42",
+          "source": "rules",
+          "confidence": 0.78,
+          "evidence_id": "e--00216",
+          "zone": ""
+        }
+      ],
+      "note": "多个来源取值不一致：已按置信度取值，请人工确认"
+    }
+  ]
+}

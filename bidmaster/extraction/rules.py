@@ -25,16 +25,37 @@ class RulePack:
 
 
 def _c(label: str, value_head: str = r"([^，。;；\n]{2,60}?)", value_tail: str = "") -> re.Pattern:
-    """构造 `标签：值` 形态的正则。默认值锚定到行内终止符，保证非贪婪捕获完整值。"""
-    tail = value_tail or r"(?=[，。;；\n]|$)"
-    return re.compile(rf"(?:{label})\s*[：:为是]?\s*{value_head}{tail}", re.M)
+    """构造 `标签：值` 形态的正则。
+
+    文本路径强制要求冒号（消灭"按招标编号顺序核定"这类裸词噪声）；
+    表格 summary 行（label 与值以 \t 相邻）单独允许；值锚定到行内终止符，
+    遇 地址/联系人/电话 等下一个标签时截断。
+    """
+    tail = value_tail or r"(?=[，。;；\n]|地址|联系人|电话|邮编|传真|邮箱|备注|$)"
+    return re.compile(
+        rf"(?:{label})\s*[：:]\s*{value_head}{tail}"
+        rf"|(?:^|\t)(?:{label})\t\s*{value_head}{tail}",
+        re.M)
+
+
+# 值本身是另一个标签/占位 → 无效
+_VALUE_JUNK = re.compile(r"^(?:招标编号|项目编号|标段编号|采购编号|分标编号|工程名称|分标|序号|条款|条款号)[：:]?$")
+
+
+def _is_junk_value(raw: str) -> bool:
+    raw = raw.strip()
+    if not raw or raw.endswith(("：", ":")):
+        return True
+    if _VALUE_JUNK.match(raw):
+        return True
+    return raw in _INVALID_VALUES
 
 
 FIELD_RULES: dict[str, RulePack] = {
     "project_name": RulePack(
         field_key="project_name",
         patterns=[_c(r"项目名称|工程名称|采购项目名称|标段名称"),
-                  re.compile(r"就\s*(?:以下)?\s*(?:[\u4e00-\u9fa5（）()]+?)项目", re.M)],
+                  re.compile(r"就\s*(?:以下)?\s*([\u4e00-\u9fa5（）()A-Za-z0-9]+?)项目\s*(?:进行|施工|采购)", re.M)],
         preferred_zones=["notice", "instructions_front", "instructions"],
     ),
     "tender_no": RulePack(
@@ -185,12 +206,14 @@ def rule_hit(pack: RulePack, text: str):
     """
     for pat in pack.patterns:
         m = pat.search(text)
-        if not m:
+        if not m or m.group(1) is None:  # 无捕获组/未命中的模式跳过
             continue
         raw = m.group(1).strip()
-        # 无效值/占位词跳过（"评标办法前附表"的"前附表"等）
-        if not raw or raw in _INVALID_VALUES:
+        # 无效值/占位词/裸标签跳过（"评标办法前附表"的"前附表"、"1%"等）
+        if _is_junk_value(raw):
             continue
+        if pack.normalizer == NORM_AMOUNT and "%" in raw:
+            continue  # "保证金为合同价的1%"不是金额
         norm = _apply_normalizer(pack.normalizer, raw)
         if norm is None:
             continue
