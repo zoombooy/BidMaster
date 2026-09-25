@@ -1,0 +1,20 @@
+{
+  "desc": "示例招标文件金标（scripts/make_sample.py 生成）",
+  "fields": {
+    "project_name": "某某市第三人民医院住院综合楼建设项目",
+    "tender_no": "XYZ-2026-GC-001",
+    "tenderer": "某某市第三人民医院",
+    "agency": "华信工程咨询有限公司",
+    "fund_source": "财政资金",
+    "price_limit": "250000000",
+    "security_deposit": "800000",
+    "bid_deadline": "2026-11-20 09:30",
+    "bid_validity": "90日历天",
+    "duration": "540日历天",
+    "quality_standard": "合格",
+    "evaluation_method": "综合评估法"
+  },
+  "score_items": ["类似工程业绩", "施工组织设计", "项目负责人", "工作组人员配备",
+                   "质量保证与安全文明", "企业资质与认证", "财务状况", "企业信用",
+                   "企业荣誉", "投标报价"]
+}
