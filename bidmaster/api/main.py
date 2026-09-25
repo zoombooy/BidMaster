@@ -12,11 +12,13 @@ from pathlib import Path
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import Response
 
+from bidmaster.a2a.routes import router as a2a_router
 from bidmaster.config import get_settings
 from bidmaster.orchestration.pipeline import Pipeline
 
-app = FastAPI(title="BidMaster 招标文件解析 API", version="0.1.0")
+app = FastAPI(title="BidMaster 招标文件解析 Agent", version="0.1.0")
 pipeline = Pipeline(work_root=Path("work"))
+app.include_router(a2a_router)
 ALLOWED_EXT = {".docx", ".doc", ".pdf"}
 
 

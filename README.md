@@ -36,6 +36,56 @@ python -m bidmaster serve --port 8000
 | `BIDMASTER_OCR_BACKEND` | 扫描件 OCR：`mineru`（pip install mineru）或 `paddle`。未配置时扫描页如实记 FAILED_REVIEW |
 | `BIDMASTER_REVIEW_THRESHOLD` | 置信度低于阈值进人工复核队列（默认 0.7） |
 
+## A2A 协议：让其他 Agent 调用
+
+BidMaster 实现了 **A2A（Agent2Agent）协议**（protocolVersion 0.2.x），任何 Agent
+平台（LangChain / CrewAI / Coze / Dify / Claude / Gemini 等）都可以发现并调用它。
+
+### 1. 能力发现（Agent Card）
+
+```bash
+curl http://127.0.0.1:8000/.well-known/agent.json
+```
+
+返回 Agent Card：技能 `tender_analysis`（招标文件解析与评分标准结构化）、输入输出
+模式、流式/推送能力声明。
+
+### 2. 发起任务（JSON-RPC，异步任务模型）
+
+```bash
+# 用文件（base64）发起解析任务
+curl -X POST http://127.0.0.1:8000/a2a -H "Content-Type: application/json" -d '{
+  "jsonrpc": "2.0", "id": 1, "method": "message/send",
+  "params": {"message": {"role": "user", "kind": "message", "messageId": "m1",
+    "parts": [{"kind": "file", "file": {
+      "name": "tender.pdf",
+      "mimeType": "application/pdf",
+      "bytes": "<base64内容>"}}]}}}'
+
+# → 返回 Task{id, status:{state:"submitted"}}，后台执行
+```
+
+也支持 `file.uri`（HTTP 地址自动下载）与 `DataPart{file_base64, file_name}`。
+
+### 3. 轮询结果 / 流式订阅 / 推送回调
+
+```bash
+# 轮询
+curl -X POST http://127.0.0.1:8000/a2a -d '{"jsonrpc":"2.0","id":2,
+  "method":"tasks/get","params":{"id":"<task_id>"}}'
+# → completed 后 artifacts[0].parts[0].data 即完整解析报告（JSON）
+```
+
+- **`message/stream`**：SSE 流式订阅，依次推送 `status-update`（working）→
+  `artifact-update`（报告）→ `status-update`（completed, final=true）
+- **`tasks/pushNotificationConfig/set`**：注册 webhook，任务终态主动 POST 回调
+- **`tasks/cancel`**：取消未完成任务（终态任务返回 -32002）
+
+### 4. 供人类使用的 REST（并存）
+
+`POST /api/analyze`（multipart 上传，同步返回报告）、`GET /api/reports/{doc_id}`、
+Swagger 文档 `http://127.0.0.1:8000/docs`。
+
 ## 架构
 
 ```
@@ -49,6 +99,9 @@ python -m bidmaster serve --port 8000
         ★条款抽取 ｜ 分值合计机械校验(评分项合计=声明总分=权重=100)
 编排层  确定性状态机 intake→parse→structure→fields→scoring→report
         每阶段 checkpoint 落盘（work/<doc_id>/），--force 级联失效下游
+接口层  A2A 协议（Agent Card + JSON-RPC：message/send、tasks/get、
+        message/stream SSE、推送回调）→ 任意 Agent 平台可发现可调用
+        REST API（人类/传统系统）→ 同一份解析管线
 ```
 
 ## 报告长什么样
@@ -81,11 +134,11 @@ python evals/evaluate.py work/<doc_id>/06_report.json evals/golden/sample_golden
 python -m pytest tests/ -q
 ```
 
-31 个用例覆盖：中文大写金额/日期/工期归一化、编号归一化与章节树、锚区定位、评分表逐行解析与分值校验、跨页续表合并、端到端管线（含缓存续跑）。
+39 个用例覆盖：中文大写金额/日期/工期归一化、编号归一化与章节树、锚区定位、评分表逐行解析与分值校验、跨页续表合并、端到端管线（含缓存续跑）、**A2A 协议全流程**（能力发现/message/send/轮询/取消语义/推送配置/协议错误码）。
 
 ## 设计来源与致谢
 
-本项目的机制设计吸收了以下开源项目的经验（详见方案文档）：
+本仓库代码为**独立实现**（未拷贝第三方源码），机制设计吸收了以下开源项目的经验：
 
 - [FB208/OpenBidKit_Yibiao](https://github.com/FB208/OpenBidKit_Yibiao)——18 项解析并发/prompt 缓存预热、Schema 校验+错误回灌、checkpoint/定向重跑/级联失效
 - [Inupedia/tender-extract](https://github.com/Inupedia/tender-extract)——规则优先 + LLM 兜底、字段级证据链、F1 评测门禁
@@ -99,9 +152,9 @@ python -m pytest tests/ -q
 
 ## 路线图
 
-- **一期（本仓库）**：读标——解析 + 字段 + 评分标准结构化 ✅
+- **一期（本仓库）**：读标——解析 + 字段 + 评分标准结构化 + A2A 对外服务 ✅
 - **二期**：企业业绩库/人员库/证书库自动匹配（保守判定）+ 评分镜像目录驱动的标书大纲生成 + 废标自查门禁
-- **三期**：审阅工作台前端（bbox 高亮定位）、PostgreSQL/pgvector 存储层、LangGraph 编排升级
+- **三期**：审阅工作台前端（bbox 高亮定位）、PostgreSQL/pgvector 存储层、LangGraph 编排升级、MCP Server 形态
 
 ## License
 
