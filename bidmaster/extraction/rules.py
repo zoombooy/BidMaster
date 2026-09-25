@@ -114,12 +114,10 @@ FIELD_RULES: dict[str, RulePack] = {
     ),
     "bid_deadline": RulePack(
         field_key="bid_deadline",
-        # 直接抓"日期时间"串，避免标签后长描述干扰
+        # 仅认明确的投标/递交/开标前缀（裸日期兜底会误抓 DL5009.2-2013 标准编号、竣工时间等）
         patterns=[re.compile(
-            r"(?:投标文件递交的?截止时间|递交投标文件截止时间|投标截止时间|开标时间|截止时间[^。\n]{0,20}?)[^\d二〇]{0,6}"
-            r"((?:\d{4}|[零〇一二三四五六七八九]{4})\s*年\s*\d{1,2}\s*月\s*\d{1,2}\s*日[^\n，。;；]{0,12})", re.M),
-            re.compile(
-            r"((?:\d{4})[-/.]\d{1,2}[-/.]\d{1,2}[^\n，。;；]{0,10})", re.M)],
+            r"(?:投标文件递交的?截止时间|递交投标文件截止时间|投标截止时间|开标时间)[^\d二〇]{0,6}"
+            r"((?:\d{4}|[零〇一二三四五六七八九]{4})\s*年\s*\d{1,2}\s*月\s*\d{1,2}\s*日[^\n，。;；]{0,12})", re.M)],
         normalizer=NORM_DATETIME,
         preferred_zones=["instructions_front", "notice", "instructions"],
     ),
@@ -178,7 +176,7 @@ _TABLE_LABELS: dict[str, re.Pattern] = {
     "site": re.compile(r"^(建设地点|项目地点|工程地点|实施地点)$"),
     "price_limit": re.compile(r"^(最高投标限价|最高限价|招标控制价|拦标价|预算金额)(（大写）|（小写）)?"),
     "budget_amount": re.compile(r"^(预算金额|采购预算)(（大写）|（小写）)?"),
-    "security_deposit": re.compile(r"^投标保证金(金额)?$"),
+    "security_deposit": re.compile(r"^(?:应?提交)?投标保证金(（?万元）?|金额)?(（?万元）?)?$"),
     "bid_deadline": re.compile(r"^(投标截止时间|投标文件递交截止时间|递交投标文件截止时间|开标时间)$"),
     "bid_validity": re.compile(r"^投标有效期$"),
     "duration": re.compile(r"^(计划工期|合同工期|工期|服务期|交货期|供货期)$"),

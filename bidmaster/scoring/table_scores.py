@@ -26,6 +26,9 @@ _PAREN_SCORE = re.compile(r"[（(]\s*(-?\d{1,3}(?:\.\d{1,2})?)\s*分\s*[）)]")
 _SCORE_IN_TEXT = re.compile(r"(\d{1,3}(?:\.\d{1,2})?)\s*分")
 _SERIAL = re.compile(r"^(?:[一二三四五六七八九十]{1,3}|\d{1,3})$")
 _GRADED_KW = re.compile(r"优|良|一般|差|好|中档|较差|档次")
+_GRADE_TIER = re.compile(
+    r"(优|良|一般|差|中|合格|完全响应|基本响应|较好|很差|优秀)[^\d%]{0,6}"
+    r"(\d{1,3})\s*[-–—~]\s*(\d{1,3})\s*分")
 _FORMULA_KW = re.compile(r"公式|基准价|平均值|＝|=")
 _PROOF_KW = ["中标通知书", "合同协议书", "合同", "竣工验收证明", "验收证明", "验收报告",
              "证书", "社保证明", "社保", "审计报告", "财务报告", "获奖证书", "承诺函",
@@ -83,6 +86,69 @@ def _is_grid_table(tb: TableModel) -> bool:
     return any(kw in header for kw in _GRID_HEADER_KW) and len(tb.rows) > 2
 
 
+_PRICE_MATRIX_KW = ("价格公式", "下浮系数", "正向系数", "负向系数")
+_WEIGHT_TRIPLE = re.compile(r"(\d{1,3})\s*[：:]\s*(\d{1,3})\s*[：:]\s*(\d{1,3})")
+
+
+def _is_price_matrix(tb: TableModel) -> bool:
+    """前附表之六形态：分标 × (权重设置 技:商:价 | 价格公式 | 系数 | 限包数)。"""
+    header = "".join("".join(r) for r in tb.rows[:2]) if tb.rows else ""
+    return (sum(kw in header for kw in _PRICE_MATRIX_KW) >= 2
+            and "权重" in header)
+
+
+def _parse_price_matrix(tb: TableModel, store: EvidenceStore,
+                        counters: dict, items: list) -> None:
+    """价格公式矩阵 → 每分标一条结构化价格评分项（公式名/系数/权重）。"""
+    for ri, row in enumerate(tb.rows):
+        cells = [c.strip() for c in row]
+        joined = " ".join(c for c in cells if c)
+        m = _WEIGHT_TRIPLE.search(joined)
+        if not m:
+            continue  # 表头行/空行
+        tech_w, comm_w, price_w = (float(m.group(1)), float(m.group(2)),
+                                   float(m.group(3)))
+        # 定位各列（国网矩阵表两行表头：子列头在第二行）
+        header2 = tb.rows[1] if len(tb.rows) > 1 else (tb.rows[0] if tb.rows else [])
+        col = {kw: None for kw in _PRICE_MATRIX_KW}
+        lot_col = None
+        formula_name = ""
+        coefs: dict[str, float] = {}
+        for j, h in enumerate(header2):
+            for kw in _PRICE_MATRIX_KW:
+                if col[kw] is None and kw in h:
+                    col[kw] = j
+            if "分标" in h and lot_col is None:
+                lot_col = j
+        # 值抽取
+        if col["价格公式"] is not None and col["价格公式"] < len(cells):
+            formula_name = cells[col["价格公式"]]
+        for kw in ("下浮系数", "正向系数", "负向系数"):
+            ci = col[kw]
+            if ci is not None and ci < len(cells):
+                cm = re.search(r"-?\d+(?:\.\d+)?", cells[ci])
+                if cm:
+                    coefs[kw] = float(cm.group(0))
+        lot = (cells[lot_col] if lot_col is not None and lot_col < len(cells)
+               and cells[lot_col] else (cells[1] if len(cells) > 1 else "默认分标"))
+        counters[CAT_PRICE] += 1
+        ev = store.add(make_evidence(
+            kind="table_cell", source="table",
+            page_no=(tb.page_nos[0] if tb.page_nos else 0),
+            table_id=tb.table_id, row=ri, snippet=joined[:200]))
+        formula_text = (f"{formula_name or '价格公式'}；下浮系数={coefs.get('下浮系数', '')}；"
+                        f"正向系数={coefs.get('正向系数', '')}；负向系数={coefs.get('负向系数', '')}")
+        items.append(ScoreItem(
+            score_id=f"P-{counters[CAT_PRICE]:03d}", category=CAT_PRICE,
+            name=f"投标报价评分（{lot[:24]}）", max_score=price_w,
+            rule_type=RULE_FORMULA, rule_text=joined[:500],
+            parsed_rule={"price_weight": price_w, "tech_weight": tech_w,
+                         "commercial_weight": comm_w, "lot": lot,
+                         **{k: v for k, v in coefs.items()}},
+            formula=formula_text,
+            evidence_ids=[ev.evidence_id], confidence=0.88, status="confirmed"))
+
+
 def _collect_zone_tables(parsed: ParsedDocument, zones: list[AnchorZone]):
     """全文收集评分表 + lot 提示（表前最近的短段落，如"换流站土建施工"）。
 
@@ -129,13 +195,16 @@ def extract_score_items(parsed: ParsedDocument, zones: list[AnchorZone],
 
     for tid in refs_list:
         tb = by_id[tid]
-        if not _is_score_table(tb):
-            continue
         block_idx = next((i for i, b in enumerate(parsed.blocks)
                           if b.table_ref == tid), 0)
+        lot = refs_hint.get(tid, "")
+        if _is_price_matrix(tb):  # 先于 _is_score_table（权重表头在其排除清单里）
+            _parse_price_matrix(tb, store, counters, items)
+            continue
+        if not _is_score_table(tb):
+            continue
         cat = (_category_from_sections(sections, block_idx)
                or _category_from_table(tb))
-        lot = refs_hint.get(tid, "")
         if _is_grid_table(tb):
             _parse_grid_table(tb, cat, lot, store, counters, items, declared)
         else:
@@ -365,6 +434,9 @@ def _parse_rule_numbers(rule: str) -> dict:
     m = _YEARS_MENTION.search(rule)
     if m:
         parsed["years"] = int(m.group(1))
+    m = re.search(r"开标[前之]?[^。\n]{0,4}?\s*(\d{1,3})\s*个?(?:自然年|年内|年)", rule)
+    if m:
+        parsed.setdefault("years", int(m.group(1)))
     m = _AMOUNT_MENTION.search(rule)
     if m:
         amt = normalize_amount(m.group(1))
@@ -373,6 +445,13 @@ def _parse_rule_numbers(rule: str) -> dict:
     m = re.search(r"(\d+)\s*项", rule)
     if m:
         parsed["count_min"] = int(m.group(1))
+    # 梯度量化："优16-20分，良12-15分，一般8-11分，差0-7分" → 结构化档次
+    grades = []
+    for gm in _GRADE_TIER.finditer(rule):
+        grades.append({"tier": gm.group(1), "min": int(gm.group(2)),
+                       "max": int(gm.group(3))})
+    if grades:
+        parsed["grades"] = grades
     return parsed
 
 

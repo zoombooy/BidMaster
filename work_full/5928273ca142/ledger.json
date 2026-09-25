@@ -1,0 +1,433 @@
+{
+  "doc_id": "5928273ca142",
+  "items": {
+    "file:main": {
+      "key": "file:main",
+      "kind": "file",
+      "status": "DONE",
+      "reason": ""
+    },
+    "file:5": {
+      "key": "file:5",
+      "kind": "file",
+      "status": "FAILED_REVIEW",
+      "reason": "老式 .doc 请先转换：soffice --headless --convert-to docx <file>（或 win32com）"
+    },
+    "file:7": {
+      "key": "file:7",
+      "kind": "file",
+      "status": "FAILED_REVIEW",
+      "reason": "老式 .doc 请先转换：soffice --headless --convert-to docx <file>（或 win32com）"
+    },
+    "file:8": {
+      "key": "file:8",
+      "kind": "file",
+      "status": "FAILED_REVIEW",
+      "reason": "老式 .doc 请先转换：soffice --headless --convert-to docx <file>（或 win32com）"
+    },
+    "file:15": {
+      "key": "file:15",
+      "kind": "file",
+      "status": "FAILED_REVIEW",
+      "reason": "老式 .doc 请先转换：soffice --headless --convert-to docx <file>（或 win32com）"
+    },
+    "file:16": {
+      "key": "file:16",
+      "kind": "file",
+      "status": "FAILED_REVIEW",
+      "reason": "老式 .doc 请先转换：soffice --headless --convert-to docx <file>（或 win32com）"
+    },
+    "file:22": {
+      "key": "file:22",
+      "kind": "file",
+      "status": "FAILED_REVIEW",
+      "reason": "老式 .doc 请先转换：soffice --headless --convert-to docx <file>（或 win32com）"
+    },
+    "page:1": {
+      "key": "page:1",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:2": {
+      "key": "page:2",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:3": {
+      "key": "page:3",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:4": {
+      "key": "page:4",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:5": {
+      "key": "page:5",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:6": {
+      "key": "page:6",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:7": {
+      "key": "page:7",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:8": {
+      "key": "page:8",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:9": {
+      "key": "page:9",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:10": {
+      "key": "page:10",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:11": {
+      "key": "page:11",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:12": {
+      "key": "page:12",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:13": {
+      "key": "page:13",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:14": {
+      "key": "page:14",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:15": {
+      "key": "page:15",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:16": {
+      "key": "page:16",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:17": {
+      "key": "page:17",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:18": {
+      "key": "page:18",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:19": {
+      "key": "page:19",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:20": {
+      "key": "page:20",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:21": {
+      "key": "page:21",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:22": {
+      "key": "page:22",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:23": {
+      "key": "page:23",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:24": {
+      "key": "page:24",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:25": {
+      "key": "page:25",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:26": {
+      "key": "page:26",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:27": {
+      "key": "page:27",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:28": {
+      "key": "page:28",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:29": {
+      "key": "page:29",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:30": {
+      "key": "page:30",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:31": {
+      "key": "page:31",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:32": {
+      "key": "page:32",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:33": {
+      "key": "page:33",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:34": {
+      "key": "page:34",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:35": {
+      "key": "page:35",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:36": {
+      "key": "page:36",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:37": {
+      "key": "page:37",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:38": {
+      "key": "page:38",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:39": {
+      "key": "page:39",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:40": {
+      "key": "page:40",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:41": {
+      "key": "page:41",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:42": {
+      "key": "page:42",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:43": {
+      "key": "page:43",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:44": {
+      "key": "page:44",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:45": {
+      "key": "page:45",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:46": {
+      "key": "page:46",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:47": {
+      "key": "page:47",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:48": {
+      "key": "page:48",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:49": {
+      "key": "page:49",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:50": {
+      "key": "page:50",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:51": {
+      "key": "page:51",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:52": {
+      "key": "page:52",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:53": {
+      "key": "page:53",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:54": {
+      "key": "page:54",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:55": {
+      "key": "page:55",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:56": {
+      "key": "page:56",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:57": {
+      "key": "page:57",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:58": {
+      "key": "page:58",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:59": {
+      "key": "page:59",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:60": {
+      "key": "page:60",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:61": {
+      "key": "page:61",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "page:62": {
+      "key": "page:62",
+      "kind": "page",
+      "status": "DONE",
+      "reason": ""
+    },
+    "file:31": {
+      "key": "file:31",
+      "kind": "file",
+      "status": "FAILED_REVIEW",
+      "reason": "老式 .doc 请先转换：soffice --headless --convert-to docx <file>（或 win32com）"
+    }
+  },
+  "summary": {
+    "total": 70,
+    "done": 63,
+    "excluded": 0,
+    "failed_review": 7,
+    "pending": 0,
+    "complete_gate_passed": true
+  }
+}

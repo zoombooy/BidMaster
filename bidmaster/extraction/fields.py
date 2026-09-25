@@ -6,6 +6,7 @@ LLM 兜底要求模型返回 source_quote，代码回查原文验证——无证
 from __future__ import annotations
 
 import bisect
+import re
 
 from bidmaster.extraction.llm_fallback import llm_fill_missing
 from bidmaster.extraction.rules import (FIELD_RULES, NORM_AMOUNT, NORM_DATETIME,
@@ -141,6 +142,11 @@ class FieldExtractor:
         if not candidates:
             out.note = "候选值均未通过字段格式守卫"
             return out
+        # 引用型值（"见招标公告/见前附表"）让位于具体值；只剩引用时保留引用
+        specific = [c for c in candidates
+                    if not _IS_REFERENCE.match(str(c.value_raw or ""))]
+        if specific:
+            candidates = specific
         best = max(candidates, key=lambda c: c.confidence)
         out.value_raw = best.value_raw
         out.value_normalized = best.value_normalized
@@ -168,6 +174,9 @@ class FieldExtractor:
                     if _is_junk_value(value):
                         continue
                     value = _strip_leading_label(value)
+                    # 金额单位换算：标签含"万元"（如保证金一览表列头）→ 值按万元
+                    if pack.normalizer == NORM_AMOUNT and "万元" in cell:
+                        value = f"{value}万元"
                     norm = self._normalize(pack, value)
                     if norm is None:
                         continue
@@ -249,6 +258,17 @@ class FieldExtractor:
                     return False  # "1"这类值多为其他数字列错位，真实保证金≥数千元
             except ValueError:
                 pass
+        if field_key == "bid_deadline":
+            try:
+                year = int(v[:4])
+            except (ValueError, TypeError):
+                return False
+            if not (2018 <= year <= 2040):
+                return False  # "5009-02-20"等表格数字错位噪声
+        if field_key == "quality_standard" and len(str(cand.value_raw)) > 28:
+            return False  # 质量标准应为短句，长段是条款噪声
+        if field_key in ("tenderer", "agency") and len(str(cand.value_raw)) > 30:
+            return False
         return True
 
     @staticmethod
@@ -304,3 +324,7 @@ def _strip_leading_label(value: str) -> str:
     import re
     v = re.sub(r"^(?:名称|项目名称|工程名称|金额|大写)\s*[：:]\s*", "", value.strip())
     return v.strip("（）()").strip()
+
+
+# 引用型值："见招标公告/详见前附表"——指向别处的引用而非具体值
+_IS_REFERENCE = re.compile(r"^\s*(?:详见?|见)[（(]?[^）)]*(?:公告|前附表|须知|章|附件|规范书|一览表)")

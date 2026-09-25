@@ -41,7 +41,7 @@ def probe_pdf_text_layer(path: Path) -> tuple[bool, int, list[int]]:
 def detect_type(path: Path) -> tuple[str, dict]:
     """识别文件类型并返回 (routed_type, probe_info)。
 
-    routed_type ∈ docx | doc | pdf_text | pdf_scan | unsupported
+    routed_type ∈ docx | doc | pdf_text | pdf_scan | xlsx | zip | unsupported
     """
     ext = path.suffix.lower()
     probe: dict = {}
@@ -49,6 +49,10 @@ def detect_type(path: Path) -> tuple[str, dict]:
         return "docx", probe
     if ext == ".doc":
         return "doc", probe
+    if ext == ".xlsx":
+        return "xlsx", probe
+    if ext == ".zip":
+        return "zip", probe
     if ext == ".pdf":
         has_text, pages, empty = probe_pdf_text_layer(path)
         probe = {"pages": pages, "empty_pages": empty, "has_text_layer": has_text}

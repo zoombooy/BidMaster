@@ -17,6 +17,8 @@ def route_and_parse(path: str, doc_id: str, routed_type: str,
     elif routed_type == "pdf_scan":
         parsed = _lazy("ocr_parser").parse_pdf_ocr(
             path, doc_id, ledger, empty_pages=empty_pages)
+    elif routed_type == "xlsx":
+        parsed = _lazy("xlsx_parser").parse_xlsx(path, doc_id, ledger)
     elif routed_type == "doc":
         raise NotImplementedError(
             "老式 .doc 请先转换：soffice --headless --convert-to docx <file>（或 win32com）")

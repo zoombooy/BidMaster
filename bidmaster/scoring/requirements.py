@@ -53,6 +53,64 @@ _SCORE_KEY2REQ = [("业绩", REQ_PERFORMANCE), ("负责人", REQ_LEADER), ("项�
                   ("价格", REQ_PRICE)]
 
 _SENT_SPLIT = re.compile(r"[。；;\n]")
+# 业绩时间窗：近5年 / 开标前5年内 / 投标截止日近3年 / 近3个自然年 / 前3年
+_YEAR_WINDOW = re.compile(
+    r"(?:近|开标\s*前|投标截止日\s*近?|截止日\s*前?|前)\s*(\d{1,3})\s*个?(?:自然年|年内|年)")
+# 证书编号配对（模式分类学参考 tender-extract personnel_extractor.CERTIFICATE_PATTERNS）
+_CERT_NO = re.compile(
+    r"(?:建造师|工程师|安全生产考核[^，。\n]{0,8}|安全[BC]证|资格证书?|执业证|职称证)"
+    r"[^，。\n]{0,24}?(?:证书)?(?:编号|号)[：:]\s*([^\s，。，；;\n]{4,30})")
+
+
+def _perf_parse(sentence: str) -> dict | None:
+    """业绩要求句 → 结构化约束（时间窗/金额/数量/证明材料/单项分值）。"""
+    s = sentence
+    if "业绩" not in s:
+        return None
+    if not re.search(r"完成|承担|提供|具有|获得|承接|承揽|独立", s):
+        return None
+    parsed: dict = {}
+    m = _YEAR_WINDOW.search(s)
+    if m:
+        parsed["years"] = int(m.group(1))
+    else:
+        return None  # 无时间窗的业绩句过于宽泛，不建模
+    m = re.search(r"(\d+)\s*项", s)
+    if m:
+        parsed["count_min"] = int(m.group(1))
+    m = re.search(r"金额(?:不低于|达到|在|为)?\s*([\d一二三四五六七八九十佰仟万亿,，.]+\s*万?亿?元?)", s)
+    if m:
+        amt = normalize_amount(m.group(1))
+        if amt:
+            parsed["amount_min"] = int(amt[0]) if float(amt[0]).is_integer() else amt[0]
+    proofs = [kw for kw in _PROOF_KW if kw in s]
+    if proofs:
+        parsed["proof_materials"] = proofs
+    m = re.search(r"得\s*(\d+)\s*分", s)
+    if m:
+        parsed["unit_score"] = float(m.group(1))
+    return parsed or None
+
+
+def _team_parse(sentence: str, pos: str) -> dict | None:
+    idx = sentence.find(pos)
+    if idx < 0:
+        return None
+    window = sentence[idx: idx + 40]
+    parsed: dict = {"position": pos}
+    m = re.search(r"(\d+)\s*(?:名|人)", window)
+    if m:
+        parsed["count"] = int(m.group(1))
+    hits = [c for c in _POS_CERTS.get(pos, []) if c in window]
+    if hits:
+        parsed["certificates"] = hits
+    m = re.search(r"([一-龥]{1,4}职称|高级工程师|中级工程师|助理工程师)", window)
+    if m:
+        parsed["title"] = m.group(1)
+    m = _CERT_NO.search(sentence)
+    if m:
+        parsed.setdefault("cert_numbers", []).append(m.group(1))
+    return parsed if len(parsed) > 1 else None
 
 
 def _sentences(text: str) -> list[str]:
@@ -100,11 +158,54 @@ class RequirementBuilder:
         self._commercial()
         self._price()
         self._star()
+        self._from_scores()
         self._dedupe_team()
         self._link()
         for i, r in enumerate(self.reqs, 1):
             r.req_id = f"R-{i:03d}"
         return self.reqs, self.stars
+
+    # ---------- 从评分项细则提取（国网格式：业绩/人员要求嵌在评分表"项目内容"列） ----------
+    def _from_scores(self) -> None:
+        for s in self.scores:
+            rule = s.rule_text or ""
+            if len(rule) < 10:
+                continue
+            for sentence in _sentences(rule):
+                # 业绩要求
+                parsed = _perf_parse(sentence)
+                if parsed:
+                    self.reqs.append(RequirementItem(
+                        req_id="", type=REQ_PERFORMANCE, subject="投标人",
+                        constraint=sentence[:300], parsed=parsed,
+                        scoring_refs=[s.score_id], evidence_ids=list(s.evidence_ids),
+                        confidence=0.82))
+                # 人员要求（窗口定位）
+                for pos in _POS_CERTS:
+                    parsed = _team_parse(sentence, pos)
+                    if parsed:
+                        self.reqs.append(RequirementItem(
+                            req_id="", type=REQ_TEAM, subject=pos,
+                            constraint=sentence[:300], parsed=parsed,
+                            scoring_refs=[s.score_id],
+                            evidence_ids=list(s.evidence_ids), confidence=0.78))
+                # 项目负责人要求
+                if re.search(r"项目负责人|项目经理", sentence):
+                    parsed: dict = {}
+                    m = re.search(r"([一-龥]{2,6}?)?(?:专业)?(?:一级|二级|壹级|贰级)?(?:注册)?建造师", sentence)
+                    if m:
+                        parsed["registered_builder"] = (m.group(0) or "").strip()
+                    m2 = re.search(r"(高级|中级|初级)工程师", sentence)
+                    if m2:
+                        parsed["title"] = f"{m2.group(1)}工程师"
+                    if re.search(r"无在建|在建工程|不得同时", sentence):
+                        parsed["ongoing_limit"] = "无在建工程或满足文件限制"
+                    if parsed:
+                        self.reqs.append(RequirementItem(
+                            req_id="", type=REQ_LEADER, subject="项目负责人",
+                            constraint=sentence[:300], parsed=parsed,
+                            scoring_refs=[s.score_id],
+                            evidence_ids=list(s.evidence_ids), confidence=0.82))
 
     def _dedupe_team(self) -> None:
         """同一岗位多个来源时：parsed 为子集的条目并入超集条目（保留信息量大的）。"""

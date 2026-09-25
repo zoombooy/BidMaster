@@ -56,8 +56,9 @@ class Pipeline:
     # ---------- 对外 ----------
     def run(self, file_paths: str | list[str], *, force: bool = False,
             use_llm: bool = True) -> TenderReport:
-        """支持单文件或多个文件（如 第一章公告 + 第2-8章正文 合并解析）。"""
+        """支持单文件或多个文件（公告+正文）；zip 自动递归解压展开。"""
         files = [file_paths] if isinstance(file_paths, str) else list(file_paths)
+        files = self._expand_archives(files)
         ws, doc_id = self._ensure_workspace(files, force)
         meta = self._stage_intake(ws, doc_id, files, force)
         parsed = self._stage_parse(ws, meta, force)
@@ -67,6 +68,22 @@ class Pipeline:
         report = self._stage_report(ws, meta, parsed, struct, fields, conflicts,
                                     scoring, force)
         return report
+
+    def _expand_archives(self, files: list[str]) -> list[str]:
+        """zip 输入 → 递归解压 → 收集全部文档（含 xlsx）。"""
+        from bidmaster.ingestion.archive import collect_documents, extract_zip
+        out: list[str] = []
+        for fp in files:
+            if Path(fp).suffix.lower() == ".zip":
+                target = self.work_root / "_archives" / Path(fp).stem[:50]
+                extract_zip(Path(fp), target)
+                docs = collect_documents([target])
+                if not docs:
+                    raise ValueError(f"压缩包内无可解析文档: {fp}")
+                out.extend(str(p) for p in docs)
+            else:
+                out.append(fp)
+        return out
 
     def load_report(self, doc_id: str) -> TenderReport | None:
         p = self.work_root / doc_id / STAGE_FILES["report"]
@@ -120,9 +137,19 @@ class Pipeline:
         docs: list[ParsedDocument] = []
         for i, info in enumerate(meta["files"]):
             probe = info.get("probe") or {}
-            doc = route_and_parse(info["path"], info["doc_id"],
-                                  info["routed_type"], ledger,
-                                  empty_pages=probe.get("empty_pages"))
+            try:
+                doc = route_and_parse(info["path"], info["doc_id"],
+                                      info["routed_type"], ledger,
+                                      empty_pages=probe.get("empty_pages"))
+            except NotImplementedError as e:
+                # .doc 等需预转换格式：记账本转人工，不阻塞整包
+                ledger.register(f"file:{i}", "file")
+                ledger.fail(f"file:{i}", str(e))
+                continue
+            except ValueError as e:
+                ledger.register(f"file:{i}", "file")
+                ledger.fail(f"file:{i}", f"不支持的类型: {e}")
+                continue
             doc.quality.warnings.extend(self._quality_warnings(info))
             docs.append(doc)
         parsed = docs[0] if len(docs) == 1 else self._merge_parsed(meta, docs)
