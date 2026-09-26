@@ -12,12 +12,28 @@ import sys
 from pathlib import Path
 
 
-def load(p: str) -> dict:
-    return json.loads(Path(p).read_text(encoding="utf-8"))
+def load_gold(path: str) -> dict:
+    """加载金标：支持两种格式——
+    1) 单文档 JSON（{"fields": {...}, "score_items": [...]}, 见 sample_golden.json）
+    2) 复核导出的部分标注 JSONL（每行 {"id","document","fields":{...}}，只评标注字段）"""
+    p = Path(path)
+    text = p.read_text(encoding="utf-8").strip()
+    if text.startswith("[") or "\n" in text and not text.startswith("{"):
+        rows = [json.loads(line) for line in text.splitlines() if line.strip()]
+        merged: dict[str, dict] = {}
+        score_items: list[str] = []
+        for row in rows:
+            doc = row.get("document", row.get("id", ""))
+            g = merged.setdefault(doc, {"fields": {}, "score_items": []})
+            g["fields"].update(row.get("fields", {}))
+            score_items.extend(row.get("score_items", []))
+        # 多文档行：返回 {"docs": {doc_id: golden}} 供多报告评测
+        return {"__multi__": True, "docs": merged, "score_items": score_items}
+    return json.loads(text)
 
 
 def field_metrics(report: dict, golden: dict) -> dict:
-    """按字段统计：金标给出期望 normalized 值（可多个）。"""
+    """按字段统计：金标给出期望 normalized 值（可多个）。部分标注安全——只评金标里出现的字段。"""
     fields = report.get("fields", {})
     tp = fp = fn = 0
     details: dict[str, dict] = {}
@@ -62,7 +78,18 @@ def main(argv=None) -> int:
                     help="F1 低于阈值则退出码 1（CI 门禁）")
     args = ap.parse_args(argv)
 
-    report, golden = load(args.report), load(args.golden)
+    report = load(args.report)
+    golden_raw = load(args.golden)
+
+    if golden_raw.get("__multi__"):
+        doc_id = report.get("doc_id")
+        golden = golden_raw["docs"].get(doc_id, {"fields": {}, "score_items": []})
+        if not golden["fields"]:
+            print(f"[SKIP] 金标 JSONL 中没有文档 {doc_id} 的标注")
+            return 0
+    else:
+        golden = golden_raw
+
     fm = field_metrics(report, golden)
     sr = score_recall(report, golden)
     print(json.dumps({

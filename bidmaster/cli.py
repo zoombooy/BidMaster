@@ -70,6 +70,15 @@ def _print_report(report_dict: dict) -> None:
     print("=" * 62)
 
 
+def _load_report_stub(work_root: str, doc_id: str):
+    """review 子命令专用：从工作区加载报告（供复核收集）。"""
+    from bidmaster.orchestration.pipeline import Pipeline
+    r = Pipeline(work_root=work_root).load_report(doc_id)
+    if r is None:
+        raise SystemExit(f"报告不存在: {doc_id}")
+    return r
+
+
 def main(argv=None) -> int:
     sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(prog="bidmaster", description="招标文件解析 Agent（一期）")
@@ -86,6 +95,22 @@ def main(argv=None) -> int:
     p_sv.add_argument("--port", type=int, default=8000)
     p_sv.add_argument("--host", default="127.0.0.1")
 
+    p_rv = sub.add_parser("review", help="复核队列：低置信/冲突字段人工裁决 → 金标回流")
+    rv_sub = p_rv.add_subparsers(dest="rv_cmd", required=True)
+    p_rl = rv_sub.add_parser("list", help="列出待复核项")
+    p_rl.add_argument("report_workdir", help="工作区根目录（如 work）")
+    p_rl.add_argument("--doc-id", required=True)
+    p_rr = rv_sub.add_parser("resolve", help="裁决一项：accept/correct/reject")
+    p_rr.add_argument("report_workdir")
+    p_rr.add_argument("--doc-id", required=True)
+    p_rr.add_argument("--item-id", required=True)
+    p_rr.add_argument("--action", choices=["accept", "correct", "reject"], required=True)
+    p_rr.add_argument("--value", default=None, help="correct 时的修正值")
+    p_re = rv_sub.add_parser("export", help="导出已裁决项为部分标注金标 JSONL")
+    p_re.add_argument("report_workdir")
+    p_re.add_argument("--doc-ids", required=True, help="逗号分隔的多个 doc_id")
+    p_re.add_argument("--out", default="evals/golden/reviewed.jsonl")
+
     args = parser.parse_args(argv)
     if args.cmd == "analyze":
         from bidmaster.orchestration.pipeline import Pipeline
@@ -96,6 +121,25 @@ def main(argv=None) -> int:
             print(json.dumps(report.model_dump(mode="json"), ensure_ascii=False, indent=2))
         else:
             _print_report(report.model_dump(mode="json"))
+        return 0
+    if args.cmd == "review":
+        from bidmaster.review import ReviewStore
+        store = ReviewStore(root=args.report_workdir)
+        if args.rv_cmd == "list":
+            items = store.collect(_load_report_stub(args.report_workdir, args.doc_id))
+            if not items:
+                print("当前没有待复核项")
+            for it in items:
+                print(f"  {it['item_id']}  {it['field_key']:<20} "
+                      f"主值={str(it['primary_value'])[:30]:<32} "
+                      f"置信={it['confidence']} 原因={','.join(it['reasons'])}")
+        elif args.rv_cmd == "resolve":
+            it = store.resolve(args.doc_id, args.item_id, args.action, args.value)
+            print(f"已裁决: {it['item_id']} → {it['decision']}")
+        elif args.rv_cmd == "export":
+            out = store.export_gold([d.strip() for d in args.doc_ids.split(",")],
+                                    Path(args.out))
+            print(f"金标已导出: {out}")
         return 0
     if args.cmd == "serve":
         import uvicorn
