@@ -14,3 +14,7 @@ work/
 deploy_pkg/
 uvicorn_local.log
 mock_llm.log
+probe_*.py*
+diag.py*
+verify_*.py*
+*.log
