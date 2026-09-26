@@ -64,7 +64,8 @@ class Pipeline:
         parsed = self._stage_parse(ws, meta, force)
         struct = self._stage_structure(ws, parsed, force)
         fields, conflicts = self._stage_fields(ws, parsed, struct, use_llm, force)
-        scoring = self._stage_scoring(ws, parsed, struct, fields, force)
+        scoring = self._stage_scoring(ws, parsed, struct, fields, force,
+                                      use_llm=use_llm)
         report = self._stage_report(ws, meta, parsed, struct, fields, conflicts,
                                     scoring, force)
         return report
@@ -240,7 +241,7 @@ class Pipeline:
         return fields_d, conflicts_d
 
     def _stage_scoring(self, ws: Path, parsed: ParsedDocument, struct: dict,
-                       fields: dict, force: bool) -> dict:
+                       fields: dict, force: bool, use_llm: bool = True) -> dict:
         f = ws / STAGE_FILES["scoring"]
         if f.exists() and not force:
             return read_json(f)
@@ -251,6 +252,15 @@ class Pipeline:
         scores, declared = extract_score_items(parsed, zones, store, sections=sections)
         builder = RequirementBuilder(parsed, zones, scores, store)
         reqs, stars = builder.build()
+        # LLM 兜底：散文式评分细则（如价格公式 blob）结构化——需配置 Key 才生效
+        if use_llm:
+            from bidmaster.llm.client import LLMClient
+            from bidmaster.scoring.llm_scores import refine_pending_scores
+            llm = LLMClient()
+            if llm.enabled:
+                upgraded = refine_pending_scores(parsed, scores, store, llm)
+                if upgraded:
+                    print(f"[llm] 评分细则结构化升级 {upgraded} 项")
         write_json(ws / "evidence.json", store.model_dump(mode="json"))
         data = {
             "scores": [s.model_dump(mode="json") for s in scores],
