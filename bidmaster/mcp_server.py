@@ -44,6 +44,7 @@ TOOLS_SCHEMA: list[dict] = [
                 "file_base64": {"type": "string", "description": "文件内容的 base64"},
                 "file_name": {"type": "string", "description": "文件名（base64 时用于识别类型）"},
                 "use_llm": {"type": "boolean", "description": "是否启用 LLM 兜底（默认 true，未配置 Key 自动跳过）"},
+                "force": {"type": "boolean", "description": "强制重跑（忽略缓存；解析逻辑升级后旧缓存会自动失效，一般无需指定）"},
             },
         },
     },
@@ -97,7 +98,8 @@ def _tool_analyze_tender(args: dict) -> str:
         local_path = str(_resolve_local_path(local_path))
 
     report = Pipeline(work_root=Path("work")).run(
-        local_path, use_llm=bool(args.get("use_llm", True)))
+        local_path, use_llm=bool(args.get("use_llm", True)),
+        force=bool(args.get("force", False)))
     # 管线内存态返回 pydantic 对象（磁盘缓存态为 dict）——统一序列化
     rd = report.model_dump(mode="json")
     fields = {}

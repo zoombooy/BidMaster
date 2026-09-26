@@ -38,6 +38,9 @@ STAGE_FILES = {
     "scoring": "05_scoring.json",
     "report": "06_report.json",
 }
+# 产物格式版本：解析/评分逻辑升级导致旧缓存不兼容时必须 bump，
+# 管线启动时检测版本不符会自动级联失效全部缓存（防止新旧逻辑结果混杂）。
+CODE_VERSION = "0.2.0"
 _DOWNSTREAM = {  # 级联失效表
     "intake": ["parse", "structure", "fields", "scoring", "report"],
     "parse": ["structure", "fields", "scoring", "report"],
@@ -100,16 +103,29 @@ class Pipeline:
             "|".join(i["sha256"] for i in infos).encode()).hexdigest()
         doc_id = combined[:12]
         ws = workspace_for(self.work_root, doc_id)
-        if force:
-            for stage in ("parse", "structure", "fields", "scoring", "report"):
-                f = ws / STAGE_FILES[stage]
-                if f.exists():
-                    f.unlink()
+        self._invalidate_stale_cache(ws, force)
         for i, info in enumerate(infos):
             src = ws / f"source_{i}{Path(file_paths[i]).suffix.lower()}"
             if not src.exists():
                 shutil.copy(file_paths[i], src)
         return ws, doc_id
+
+    def _invalidate_stale_cache(self, ws: Path, force: bool) -> None:
+        """代码版本变更 → 旧产物全部失效（防止新旧逻辑结果混杂）；
+        --force → 手动级联失效。"""
+        stages = ["parse", "structure", "fields", "scoring", "report"]
+        intake_file = ws / STAGE_FILES["intake"]
+        stale = force
+        if not stale and intake_file.exists():
+            try:
+                stale = read_json(intake_file).get("code_version") != CODE_VERSION
+            except Exception:  # noqa: BLE001 损坏文件视同过期
+                stale = True
+        if stale:
+            for name in [STAGE_FILES[s] for s in stages] + ["ledger.json"]:
+                f = ws / name
+                if f.exists():
+                    f.unlink()
 
     # ---------- 各阶段 ----------
     def _stage_intake(self, ws: Path, doc_id: str, file_paths: list[str],
@@ -126,6 +142,7 @@ class Pipeline:
             "file_name": " + ".join(Path(p).name for p in file_paths),
             "files": infos,
             "sha256": infos[0]["sha256"] if len(infos) == 1 else "",
+            "code_version": CODE_VERSION,
         }
         write_json(f, meta)
         return meta
