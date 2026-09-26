@@ -164,6 +164,95 @@ FIELD_RULES: dict[str, RulePack] = {
         normalizer=NORM_TEXT,
         preferred_zones=["evaluation_method", "scoring"],
     ),
+    # ---------- 二期扩展字段（对标易标 18 项 / tender-extract 40 字段） ----------
+    "credit_code": RulePack(
+        field_key="credit_code",
+        patterns=[_c(r"统一社会信用代码",
+                     value_head=r"([0-9A-HJ-NPQRTUWXY]{18})")],
+        preferred_zones=["notice", "instructions_front", "qualification"],
+    ),
+    "legal_representative": RulePack(
+        field_key="legal_representative",
+        patterns=[_c(r"法定代表人|法人代表"),
+                  _c(r"法\s*定\s*代\s*表\s*人")],
+        preferred_zones=["notice", "instructions_front"],
+    ),
+    "contact_phone": RulePack(
+        field_key="contact_phone",
+        patterns=[_c(r"联系电话|联系方式|电话|传真",
+                     value_head=r"([0-9\-—－至,，、]{7,25})")],
+        preferred_zones=["notice", "instructions_front"],
+    ),
+    "doc_get_way": RulePack(
+        field_key="doc_get_way",
+        patterns=[_c(r"招标文件获取方式|获取招标文件方式|招标文件的?获取",
+                     value_head=r"([^\n，。;；]{2,50}?)(?=[，。;；\n]|$)")],
+        preferred_zones=["notice", "instructions_front"],
+    ),
+    "doc_price": RulePack(
+        field_key="doc_price",
+        patterns=[_c(r"招标文件售价|文件售价|工本费"),
+                 re.compile(r"(?:招标文件|文件)售价[^\n（）()]{0,6}[（(]\s*([^（）()]{1,20})[）)]", re.M)],
+        normalizer=NORM_AMOUNT,
+        preferred_zones=["notice", "instructions_front"],
+    ),
+    "submission_location": RulePack(
+        field_key="submission_location",
+        patterns=[_c(r"投标文件递交地点|递交地点|提交地点|投标文件提交地点")],
+        preferred_zones=["instructions_front", "notice", "instructions"],
+    ),
+    "warranty_period": RulePack(
+        field_key="warranty_period",
+        patterns=[_c(r"质保期|保修期|质量保证期|缺陷责任期",
+                     value_head=r"([^\n，。;；]{1,20}?)(?=[，。;；\n]|$)")],
+        normalizer=NORM_DURATION,
+        preferred_zones=["instructions_front", "tech_requirements", "notice"],
+    ),
+    "acceptance_requirements": RulePack(
+        field_key="acceptance_requirements",
+        patterns=[_c(r"验收要求|验收标准",
+                     value_head=r"([^\n，。;；]{2,40}?)(?=[，。;；\n]|$)")],
+        preferred_zones=["instructions_front", "tech_requirements"],
+    ),
+    "performance_bond": RulePack(
+        field_key="performance_bond",
+        patterns=[
+            re.compile(r"履约保证金[^\n（）()]{0,8}[（(]\s*([^（）()]{2,30})[）)]", re.M),
+            _c(r"履约保证金"),
+        ],
+        normalizer=NORM_AMOUNT,
+        preferred_zones=["instructions", "contract", "instructions_front"],
+    ),
+    "deposit_refund": RulePack(
+        field_key="deposit_refund",
+        patterns=[_c(r"保证金退还|退还保证金|退保",
+                     value_head=r"([^\n，。;；]{2,50}?)(?=[，。;；\n]|$)")],
+        preferred_zones=["instructions_front", "instructions"],
+    ),
+    "deposit_method": RulePack(
+        field_key="deposit_method",
+        patterns=[_c(r"保证金缴纳方式|缴纳方式|递交方式",
+                     value_head=r"([^\n，。;；]{2,40}?)(?=[，。;；\n]|$)")],
+        preferred_zones=["instructions_front", "instructions"],
+    ),
+    "payment_terms": RulePack(
+        field_key="payment_terms",
+        patterns=[_c(r"付款条件|付款方式|结算方式|支付方式",
+                     value_head=r"([^\n，。;；]{2,40}?)(?=[，。;；\n]|$)")],
+        preferred_zones=["instructions_front", "contract"],
+    ),
+    "objection_clause": RulePack(
+        field_key="objection_clause",
+        patterns=[_c(r"异议与投诉|异议处理|提出异议",
+                     value_head=r"([^\n，。;；]{2,50}?)(?=[，。;；\n]|$)")],
+        preferred_zones=["instructions", "notice"],
+    ),
+    "evaluation_committee": RulePack(
+        field_key="evaluation_committee",
+        patterns=[_c(r"评标委员会(?:的)?组成|评标委员会构成",
+                     value_head=r"([^\n，。;；]{2,50}?)(?=[，。;；\n]|$)")],
+        preferred_zones=["evaluation_method"],
+    ),
 }
 
 # 表格标签匹配（用于"投标人须知前附表"类两列表格：左标签/右值，或上标签/下值）
@@ -176,12 +265,20 @@ _TABLE_LABELS: dict[str, re.Pattern] = {
     "site": re.compile(r"^(建设地点|项目地点|工程地点|实施地点)$"),
     "price_limit": re.compile(r"^(最高投标限价|最高限价|招标控制价|拦标价|预算金额)(（大写）|（小写）)?"),
     "budget_amount": re.compile(r"^(预算金额|采购预算)(（大写）|（小写）)?"),
-    "security_deposit": re.compile(r"^(?:应?提交)?投标保证金(（?万元）?|金额)?(（?万元）?)?$"),
+    "security_deposit": re.compile(r"^(?:应?提交)?投标保证金(（?万元）?|金额)?$"),
+    "deposit_method": re.compile(r"^(保证金缴纳方式|缴纳方式)$"),
     "bid_deadline": re.compile(r"^(投标截止时间|投标文件递交截止时间|递交投标文件截止时间|开标时间)$"),
     "bid_validity": re.compile(r"^投标有效期$"),
     "duration": re.compile(r"^(计划工期|合同工期|工期|服务期|交货期|供货期)$"),
     "quality_standard": re.compile(r"^(质量标准|质量要求)$"),
     "evaluation_method": re.compile(r"^(评标办法|评审办法)$"),
+    "credit_code": re.compile(r"^(统一社会信用代码)$"),
+    "legal_representative": re.compile(r"^(法定代表人|法人代表)$"),
+    "contact_phone": re.compile(r"^(联系电话|联系方式|电话|传真)$"),
+    "warranty_period": re.compile(r"^(质保期|保修期|质量保证期|缺陷责任期)$"),
+    "performance_bond": re.compile(r"^(履约保证金)(（?万元）?)?$"),
+    "doc_price": re.compile(r"^(招标文件售价|文件售价|工本费)$"),
+    "submission_location": re.compile(r"^(投标文件递交地点|递交地点|提交地点)$"),
 }
 
 _TIME_CLEAN = re.compile(r"[（(]下同[）)]|[（(]即[^）)]*[）)]")

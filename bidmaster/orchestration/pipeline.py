@@ -252,6 +252,8 @@ class Pipeline:
         scores, declared = extract_score_items(parsed, zones, store, sections=sections)
         builder = RequirementBuilder(parsed, zones, scores, store)
         reqs, stars = builder.build()
+        from bidmaster.scoring.rejection import extract_rejections
+        rejections = extract_rejections(parsed, store)
         # LLM 兜底：散文式评分细则（如价格公式 blob）结构化——需配置 Key 才生效
         if use_llm:
             from bidmaster.llm.client import LLMClient
@@ -266,6 +268,7 @@ class Pipeline:
             "scores": [s.model_dump(mode="json") for s in scores],
             "requirements": [r.model_dump(mode="json") for r in reqs],
             "stars": [s.model_dump(mode="json") for s in stars],
+            "rejections": [r.model_dump(mode="json") for r in rejections],
             "declared": declared,
         }
         write_json(f, data)
@@ -313,6 +316,7 @@ class Pipeline:
             scores=scoring["scores"],
             requirements=scoring["requirements"],
             star_clauses=scoring["stars"],
+            rejections=scoring.get("rejections", []),
             sum_checks=sum_checks,
             issues=issues,
             sections=struct["sections"],

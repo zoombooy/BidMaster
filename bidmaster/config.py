@@ -29,6 +29,11 @@ class Settings:
     # 置信度低于阈值 → 人工复核队列
     review_threshold: float = field(default_factory=lambda: float(os.getenv("BIDMASTER_REVIEW_THRESHOLD", "0.7")))
 
+    # MCP/A2A local_path 白名单：额外允许解析的目录（os.pathsep 分隔）。
+    # 工作目录（cwd）始终允许；未配置时仅 cwd 内文件可解析。
+    allowed_paths: list[str] = field(default_factory=lambda: [
+        p for p in os.getenv("BIDMASTER_ALLOWED_PATHS", "").split(os.pathsep) if p.strip()])
+
     @property
     def llm_enabled(self) -> bool:
         return bool(self.llm_base_url and self.llm_model)

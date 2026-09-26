@@ -76,3 +76,17 @@ class StarClause(BaseModel):
     text: str = ""
     page_no: int = 0
     evidence_ids: list[str] = []
+
+
+class RejectionItem(BaseModel):
+    """废标/否决风险条目（借鉴易标四象限纪律：明确溯源优先，经验补充单独标记）。"""
+    rej_id: str
+    kind: str = "rejection"          # rejection废标 | invalid无效投标
+    origin: str = "explicit"          # explicit文中明确 | experienced经验补充(需LLM)
+    category: str = ""                # 情形分类（主体不符/资格不符/资信不良/实质不符/其他）
+    text: str = ""                    # 条款原文
+    severity: str = "high"            # high | medium | low
+    source: str = "rejection_table"   # rejection_table | star_clause | llm
+    evidence_ids: list[str] = []
+    confidence: float = 0.0
+    status: str = "confirmed"         # confirmed | pending_review

@@ -147,11 +147,11 @@ class FieldExtractor:
                     if not _IS_REFERENCE.match(str(c.value_raw or ""))]
         if specific:
             candidates = specific
-        best = max(candidates, key=lambda c: c.confidence)
+        best = max(candidates, key=lambda c: c.confidence * self._penalty(field_key, c))
         out.value_raw = best.value_raw
         out.value_normalized = best.value_normalized
         out.value_unit = self._unit_of(pack.normalizer, best.value_normalized)
-        out.confidence = best.confidence
+        out.confidence = round(best.confidence * self._penalty(field_key, best), 2)
         out.status = STATUS_FOUND
         out.evidence_ids = [best.evidence_id] if best.evidence_id else []
         return out
@@ -245,31 +245,51 @@ class FieldExtractor:
     # ---------- 工具 ----------
     @staticmethod
     def _guard(field_key: str, cand: FieldCandidate) -> bool:
-        """字段级格式守卫：结构不符的候选直接淘汰。"""
+        """字段级格式守卫（硬校验：不合法直接淘汰）。"""
         import re
+        from bidmaster.extraction import validators as V
         v = str(cand.value_normalized or "")
-        if field_key == "tender_no" and not re.search(r"[0-9A-Za-z]", v):
-            return False  # 编号必含字母/数字（"异议人类型：□…"之类噪声）
+        raw = str(cand.value_raw or "")
+        if not V.is_meaningful(raw):
+            return False  # 占位词/低字符多样性噪声
+        if field_key == "tender_no" and not V.is_tender_no_like(v):
+            return False  # 编号必含字母/数字且格式合规
         if field_key == "project_name" and v.rstrip("：:") in ("标包名称", "包名称", "分标"):
             return False
-        if field_key == "security_deposit":
-            try:
-                if float(v) < 5000:
-                    return False  # "1"这类值多为其他数字列错位，真实保证金≥数千元
-            except ValueError:
-                pass
-        if field_key == "bid_deadline":
-            try:
-                year = int(v[:4])
-            except (ValueError, TypeError):
-                return False
-            if not (2018 <= year <= 2040):
-                return False  # "5009-02-20"等表格数字错位噪声
-        if field_key == "quality_standard" and len(str(cand.value_raw)) > 28:
+        if field_key == "credit_code" and not V.is_valid_credit_code(v):
+            return False
+        if field_key == "legal_representative":
+            if "公司" in raw or len(raw) > 12 or raw.strip() in ("姓名", "名称", "本人"):
+                return False  # 法定代表人是人名，不是机构/列头/长句
+            if not re.fullmatch(r"[\u4e00-\u9fa5·]{2,4}", v.strip()):
+                return False  # 必须是 2-4 字中文人名
+        if field_key == "contact_phone" and not re.search(r"\d{3,}", v):
+            return False
+        if field_key == "bid_deadline" and not V.date_in_window(v):
+            return False  # "5009-02-20"等表格数字错位噪声
+        if field_key == "quality_standard" and len(raw) > 28:
             return False  # 质量标准应为短句，长段是条款噪声
-        if field_key in ("tenderer", "agency") and len(str(cand.value_raw)) > 30:
+        if field_key in ("tenderer", "agency") and len(raw) > 30:
             return False
         return True
+
+    @staticmethod
+    def _penalty(field_key: str, cand: FieldCandidate) -> float:
+        """软校验：合法但存疑的候选降置信度（不淘汰，保留进冲突列表）。"""
+        from bidmaster.extraction import validators as V
+        try:
+            fv = float(str(cand.value_normalized or ""))
+        except (ValueError, TypeError):
+            return 1.0
+        if field_key == "security_deposit":
+            lo, hi = V.AMOUNT_RANGE["deposit"]
+            if not V.amount_in_range(fv, lo, hi):
+                return 0.5  # "1"这类值多为其他数字列错位
+        if field_key == "price_limit":
+            lo, hi = V.AMOUNT_RANGE["amount"]
+            if not V.amount_in_range(fv, lo, hi):
+                return 0.5
+        return 1.0
 
     @staticmethod
     def _normalize(pack: RulePack, value: str):
@@ -297,6 +317,7 @@ class FieldExtractor:
     @staticmethod
     def _detect_conflicts(results: dict[str, FieldExtraction]) -> list[FieldConflict]:
         conflicts: list[FieldConflict] = []
+        from bidmaster.extraction import validators as V
         for f in results.values():
             distinct: dict[str, FieldCandidate] = {}
             for c in f.candidates:
@@ -305,11 +326,22 @@ class FieldExtractor:
                     distinct[k] = c
             if len(distinct) > 1:
                 chosen = max(distinct.values(), key=lambda c: c.confidence)
+                note = "多个来源取值不一致：已按置信度取值，请人工确认"
+                # 数值型冲突语义增强（多分标/多条款识别）
+                nums = []
+                for c in distinct.values():
+                    try:
+                        nums.append(float(c.value_normalized))
+                    except (ValueError, TypeError):
+                        pass
+                spread = V.numeric_spread_note(nums)
+                if spread:
+                    note = spread
                 conflicts.append(FieldConflict(
                     field_key=f.field_key, chosen=str(chosen.value_normalized),
                     alternatives=sorted(distinct.values(),
                                         key=lambda c: -c.confidence),
-                    note="多个来源取值不一致：已按置信度取值，请人工确认"))
+                    note=note))
         return conflicts
 
 

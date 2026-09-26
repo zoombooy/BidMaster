@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 from .document import DocQuality
 from .evidence import Evidence
 from .fields import FieldConflict, FieldExtraction
-from .scoring import RequirementItem, ScoreItem, ScoreSumCheck, StarClause
+from .scoring import RequirementItem, ScoreItem, ScoreSumCheck, StarClause, RejectionItem
 
 
 class SectionNode(BaseModel):
@@ -49,6 +49,7 @@ class TenderReport(BaseModel):
     scores: list[ScoreItem] = []
     requirements: list[RequirementItem] = []
     star_clauses: list[StarClause] = []
+    rejections: list[RejectionItem] = []
     sum_checks: list[ScoreSumCheck] = []
     issues: list[str] = []               # 机械校验/终检问题清单
     sections: list[SectionNode] = []     # 章节树（浅层输出：顶层+二级）

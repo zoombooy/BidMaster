@@ -59,6 +59,21 @@ TOOLS_SCHEMA: list[dict] = [
 ]
 
 
+def _resolve_local_path(p: str) -> Path:
+    """local_path 白名单校验：只允许工作目录与 BIDMASTER_ALLOWED_PATHS 配置的目录。
+
+    防任意文件读：拒绝 `..` 逃逸与符号链接逃逸（resolve 后必须落在白名单目录内）。
+    """
+    from bidmaster.config import get_settings
+    rp = Path(p).resolve()
+    allowed = [Path.cwd().resolve()]
+    allowed += [Path(x).resolve() for x in get_settings().allowed_paths]
+    if not any(rp.is_relative_to(a) for a in allowed):
+        raise ValueError(
+            f"路径不在白名单内: {p}（允许：工作目录及 BIDMASTER_ALLOWED_PATHS 配置的目录）")
+    return rp
+
+
 def _tool_analyze_tender(args: dict) -> str:
     from bidmaster.orchestration.pipeline import Pipeline
 
@@ -78,6 +93,8 @@ def _tool_analyze_tender(args: dict) -> str:
         else:
             raise ValueError("需要 local_path / file_url / file_base64 之一")
         local_path = str(target)
+    else:
+        local_path = str(_resolve_local_path(local_path))
 
     report = Pipeline(work_root=Path("work")).run(
         local_path, use_llm=bool(args.get("use_llm", True)))
@@ -97,6 +114,8 @@ def _tool_analyze_tender(args: dict) -> str:
                          "lot": (s.get("parsed_rule") or {}).get("lot", "")}
                         for s in (rd.get("scores") or [])],
         "requirements_count": len(rd.get("requirements") or []),
+        "rejection_risks": [{"category": r.get("category"), "text": r.get("text", "")[:80]}
+                            for r in (rd.get("rejections") or [])[:8]],
         "star_clauses": [st.get("text", "")[:60] for st in (rd.get("star_clauses") or [])][:5],
         "issues": rd.get("issues", []),
         "hint": f"完整报告请用 get_report(doc_id='{report.doc_id}') 获取",
