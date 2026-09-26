@@ -19,6 +19,8 @@ from bidmaster.orchestration.pipeline import Pipeline
 app = FastAPI(title="BidMaster 招标文件解析 Agent", version="0.1.0")
 pipeline = Pipeline(work_root=Path("work"))
 app.include_router(a2a_router)
+from bidmaster.mcp_server import router as mcp_router
+app.include_router(mcp_router)
 ALLOWED_EXT = {".docx", ".doc", ".pdf"}
 
 

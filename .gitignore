@@ -9,3 +9,8 @@ build/
 .env
 .pytest_tmp/
 evals/golden/sample_tender.docx
+work_*/
+work/
+deploy_pkg/
+uvicorn_local.log
+mock_llm.log
