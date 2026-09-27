@@ -51,11 +51,38 @@ TOOLS_SCHEMA: list[dict] = [
         },
     },
     {
-        "name": "get_report",
-        "description": "按 doc_id 获取完整招标文件解析报告（JSON）。",
+        "name": "list_lots",
+        "description": (
+            "列出招标文件的分标/标段清单（名称 + 各分标评分项数量）。"
+            "多分标招标建议先调用本工具，再用 get_report 的 lot 参数按分标查看，"
+            "避免不同分标的评分项混在一起。"),
         "inputSchema": {
             "type": "object",
-            "properties": {"doc_id": {"type": "string"}},
+            "properties": {
+                "local_path": {"type": "string", "description": "招标文件路径（未解析过时必填）"},
+                "doc_id": {"type": "string", "description": "已解析报告的 doc_id（与 local_path 二选一）"},
+            },
+        },
+    },
+    {
+        "name": "get_report",
+        "description": (
+            "按 doc_id 获取解析报告，支持过滤与分页：lot（按分标）、category"
+            "（technical/commercial/price）、section（fields/scores/requirements/"
+            "rejections/sum_checks/all）、page+page_size 分页。大报告务必用过滤，"
+            "避免一次取全量。"),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "doc_id": {"type": "string"},
+                "lot": {"type": "string", "description": "按分标/标段名过滤"},
+                "category": {"type": "string",
+                             "description": "technical | commercial | price"},
+                "section": {"type": "string",
+                            "description": "fields | scores | requirements | rejections | sum_checks | all（默认 summary：字段+统计+分值校验）"},
+                "page": {"type": "integer", "description": "页码，从 1 起"},
+                "page_size": {"type": "integer", "description": "每页条数，默认 50，上限 200"},
+            },
             "required": ["doc_id"],
         },
     },
@@ -122,10 +149,44 @@ def _tool_analyze_tender(args: dict) -> str:
                             for r in (rd.get("rejections") or [])[:8]],
         "star_clauses": [st.get("text", "")[:60] for st in (rd.get("star_clauses") or [])][:5],
         "issues": rd.get("issues", []),
-        "hint": f"完整报告请用 get_report(doc_id='{report.doc_id}') 获取",
+        "hint": (f"完整报告请用 get_report(doc_id='{report.doc_id}')；"
+                 f"多分标文件建议先用 list_lots 查看分标清单"),
     }
     import json
     return json.dumps(summary, ensure_ascii=False, indent=2)
+
+
+def _tool_list_lots(args: dict) -> str:
+    import json
+    from bidmaster.orchestration.pipeline import Pipeline
+    pipeline = Pipeline(work_root=Path("work"))
+    doc_id = args.get("doc_id")
+    if not doc_id:
+        report = pipeline.run(args["local_path"], use_llm=bool(args.get("use_llm", True)))
+        doc_id = report.doc_id
+    report = pipeline.load_report(doc_id)
+    if report is None:
+        raise ValueError(f"报告不存在: {doc_id}")
+    lots: dict[str, dict] = {}
+    for s in report.scores:
+        lot = (s.parsed_rule or {}).get("lot") or "-"
+        entry = lots.setdefault(lot, {"lot": lot, "score_items": 0,
+                                      "total_score": 0.0,
+                                      "categories": set()})
+        entry["score_items"] += 1
+        entry["total_score"] = round(entry["total_score"] + s.max_score, 2)
+        entry["categories"].add(s.category)
+    for e in lots.values():
+        e["categories"] = sorted(e["categories"])
+    result = {"doc_id": doc_id, "lot_count": len(lots),
+              "lots": sorted(lots.values(), key=lambda x: x["lot"])}
+    if len(lots) > 1:
+        result["hint"] = "多分标文件：请用 get_report(doc_id, lot='分标名') 按分标查看，避免混淆"
+    return json.dumps(result, ensure_ascii=False, indent=2)
+
+
+_SECTIONS = ("fields", "scores", "requirements", "rejections",
+             "star_clauses", "sum_checks", "evidence")
 
 
 def _tool_get_report(args: dict) -> str:
@@ -134,10 +195,57 @@ def _tool_get_report(args: dict) -> str:
     report = Pipeline(work_root=Path("work")).load_report(args["doc_id"])
     if report is None:
         raise ValueError(f"报告不存在: {args['doc_id']}")
-    return json.dumps(report.model_dump(mode="json"), ensure_ascii=False)
+    rd = report.model_dump(mode="json")
+    section = args.get("section", "summary")
+    lot = args.get("lot")
+    category = args.get("category")
+    page = max(int(args.get("page", 1)), 1)
+    page_size = min(max(int(args.get("page_size", 50)), 1), 200)
+
+    def _match_lot(item: dict) -> bool:
+        return not lot or (item.get("parsed_rule") or {}).get("lot", "-") == lot
+
+    def _match_cat(item: dict, key: str = "category") -> bool:
+        return not category or item.get(key) == category
+
+    out: dict = {"doc_id": rd["doc_id"], "file_name": rd["file_name"],
+                 "filters": {"lot": lot, "category": category,
+                             "section": section, "page": page,
+                             "page_size": page_size},
+                 "stats": rd.get("stats", {})}
+    if section == "full":  # 兼容旧调用：全量
+        return json.dumps(rd, ensure_ascii=False)
+    if section in ("summary", "fields", "all"):
+        out["fields"] = rd.get("fields", {})
+    if section in ("summary", "scores", "all"):
+        scores = [s for s in rd.get("scores", [])
+                  if _match_lot(s) and _match_cat(s)]
+        out["scores_total"] = len(scores)
+        out["scores"] = scores[(page - 1) * page_size: page * page_size]
+        if lot is None and category is None \
+                and len({_lot_of(s) for s in scores}) > 1:
+            out["hint"] = "检测到多个分标：建议用 list_lots 列出分标后按 lot 过滤查看"
+    if section in ("summary", "requirements", "all"):
+        reqs = [r for r in rd.get("requirements", []) if _match_lot(r)]
+        out["requirements_total"] = len(reqs)
+        out["requirements"] = reqs[(page - 1) * page_size: page * page_size]
+    if section in ("rejections", "all"):
+        out["rejections"] = rd.get("rejections", [])
+    if section in ("sum_checks", "all"):
+        out["sum_checks"] = rd.get("sum_checks", [])
+    if section in ("summary", "all") and lot is None and category is None:
+        out["star_clauses"] = rd.get("star_clauses", [])[:10]
+        out["issues"] = rd.get("issues", [])
+        out["conflicts"] = rd.get("conflicts", [])[:10]
+    if section in ("evidence", "all"):
+        ev = rd.get("evidence", [])
+        out["evidence_total"] = len(ev)
+        out["evidence"] = ev[(page - 1) * page_size: page * page_size]
+    return json.dumps(out, ensure_ascii=False)
 
 
-_HANDLERS = {"analyze_tender": _tool_analyze_tender, "get_report": _tool_get_report}
+_HANDLERS = {"analyze_tender": _tool_analyze_tender, "get_report": _tool_get_report,
+             "list_lots": _tool_list_lots}
 
 
 def _rpc_result(rpc_id: Any, result: dict) -> dict:

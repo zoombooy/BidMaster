@@ -232,14 +232,15 @@ class FieldExtractor:
             hit = rule_hit(pack, b.text)
             if not hit:
                 continue
-            raw, norm_value, _span = hit  # norm_value 恒为标量
+            raw, norm_value, _span, pat_conf = hit  # norm_value 恒为标量；pat_conf 模式层置信度
+            final_conf = round(confidence * pat_conf, 2)
             ev = self.store.add(make_evidence(
                 kind="block", source="rules", page_no=b.page_no, bbox=b.bbox,
                 char_start=b.char_start, char_end=b.char_end,
                 block_id=b.block_id, snippet=b.text[:200]))
             out.append(FieldCandidate(
                 value_raw=raw, value_normalized=str(norm_value), source="rules",
-                confidence=confidence, evidence_id=ev.evidence_id, zone=zone))
+                confidence=final_conf, evidence_id=ev.evidence_id, zone=zone))
         return out
 
     # ---------- 工具 ----------
