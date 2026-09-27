@@ -22,19 +22,20 @@ class RulePack:
     patterns: list[re.Pattern] = dc_field(default_factory=list)
     normalizer: str = NORM_TEXT
     preferred_zones: list[str] = dc_field(default_factory=list)  # 锚区偏好
+    ocr_space_fix: bool = False  # OCR 文本字母/数字间空格修复（匹配前对文本生效）
 
 
 def _c(label: str, value_head: str = r"([^，。;；\n]{2,60}?)", value_tail: str = "") -> re.Pattern:
-    """构造 `标签：值` 形态的正则。
-
-    文本路径强制要求冒号（消灭"按招标编号顺序核定"这类裸词噪声）；
-    表格 summary 行（label 与值以 \t 相邻）单独允许；值锚定到行内终止符，
-    遇 地址/联系人/电话 等下一个标签时截断。
-    """
+    """构造 `标签：值` 形态的正则，支持三种形态：
+    1) 行内 `标签：值`（冒号必需，消灭裸词噪声）
+    2) 表格 summary 行 `label\\t值`
+    3) 跨行 `标签\\n值`（OCR/表格解析后标签与值常被切分到相邻块）
+    值锚定到行内终止符与下一标签（地址/联系人/电话等）。"""
     tail = value_tail or r"(?=[，。;；\n]|地址|联系人|电话|邮编|传真|邮箱|备注|$)"
     return re.compile(
-        rf"(?:{label})\s*[：:]\s*{value_head}{tail}"
-        rf"|(?:^|\t)(?:{label})\t\s*{value_head}{tail}",
+        rf"(?:{label})\s*(?:[：:]|为|是)\s*{value_head}{tail}"
+        rf"|(?:^|\t)(?:{label})\t\s*{value_head}{tail}"
+        rf"|(?:^|\n)(?:{label})\s*：?\s*\n\s*{value_head}{tail}",
         re.M)
 
 
@@ -59,7 +60,7 @@ FIELD_RULES: dict[str, RulePack] = {
         preferred_zones=["notice", "instructions_front", "instructions"],
     ),
     "tender_no": RulePack(
-        field_key="tender_no",
+        field_key="tender_no", ocr_space_fix=True,
         patterns=[_c(r"招标编号|项目编号|标段编号|采购编号|招标文件编号|招标项目编号",
                      value_head=r"([A-Za-z0-9\-—－_()（）\.、/]{4,60}?)")],
         preferred_zones=["notice", "instructions_front"],
@@ -113,7 +114,7 @@ FIELD_RULES: dict[str, RulePack] = {
         preferred_zones=["instructions_front", "instructions", "notice"],
     ),
     "bid_deadline": RulePack(
-        field_key="bid_deadline",
+        field_key="bid_deadline", ocr_space_fix=True,
         # 仅认明确的投标/递交/开标前缀（裸日期兜底会误抓 DL5009.2-2013 标准编号、竣工时间等）
         patterns=[re.compile(
             r"(?:投标文件递交的?截止时间|递交投标文件截止时间|投标截止时间|开标时间)[^\d二〇]{0,6}"
@@ -122,8 +123,8 @@ FIELD_RULES: dict[str, RulePack] = {
         preferred_zones=["instructions_front", "notice", "instructions"],
     ),
     "bid_validity": RulePack(
-        field_key="bid_validity",
-        patterns=[re.compile(r"投标有效期[^\d]{0,15}(\d{1,3})\s*(日历天|历天|工作日|天|日)", re.M)],
+        field_key="bid_validity", ocr_space_fix=True,
+        patterns=[re.compile(r"投标有效期[^\d]{0,15}(\d{1,3}\s*(?:日历天|历天|工作日|天|日))", re.M)],
         normalizer=NORM_DURATION,
         preferred_zones=["instructions_front", "instructions"],
     ),
@@ -166,7 +167,7 @@ FIELD_RULES: dict[str, RulePack] = {
     ),
     # ---------- 二期扩展字段（对标易标 18 项 / tender-extract 40 字段） ----------
     "credit_code": RulePack(
-        field_key="credit_code",
+        field_key="credit_code", ocr_space_fix=True,
         patterns=[_c(r"统一社会信用代码",
                      value_head=r"([0-9A-HJ-NPQRTUWXY]{18})")],
         preferred_zones=["notice", "instructions_front", "qualification"],
@@ -294,11 +295,29 @@ def _apply_normalizer(kind: str, value: str):
     return value.strip(), value.strip()
 
 
+_NBSP = chr(160)
+_OCR_SPACE = re.compile(r"(\d)[  ]+(\d)|(?<=[A-Za-z0-9\-])[  ]+(?=[A-Za-z0-9\-])")
+
+
+_OCR_SPACE_SUB = "\\1\\2"  # re.sub 分组引用
+
+
+def _squeeze_ocr_spaces(text: str) -> str:
+    """合并 OCR 在字母/数字之间插入的空格：'S C A N - 2 0 2 6'→'SCAN-2026'，'1 2月'→'12月'。"""
+    prev = None
+    while prev != text:
+        prev = text
+        text = _OCR_SPACE.sub(_OCR_SPACE_SUB, text)
+    return text
+
+
 def rule_hit(pack: RulePack, text: str):
     """对一段文本执行规则包 → (raw_value, normalized, span) | None。
 
     normalized 恒为标量：amount→float(元)、datetime→ISO str、duration→'540日历天'、text→str。
     """
+    if pack.ocr_space_fix:
+        text = _squeeze_ocr_spaces(text)
     for pat in pack.patterns:
         m = pat.search(text)
         if not m or m.group(1) is None:  # 无捕获组/未命中的模式跳过

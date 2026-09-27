@@ -19,8 +19,17 @@ class Settings:
     llm_model: str = field(default_factory=lambda: os.getenv("BIDMASTER_LLM_MODEL", ""))
     llm_timeout: float = field(default_factory=lambda: float(os.getenv("BIDMASTER_LLM_TIMEOUT", "60")))
 
-    # OCR 兜底通道（扫描件）：mineru | paddle | 空=不启用（扫描页记 FAILED_REVIEW）
+    # OCR 兜底通道（扫描件）：mineru（在线 API）| mineru-local（本机 CLI）| paddle | 空=转人工
     ocr_backend: str = field(default_factory=lambda: os.getenv("BIDMASTER_OCR_BACKEND", ""))
+
+    # 在线 MinerU API（https://mineru.net/api/v4）
+    mineru_api_key: str = field(default_factory=lambda: os.getenv("BIDMASTER_MINERU_API_KEY", ""))
+    mineru_endpoint: str = field(default_factory=lambda: os.getenv(
+        "BIDMASTER_MINERU_ENDPOINT", "https://mineru.net/api/v4"))
+    mineru_poll_interval: float = field(default_factory=lambda: float(
+        os.getenv("BIDMASTER_MINERU_POLL_INTERVAL", "10")))
+    mineru_poll_timeout: float = field(default_factory=lambda: float(
+        os.getenv("BIDMASTER_MINERU_TIMEOUT", "900")))
 
     # PDF 文本层判定阈值：平均每页有效字符数低于该值视为扫描件
     pdf_text_min_chars_per_page: int = field(
