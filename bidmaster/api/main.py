@@ -31,6 +31,9 @@ def healthz():
             "ocr_backend": s.ocr_backend or "未配置"}
 
 
+MAX_UPLOAD_BYTES = 200 * 1024 * 1024  # 200MB
+
+
 @app.post("/api/analyze")
 async def analyze(file: UploadFile = File(...)):
     ext = Path(file.filename or "").suffix.lower()
@@ -38,8 +41,20 @@ async def analyze(file: UploadFile = File(...)):
         raise HTTPException(400, f"不支持的文件类型 {ext}；支持 {sorted(ALLOWED_EXT)}")
     tmp = Path("work/_uploads")
     tmp.mkdir(parents=True, exist_ok=True)
-    save_path = tmp / (file.filename or "upload.docx")
-    save_path.write_bytes(await file.read())
+    # 安全：服务端生成文件名杜绝路径穿越；分块写入限大小；魔数校验防伪装扩展名
+    save_path = tmp / f"{__import__('uuid').uuid4().hex}{ext}"
+    size = 0
+    with save_path.open("wb") as out:
+        while chunk := await file.read(1 << 20):
+            size += len(chunk)
+            if size > MAX_UPLOAD_BYTES:
+                out.close()
+                save_path.unlink(missing_ok=True)
+                raise HTTPException(413, f"文件超过大小上限 {MAX_UPLOAD_BYTES // (1 << 20)}MB")
+            out.write(chunk)
+    if ext == ".docx" and save_path.read_bytes()[:4] == b"\xd0\xcf\x11\xe0":
+        save_path.unlink(missing_ok=True)
+        raise HTTPException(400, "文件内容是老式 .doc（仅改了扩展名），请用 Word 另存为 .docx 后重新上传")
     try:
         report = pipeline.run(str(save_path))
     except NotImplementedError as e:
@@ -66,7 +81,8 @@ def evidence_page_png(doc_id: str, evidence_id: str):
     ev = next((e for e in report.evidence if e.evidence_id == evidence_id), None)
     if ev is None or ev.page_no <= 0:
         raise HTTPException(404, "证据不存在或无页码（docx 链路无页码，请转 PDF）")
-    src = next(Path("work", doc_id).glob("source.*"), None)
+    src = next(Path("work", doc_id).glob("source_*.*"), None) or \
+        next(Path("work", doc_id).glob("source.*"), None)
     if src is None:
         raise HTTPException(404, "源文件不存在")
     import fitz

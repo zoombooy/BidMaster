@@ -44,7 +44,9 @@ def extract_input_file(parts: list[Part]) -> tuple[Path | None, str | None]:
                 return path, None
             if part.file.uri:
                 try:
-                    resp = httpx.get(part.file.uri, timeout=60, follow_redirects=True)
+                    from bidmaster.security import validate_public_url
+                    safe_uri = validate_public_url(part.file.uri)  # 防 SSRF
+                    resp = httpx.get(safe_uri, timeout=60, follow_redirects=True)
                     resp.raise_for_status()
                     path.write_bytes(resp.content)
                 except Exception as e:  # noqa: BLE001

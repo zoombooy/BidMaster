@@ -117,7 +117,9 @@ def _tool_analyze_tender(args: dict) -> str:
             target.write_bytes(base64.b64decode(args["file_base64"]))
         elif args.get("file_url"):
             import httpx
-            resp = httpx.get(args["file_url"], timeout=120, follow_redirects=True)
+            from bidmaster.security import validate_public_url
+            safe_url = validate_public_url(args["file_url"])  # 防 SSRF：拦截内网/元数据地址
+            resp = httpx.get(safe_url, timeout=120, follow_redirects=True)
             resp.raise_for_status()
             target.write_bytes(resp.content)
         else:

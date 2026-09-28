@@ -50,8 +50,8 @@ def extract_zip(zip_path: Path, out_dir: Path, depth: int = 0,
             if info.file_size > MAX_ENTRY_SIZE:
                 continue
             target = out_dir / Path(name).name if depth > 0 else out_dir / name
-            # 路径穿越防护
-            if not str(target.resolve()).startswith(str(out_dir.resolve())):
+            # 路径穿越防护：规范化后的严格父子关系判断（非字符串前缀）
+            if not target.resolve().is_relative_to(out_dir.resolve()):
                 continue
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(z.read(info))

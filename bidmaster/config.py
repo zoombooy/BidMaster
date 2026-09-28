@@ -43,6 +43,12 @@ class Settings:
     allowed_paths: list[str] = field(default_factory=lambda: [
         p for p in os.getenv("BIDMASTER_ALLOWED_PATHS", "").split(os.pathsep) if p.strip()])
 
+    # URL 防 SSRF：是否对域名做 DNS 解析级私网校验。默认开启；
+    # fake-IP 代理环境（如 Clash TUN，所有域名解析到 198.18.0.0/15）可设 0 关闭，
+    # 字面量内网 IP / localhost / 云元数据地址仍始终拦截。
+    url_strict_dns: bool = field(default_factory=lambda: os.getenv(
+        "BIDMASTER_URL_STRICT_DNS", "1") not in ("0", "false", "False"))
+
     @property
     def llm_enabled(self) -> bool:
         return bool(self.llm_base_url and self.llm_model)

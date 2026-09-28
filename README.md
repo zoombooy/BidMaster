@@ -8,7 +8,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://www.python.org/)
-[![Tests](https://img.shields.io/badge/Tests-79%20passing-brightgreen.svg)](#本地验证)
+[![Tests](https://img.shields.io/badge/Tests-89%20passing-brightgreen.svg)](#本地验证)
 [![A2A](https://img.shields.io/badge/Protocol-A2A%20%7C%20MCP-orange.svg)](#-作为-agent-接入)
 
 </div>
