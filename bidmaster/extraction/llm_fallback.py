@@ -65,6 +65,12 @@ def llm_fill_missing(parsed: ParsedDocument, zones: list[AnchorZone],
             f = results[key]
             f.note = "LLM 返回值归一化失败（无法解析为该字段要求的格式），已拒绝采纳"
             continue
+        # 类型化清洗：LLM 候选与规则候选同一纪律（引用语/格式不符淘汰）
+        from bidmaster.extraction import field_types as FT
+        if FT.clean_candidate(key, value) is None:
+            f = results[key]
+            f.note = "LLM 返回值未通过字段类型清洗（引用语/格式不符），已拒绝采纳"
+            continue
         ev = store.add(make_evidence(
             kind="llm_quote", source="llm", char_start=pos,
             char_end=pos + len(quote), snippet=quote[:200]))

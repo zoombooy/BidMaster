@@ -8,6 +8,7 @@ from __future__ import annotations
 import bisect
 import re
 
+from bidmaster.extraction import field_types as FT
 from bidmaster.extraction.llm_fallback import llm_fill_missing
 from bidmaster.extraction.rules import (FIELD_RULES, NORM_AMOUNT, NORM_DATETIME,
                                         NORM_DURATION, RulePack, _TABLE_LABELS, rule_hit)
@@ -136,18 +137,25 @@ class FieldExtractor:
         if not candidates:
             return out  # not_found
 
-        out.candidates = candidates
-        # 字段专属守卫
-        candidates = [c for c in candidates if self._guard(field_key, c)]
-        if not candidates:
-            out.note = "候选值均未通过字段格式守卫"
+        # 类型化清洗（候选生成即淘汰不合格形态：引用语/占位词/列头回声/格式不符）
+        cleaned: list[FieldCandidate] = []
+        for c in candidates:
+            v = FT.clean_candidate(field_key, str(c.value_raw or c.value_normalized or ""))
+            if v is None:
+                continue
+            c.value_normalized = str(self._normalize(pack, v)[1]) \
+                if self._normalize(pack, v) else c.value_normalized
+            cleaned.append(c)
+        out.candidates = cleaned
+        if not cleaned:
+            out.note = "候选值均未通过类型化清洗（格式不符/占位引用/列头回声）"
             return out
-        # 引用型值（"见招标公告/见前附表"）让位于具体值；只剩引用时保留引用
-        specific = [c for c in candidates
-                    if not _IS_REFERENCE.match(str(c.value_raw or ""))]
-        if specific:
-            candidates = specific
-        best = max(candidates, key=lambda c: c.confidence * self._penalty(field_key, c))
+
+        # 类型化合并（金额/日期等按合理区间逐候选筛选，全不合格则 not_found）
+        best = FT.merge_candidates(field_key, cleaned)
+        if best is None:
+            out.note = "候选值均未通过该字段类型的合并校验（如金额超出合理区间）"
+            return out
         out.value_raw = best.value_raw
         out.value_normalized = best.value_normalized
         out.value_unit = self._unit_of(pack.normalizer, best.value_normalized)
@@ -177,6 +185,9 @@ class FieldExtractor:
                     # 金额单位换算：标签含"万元"（如保证金一览表列头）→ 值按万元
                     if pack.normalizer == NORM_AMOUNT and "万元" in cell:
                         value = f"{value}万元"
+                    # 类型化清洗：表格路径同样淘汰占位引用/列头回声/格式不符
+                    if FT.clean_candidate(pack.field_key, value) is None:
+                        continue
                     norm = self._normalize(pack, value)
                     if norm is None:
                         continue

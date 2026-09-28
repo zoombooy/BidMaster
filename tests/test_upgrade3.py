@@ -117,3 +117,47 @@ class TestGetReportFilter:
                                      "doc_id": "docF", "section": "rejections"}}}).json()
         data = json.loads(r["result"]["content"][0]["text"])
         assert data["rejections"][0]["rej_id"] == "RJ-001"
+
+
+class TestTypedCleaning:
+    """三类实战噪声用例（对照 tender-extract 清洗器/合并器架构的回归）。"""
+
+    def _extract(self, key, text, zone=None):
+        from bidmaster.schemas.document import Block, ParsedDocument
+        from bidmaster.schemas.evidence import EvidenceStore
+        from bidmaster.schemas.report import AnchorZone
+        blocks = [Block(block_id="b-1", text=text)]
+        parsed = ParsedDocument(doc_id="t", file_name="t", file_type="docx",
+                                blocks=blocks, full_text=text)
+        zones = [AnchorZone(zone=zone, block_start=0, block_end=1)] if zone else []
+        ex = FieldExtractor(parsed, zones, EvidenceStore(doc_id="t"), None)
+        return ex.extract_one(key)
+
+    from bidmaster.extraction.fields import FieldExtractor
+
+    def test_deposit_number_rejected(self):
+        """保证金收到非金额文本（勾选框说明）→ not_found。"""
+        f = self._extract("security_deposit",
+                          "投标保证金 → □本项目免收投标保证金，招标文件中保证金的相关要求均不适用。"
+                          "☑本次招标要求投标人递交投标保证金，投标保")
+        assert f.status != "found"
+
+    def test_legal_rep_columnheader_rejected(self):
+        """法定代表人收到列头"姓名" → not_found。"""
+        f = self._extract("legal_representative", "姓名")
+        assert f.status != "found"
+
+    def test_credit_code_reference_rejected(self):
+        """信用代码收到引用语"见招标公告" → not_found。"""
+        f = self._extract("credit_code", "统一社会信用代码：见招标公告")
+        assert f.status != "found"
+
+    def test_reference_ok_for_org(self):
+        """招标人字段引用语放行（"见招标公告"是合法的待查引用）。"""
+        f = self._extract("tenderer", "招标人：见招标公告")
+        assert f.status == "found"
+
+    def test_deposit_real_value_still_works(self):
+        """真金额仍正常：伍拾万元 → 500000。"""
+        f = self._extract("security_deposit", "投标保证金：人民币伍拾万元整")
+        assert f.status == "found" and f.value_normalized == "500000"
