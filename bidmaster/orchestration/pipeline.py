@@ -184,6 +184,24 @@ class Pipeline:
                 if not t.source_file:
                     t.source_file = fname
         parsed.sha256 = meta.get("sha256", "")
+
+        # DOCX 页码锚定：有 LibreOffice 时转 PDF 并回写块页码（证据定位用）
+        if parsed.file_type == "docx":
+            try:
+                from bidmaster.parser.page_anchor import anchor_blocks, docx_to_pdf
+                for fi, fp in enumerate(file_paths):
+                    if Path(fp).suffix.lower() != ".docx":
+                        continue
+                    pdf_path = docx_to_pdf(fp, ws / "_pdf")
+                    if not pdf_path:
+                        continue
+                    doc_blocks = [b for b in parsed.blocks
+                                  if b.source_file == Path(fp).name]
+                    n = anchor_blocks(doc_blocks, pdf_path)
+                    if n:
+                        print(f"[页码锚定] {Path(fp).name}: {n} 块已定位页码")
+            except Exception:  # noqa: BLE001  页码锚定失败不影响主链
+                pass
         write_json(ws / "ledger.json",
                    {**ledger.model_dump(mode="json"), "summary": ledger.summary()})
         write_json(f, parsed.model_dump(mode="json"))
