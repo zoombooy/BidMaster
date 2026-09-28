@@ -126,8 +126,17 @@ def _tool_analyze_tender(args: dict) -> str:
     else:
         local_path = str(_resolve_local_path(local_path))
 
+    # 目录 → 收集其中全部可解析文档，批量解析（一次传多个附件的场景）
+    run_paths: list[str] | str = local_path
+    if Path(local_path).is_dir():
+        from bidmaster.ingestion.archive import collect_documents
+        docs = collect_documents([Path(local_path)])
+        if not docs:
+            raise ValueError(f"目录中无可解析文档（支持 docx/pdf/xlsx/zip）: {local_path}")
+        run_paths = [str(p) for p in docs]
+
     report = Pipeline(work_root=Path("work")).run(
-        local_path, use_llm=bool(args.get("use_llm", True)),
+        run_paths, use_llm=bool(args.get("use_llm", True)),
         force=bool(args.get("force", False)))
     # 管线内存态返回 pydantic 对象（磁盘缓存态为 dict）——统一序列化
     rd = report.model_dump(mode="json")
