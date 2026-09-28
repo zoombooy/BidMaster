@@ -16,7 +16,7 @@ def sha256_of(path: Path) -> str:
     return h.hexdigest()
 
 
-def probe_pdf_text_layer(path: Path) -> tuple[bool, int, list[int]]:
+def probe_pdf_text_layer(path: Path) -> tuple[bool, int, list[int], list[int]]:
     """探测 PDF 是否有可用文本层。
 
     返回 (has_text_layer, total_pages, empty_pages)。判定标准：平均每页有效字符数
@@ -35,7 +35,8 @@ def probe_pdf_text_layer(path: Path) -> tuple[bool, int, list[int]]:
     non_empty = [c for c in char_counts if c > 0]
     avg = (sum(non_empty) / len(non_empty)) if non_empty else 0
     empty_pages = [i + 1 for i, c in enumerate(char_counts) if c == 0]
-    return (avg >= settings.pdf_text_min_chars_per_page), total, empty_pages
+    low_text = [i+1 for i,c in enumerate(char_counts) if 0 < c < settings.pdf_text_min_chars_per_page]
+    return (avg >= settings.pdf_text_min_chars_per_page), total, empty_pages, low_text
 
 
 def detect_type(path: Path) -> tuple[str, dict]:
@@ -61,8 +62,8 @@ def detect_type(path: Path) -> tuple[str, dict]:
     if ext == ".zip":
         return "zip", probe
     if ext == ".pdf":
-        has_text, pages, empty = probe_pdf_text_layer(path)
-        probe = {"pages": pages, "empty_pages": empty, "has_text_layer": has_text}
+        has_text, pages, empty, low_text = probe_pdf_text_layer(path)
+        probe = {"pages": pages, "empty_pages": empty, "low_text_pages": low_text, "has_text_layer": has_text}
         return ("pdf_text" if has_text else "pdf_scan"), probe
     if ext in (".png", ".jpg", ".jpeg", ".tif", ".tiff", ".bmp"):
         return "pdf_scan", probe  # 图片走 OCR 链路（同扫描件）

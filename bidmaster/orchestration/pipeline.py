@@ -298,6 +298,7 @@ class Pipeline:
             "sections": [s.model_dump(mode="json") for s in flatten(tops, max_level=3)],
             "zones": [z.model_dump(mode="json") for z in zones],
             "chunk_count": len(chunks),
+            "chunks": [c.__dict__ for c in chunks],
         }
         write_json(f, data)
         return data

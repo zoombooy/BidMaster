@@ -43,6 +43,7 @@ class TableModel(BaseModel):
     table_id: str
     source_file: str = ""   # 来源文件名（多文件合并时标注）
     page_nos: list[int] = []  # 跨页合并后可能包含多个页码
+    row_pages: list[int] = []  # 每行来源页码
     rows: list[list[str]] = []  # 逻辑展开后的单元格文本（合并单元格已填充）
     header_rows: int = 1
     caption: str = ""

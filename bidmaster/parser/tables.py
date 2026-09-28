@@ -43,6 +43,7 @@ def merge_cross_page_tables(tables: list[TableModel]) -> list[TableModel]:
             and (_looks_truncated_bottom(prev.rows) or _first_row_incomplete(tb.rows))
         ):
             prev.rows.extend(tb.rows)
+            prev.row_pages.extend(tb.row_pages or tb.page_nos * len(tb.rows))
             prev.page_nos.extend(tb.page_nos)
             if tb.cell_bboxes:
                 prev.cell_bboxes.extend(tb.cell_bboxes)

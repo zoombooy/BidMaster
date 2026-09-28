@@ -119,7 +119,7 @@ def _tool_analyze_tender(args: dict) -> str:
             import httpx
             from bidmaster.security import validate_public_url
             safe_url = validate_public_url(args["file_url"])  # 防 SSRF：拦截内网/元数据地址
-            resp = httpx.get(safe_url, timeout=120, follow_redirects=True)
+            resp = httpx.get(safe_url, timeout=120, follow_redirects=False)
             resp.raise_for_status()
             target.write_bytes(resp.content)
         else:
