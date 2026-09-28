@@ -42,10 +42,17 @@ def detect_type(path: Path) -> tuple[str, dict]:
     """识别文件类型并返回 (routed_type, probe_info)。
 
     routed_type ∈ docx | doc | pdf_text | pdf_scan | xlsx | zip | unsupported
+    类型判定基于文件魔数而非扩展名——"改后缀的假 docx"（OLE2 内容）会被识破。
     """
     ext = path.suffix.lower()
     probe: dict = {}
+    with open(path, "rb") as fh:
+        magic = fh.read(8)
+    is_ole2 = magic[:4] == bytes([0xD0, 0xCF, 0x11, 0xE0])   # OLE2 = 老式 .doc 家族
     if ext == ".docx":
+        if is_ole2:
+            probe["note"] = "扩展名为 .docx 但内容是老式 .doc（仅改了扩展名，未真正转换）"
+            return "doc", probe
         return "docx", probe
     if ext == ".doc":
         return "doc", probe

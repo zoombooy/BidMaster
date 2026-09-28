@@ -161,8 +161,9 @@ class Pipeline:
                                       empty_pages=probe.get("empty_pages"))
             except NotImplementedError as e:
                 # .doc 等需预转换格式：记账本转人工，不阻塞整包
+                hint = "请用 Word/WPS 打开该文件，【另存为】.docx（直接改扩展名无效）后重新解析"
                 ledger.register(f"file:{i}", "file")
-                ledger.fail(f"file:{i}", str(e))
+                ledger.fail(f"file:{i}", f"{e}；{hint}")
                 continue
             except ValueError as e:
                 ledger.register(f"file:{i}", "file")
