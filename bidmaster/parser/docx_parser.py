@@ -37,16 +37,19 @@ def _heading_level_from_outline(paragraph) -> int:
 
 
 def _extract_table(tbl, table_id: str, page_no: int = 0) -> TableModel:
-    """提取表格：横向合并单元格（python-docx 返回重复单元格）做连续去重；
+    """提取表格：按 tc 元素身份去重（python-docx 对合并单元格返回同一 tc 的重复引用，
+    用身份判断而非文本判断，避免误删真实存在的同文本相邻列）；
     纵向合并不做向下填充（避免污染评分表首列），类别继承交给评分解析层。"""
     rows: list[list[str]] = []
     for row in tbl.rows:
         cells: list[str] = []
+        prev_tc = None
         for cell in row.cells:
-            text = cell.text.strip().replace("\n", " ")
-            if cells and cells[-1] == text:  # 横向合并 → 连续重复去重
+            tc = cell._tc
+            if tc is prev_tc:  # 横向合并 → 同一 XML 元素重复出现
                 continue
-            cells.append(text)
+            prev_tc = tc
+            cells.append(cell.text.strip().replace("\n", " "))
         rows.append(cells)
     ncols = max((len(r) for r in rows), default=0)
     for r in rows:
@@ -83,6 +86,10 @@ def parse_docx(path: str, doc_id: str, ledger: ProcessingLedger | None = None) -
     body = document.element.body
     from docx.table import Table as DocxTable
     from docx.text.paragraph import Paragraph as DocxParagraph
+
+    # 按文档流顺序遍历正文元素（段落与表格交错）
+    # 注：页眉页脚不提取——经真实文件审计，其中只有分页页码（参考 tender-extract、
+    # dsh-bidding 同样不提取，页码进内容层会污染文本）。如未来发现实质内容再评估。
 
     for child in body.iterchildren():
         tag = child.tag.rsplit("}", 1)[-1]
