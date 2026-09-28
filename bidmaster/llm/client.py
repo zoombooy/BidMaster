@@ -52,11 +52,15 @@ class LLMClient:
         print(f"[llm] 调用失败: {last_err}")
         return None
 
-    def chat_json(self, system: str, user: str, **kw) -> dict | list | None:
-        content = self.chat(system, user, json_mode=True, **kw)
-        if not content:
-            return None
-        return parse_json_loose(content)
+    def chat_json(self, system: str, user: str, max_tokens: int = 2000, **kw) -> dict | list | None:
+        """结构化输出：解析失败或疑似截断时，加大 max_tokens 重试一次（BidPilot 模式）。"""
+        content = self.chat(system, user, json_mode=True, max_tokens=max_tokens, **kw)
+        data = parse_json_loose(content) if content else None
+        if data is None:
+            content = self.chat(system, user, json_mode=True,
+                                max_tokens=max_tokens * 2, **kw)
+            data = parse_json_loose(content) if content else None
+        return data
 
 
 def parse_json_loose(content: str):

@@ -1,0 +1,146 @@
+[
+ {
+  "perf": "P1",
+  "crit": "K1",
+  "ideal": "match",
+  "keyword": "match",
+  "qwen": "match",
+  "qwen_reason": "企业业绩为±800kV换流站土建施工工程，属于±800kV换流站土建A包范畴，且竣工时间为2024年"
+ },
+ {
+  "perf": "P1",
+  "crit": "K2",
+  "ideal": "uncertain",
+  "keyword": "no_match",
+  "qwen": "match",
+  "qwen_reason": "该业绩为同类房屋建筑工程（换流站土建施工属于房屋建筑工程范畴），合同金额12000万元≥5000万元"
+ },
+ {
+  "perf": "P1",
+  "crit": "K3",
+  "ideal": "no_match",
+  "keyword": "no_match",
+  "qwen": "no_match",
+  "qwen_reason": "企业业绩为±800kV换流站土建施工工程，非1000kV变电站工程，且为施工而非监理业绩，不满足评分"
+ },
+ {
+  "perf": "P2",
+  "crit": "K1",
+  "ideal": "no_match",
+  "keyword": "no_match",
+  "qwen": "no_match",
+  "qwen_reason": "企业业绩为1000kV变电站电气安装工程，与评分口径要求的±800kV换流站土建A包在电压等级（10"
+ },
+ {
+  "perf": "P2",
+  "crit": "K2",
+  "ideal": "uncertain",
+  "keyword": "no_match",
+  "qwen": "no_match",
+  "qwen_reason": "该业绩为变电站电气安装工程，不属于房屋建筑工程类别，与招标要求的‘同类房屋建筑工程’不符。"
+ },
+ {
+  "perf": "P2",
+  "crit": "K3",
+  "ideal": "no_match",
+  "keyword": "match",
+  "qwen": "uncertain",
+  "qwen_reason": "业绩描述为'电气安装工程'，未明确是否属于监理业绩，无法确认是否满足监理业绩要求。"
+ },
+ {
+  "perf": "P3",
+  "crit": "K1",
+  "ideal": "no_match",
+  "keyword": "no_match",
+  "qwen": "no_match",
+  "qwen_reason": "企业业绩为500kV变电站，非±800kV换流站，且未明确为土建A包，不满足评分口径要求。"
+ },
+ {
+  "perf": "P3",
+  "crit": "K2",
+  "ideal": "no_match",
+  "keyword": "no_match",
+  "qwen": "no_match",
+  "qwen_reason": "业绩为变电站新建工程，属于电力工程，不属于同类房屋建筑工程。"
+ },
+ {
+  "perf": "P3",
+  "crit": "K3",
+  "ideal": "no_match",
+  "keyword": "no_match",
+  "qwen": "no_match",
+  "qwen_reason": "企业业绩为500kV变电站工程，不满足评分口径要求的1000kV变电站工程监理业绩。"
+ },
+ {
+  "perf": "P4",
+  "crit": "K1",
+  "ideal": "uncertain",
+  "keyword": "no_match",
+  "qwen": "uncertain",
+  "qwen_reason": "企业业绩描述笼统，未明确说明是否在开标前5年内具有±800kV换流站土建A包的具体业绩。"
+ },
+ {
+  "perf": "P4",
+  "crit": "K2",
+  "ideal": "uncertain",
+  "keyword": "no_match",
+  "qwen": "uncertain",
+  "qwen_reason": "企业业绩描述为电网工程，未明确是否为同类房屋建筑工程，且未提供合同金额、数量及时间等关键信息以判断是"
+ },
+ {
+  "perf": "P4",
+  "crit": "K3",
+  "ideal": "uncertain",
+  "keyword": "no_match",
+  "qwen": "uncertain",
+  "qwen_reason": "企业业绩描述笼统，未明确说明是否具有1000kV变电站工程监理业绩，也未提供具体项目名称、时间、电压"
+ },
+ {
+  "perf": "P5",
+  "crit": "K1",
+  "ideal": "no_match",
+  "keyword": "no_match",
+  "qwen": "no_match",
+  "qwen_reason": "企业业绩为医院门诊综合楼房屋建筑工程，与±800kV换流站土建A包在项目性质、电压等级、专业领域上均"
+ },
+ {
+  "perf": "P5",
+  "crit": "K2",
+  "ideal": "no_match",
+  "keyword": "match",
+  "qwen": "ERR",
+  "qwen_reason": "Unterminated string starting a"
+ },
+ {
+  "perf": "P5",
+  "crit": "K3",
+  "ideal": "no_match",
+  "keyword": "no_match",
+  "qwen": "no_match",
+  "qwen_reason": "企业业绩为医院门诊综合楼房屋建筑工程，不属于1000kV变电站工程监理业绩。"
+ },
+ {
+  "perf": "P6",
+  "crit": "K1",
+  "ideal": "uncertain",
+  "keyword": "no_match",
+  "qwen": "no_match",
+  "qwen_reason": "企业业绩为电气安装工程，非土建A包，且竣工时间为2025年（开标前尚未发生），不满足开标前5年内±8"
+ },
+ {
+  "perf": "P6",
+  "crit": "K2",
+  "ideal": "uncertain",
+  "keyword": "no_match",
+  "qwen": "no_match",
+  "qwen_reason": "该业绩为电气安装工程（非土建），不属于房屋建筑工程类别，不符合‘同类房屋建筑工程’要求。"
+ },
+ {
+  "perf": "P6",
+  "crit": "K3",
+  "ideal": "no_match",
+  "keyword": "no_match",
+  "qwen": "no_match",
+  "qwen_reason": "业绩为±800kV换流站电气安装工程，非1000kV变电站工程，电压等级和工程类型均不匹配。"
+ }
+]

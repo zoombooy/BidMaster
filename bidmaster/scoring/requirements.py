@@ -258,6 +258,11 @@ class RequirementBuilder:
                 m = re.search(r"得\s*(\d+)\s*分", s)
                 if m:
                     parsed["unit_score"] = float(m.group(1))
+                # 口径结构化（语义判定第一步）：电压/设施/工作类型/标包细分
+                from bidmaster.scoring.scope import extract_scope
+                sc = extract_scope(b.text)
+                if sc:
+                    parsed["scope"] = sc
                 # 去重：核心约束（年限/金额/数量/证明）相同即视为同一条款
                 key = str((parsed.get("years"), parsed.get("amount_min"),
                            parsed.get("count_min"),
