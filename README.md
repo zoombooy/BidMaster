@@ -31,7 +31,7 @@ BidMaster 是一个面向招投标场景的文档解析 Agent，聚焦三件事�
 
 **解析**
 
-- Word（.docx）/ PDF 文本层 / 扫描件 OCR（在线 MinerU / PaddleOCR 可插拔）/ xlsx / zip 整包递归解压
+- Word（.docx）/ PDF 文本层 / 扫描件 OCR（在线 MinerU，表格行列结构化还原）/ xlsx / zip 整包递归解压
 - 表格专项：跨页续表合并、合并单元格归一、四列评分表、权重矩阵表
 - 章节树 + 编号归一化（第X章 / 1.1 / （一））+ 关键词锚区定位
 

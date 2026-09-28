@@ -11,13 +11,14 @@ from __future__ import annotations
 
 import io
 import json
+import re
 import time
 import zipfile
 from pathlib import Path
 
 from bidmaster.config import get_settings
 from bidmaster.ingestion.ledger import ProcessingLedger
-from bidmaster.schemas.document import Block, BlockStyle, Page, ParsedDocument
+from bidmaster.schemas.document import Block, BlockStyle, Page, ParsedDocument, TableModel
 
 _TYPE_MAP = {"text": "paragraph", "title": "heading", "table": "table",
              "image": "figure", "equation": "paragraph"}
@@ -120,19 +121,56 @@ def _parse_with_mineru_online(path: str, doc_id: str,
     return parsed
 
 
+def _html_table_to_rows(html: str) -> list[list[str]]:
+    """MinerU table_body HTML → 行列文本（无 BS4 依赖，正则提取）。"""
+    rows = []
+    for tr in re.findall(r"<tr[^>]*>(.*?)</tr>", html or "", re.S):
+        cells = [re.sub(r"<[^>]+>", "", c).strip().replace("\n", " ")
+                 for c in re.findall(r"<t[dh][^>]*>(.*?)</t[dh]>", tr, re.S)]
+        if cells:
+            rows.append(cells)
+    return rows
+
+
 def _build_parsed_from_content_list(content: list, doc_id: str,
                                     file_name: str, file_type: str) -> ParsedDocument:
-    """MinerU content_list（type/text/page_idx/bbox）→ 统一 ParsedDocument。"""
+    """MinerU content_list（type/text/page_idx/bbox）→ 统一 ParsedDocument。
+
+    table 条目：table_body(html) 解析为行列 → TableModel（供评分链路消费）；
+    文本块照常入 blocks。
+    """
     blocks: list[Block] = []
+    tables: list[TableModel] = []
     char_cursor = 0
     for i, item in enumerate(content):
         text = (item.get("text") or "").strip()
-        if not text and item.get("type") != "table":
-            continue
         itype = item.get("type", "text")
+        page_no = int(item.get("page_idx", 0)) + 1
+
+        # 表格条目：table_body(html) 解析为行列 → TableModel + 摘要块
+        if itype == "table" and (item.get("table_body") or "").strip():
+            t_seq = len(tables) + 1
+            table_id = f"t-{t_seq:04d}"
+            rows = _html_table_to_rows(item.get("table_body"))
+            if rows:
+                ncols = max(len(r) for r in rows)
+                for r in rows:
+                    r += [""] * (ncols - len(r))
+                tables.append(TableModel(table_id=table_id, page_nos=[page_no],
+                                         rows=rows, header_rows=1))
+                summary = "\n".join("\t".join(r) for r in rows[:50])
+                start = char_cursor
+                char_cursor += len(summary) + 1
+                blocks.append(Block(
+                    block_id=f"b-{i + 1:05d}", type="table", page_no=page_no,
+                    char_start=start, char_end=start + len(summary),
+                    text=summary, table_ref=table_id))
+            continue
+
+        if not text and itype != "table":
+            continue
         btype = _TYPE_MAP.get(itype, "paragraph")
         level = 1 if itype == "title" else 0
-        page_no = int(item.get("page_idx", 0)) + 1
         start = char_cursor
         char_cursor += len(text) + 1
         blocks.append(Block(
@@ -141,7 +179,8 @@ def _build_parsed_from_content_list(content: list, doc_id: str,
             text=text, style=BlockStyle(heading_level=level)))
     return ParsedDocument(
         doc_id=doc_id, file_name=file_name, file_type=file_type,
-        blocks=blocks, full_text="\n".join(b.text for b in blocks),
+        blocks=blocks, tables=tables,
+        full_text="\n".join(b.text for b in blocks),
         quality={"ocr_used": True},
     )
 
