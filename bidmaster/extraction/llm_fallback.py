@@ -61,6 +61,10 @@ def llm_fill_missing(parsed: ParsedDocument, zones: list[AnchorZone],
             continue
         pack = catalog[key]
         norm_str = _normalize_for(key, value)
+        if norm_str is None or not str(norm_str).strip():
+            f = results[key]
+            f.note = "LLM 返回值归一化失败（无法解析为该字段要求的格式），已拒绝采纳"
+            continue
         ev = store.add(make_evidence(
             kind="llm_quote", source="llm", char_start=pos,
             char_end=pos + len(quote), snippet=quote[:200]))
