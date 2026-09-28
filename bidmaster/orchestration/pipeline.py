@@ -174,6 +174,15 @@ class Pipeline:
             doc.quality.warnings.extend(self._quality_warnings(info))
             docs.append(doc)
         parsed = docs[0] if len(docs) == 1 else self._merge_parsed(meta, docs)
+        # 来源标注：单文件时全部块/表挂该文件名（与多文件合并的标注对称）
+        if len(docs) == 1 and parsed.blocks:
+            fname = docs[0].file_name
+            for b in parsed.blocks:
+                if not b.source_file:
+                    b.source_file = fname
+            for t in parsed.tables:
+                if not t.source_file:
+                    t.source_file = fname
         parsed.sha256 = meta.get("sha256", "")
         write_json(ws / "ledger.json",
                    {**ledger.model_dump(mode="json"), "summary": ledger.summary()})
@@ -198,7 +207,7 @@ class Pipeline:
                 "style": doc.blocks[0].style.model_copy(update={"heading_level": 1}),
                 "char_start": char_base, "char_end": char_base + len(tag)})
             b_seq += 1
-            blocks.append(b)
+            blocks.append(b.model_copy(update={"source_file": doc.file_name}))
             char_base += len(tag) + 1
             for blk in doc.blocks:
                 new_ref = blk.table_ref
@@ -209,6 +218,7 @@ class Pipeline:
                 b_seq += 1
                 blocks.append(blk.model_copy(update={
                     "block_id": f"b-{b_seq:05d}",
+                    "source_file": doc.file_name,
                     "char_start": blk.char_start + char_base,
                     "char_end": blk.char_end + char_base,
                     "table_ref": new_ref}))
@@ -216,7 +226,8 @@ class Pipeline:
             for t in doc.tables:
                 t_seq += 1
                 new_id = id_map.get((i, t.table_id), t.table_id)
-                tables.append(t.model_copy(update={"table_id": new_id}))
+                tables.append(t.model_copy(update={"table_id": new_id,
+                                                   "source_file": doc.file_name}))
         merged = ParsedDocument(
             doc_id=meta["doc_id"], file_name=meta["file_name"],
             file_type="multi", pages=[p for d in docs for p in d.pages],
@@ -226,6 +237,36 @@ class Pipeline:
         merged.quality.warnings.append(
             "多文件合并解析：page_no 为各文件内页码；字段冲突可能来自不同文件（按优先级合并）")
         return merged
+
+
+    @staticmethod
+    def _backfill_evidence_sources(parsed: ParsedDocument, store) -> None:
+        """回填证据 source_file：block_id/table_id 直查，
+        其余用 snippet 在各源文件聚合文本中查找（块间缝隙不漏）。"""
+        bmap = {b.block_id: b.source_file for b in parsed.blocks if b.source_file}
+        tmap = {t.table_id: t.source_file for t in parsed.tables if t.source_file}
+        # 按源文件聚合文本：snippet 查找用
+        file_texts: dict[str, str] = {}
+        for b in parsed.blocks:
+            if b.source_file and b.text:
+                prev = file_texts.get(b.source_file, "")
+                file_texts[b.source_file] = prev + "\n" + b.text
+        for ev in store.items:
+            if ev.source_file:
+                continue
+            if ev.block_id and ev.block_id in bmap:
+                ev.source_file = bmap[ev.block_id]
+                continue
+            if ev.table_id and ev.table_id in tmap:
+                ev.source_file = tmap[ev.table_id]
+                continue
+            # 兜底：snippet 前缀在哪个源文件的文本中（LLM quote 偏移可能与合并坐标错位）
+            snip = (ev.snippet or "")[:15]
+            if snip:
+                for sf, ftext in file_texts.items():
+                    if snip in ftext:
+                        ev.source_file = sf
+                        break
 
     def _stage_structure(self, ws: Path, parsed: ParsedDocument,
                          force: bool) -> dict:
@@ -285,7 +326,12 @@ class Pipeline:
                                  for b in sub.blocks if b.table_ref)]
             sub.full_text = "\n".join(b.text for b in sub.blocks)
             sub_ex = FieldExtractor(sub, [], store, llm)
+            n_before = len(store.items)
             sub_fields, _ = sub_ex.extract_all(use_llm=use_llm)
+            # 子抽取新增的证据（含 LLM quote，其字符偏移基于子文档）直接归属该包件文件
+            for ev in store.items[n_before:]:
+                if not ev.source_file:
+                    ev.source_file = fname
             bucket = lot_fields.setdefault(lot, {})
             for k, fv in sub_fields.items():
                 if fv.status == STATUS_FOUND and k not in bucket:
@@ -298,11 +344,14 @@ class Pipeline:
                 proj_ev = store.add(make_evidence(
                     kind="block", source="rules", page_no=0,
                     snippet=f"{scope['project']}（来源：{fname}）"))
+                proj_ev.source_file = fname
                 bucket["project_name"] = _FE(
                     field_key="project_name", scope=lot, field_label="项目名称（包件）",
                     status=STATUS_FOUND, value_raw=scope["project"],
                     value_normalized=scope["project"], confidence=0.9,
                     evidence_ids=[proj_ev.evidence_id]).model_dump(mode="json")
+
+        self._backfill_evidence_sources(parsed, store)
 
         write_json(ws / "evidence.json", store.model_dump(mode="json"))
         write_json(f, {"fields": fields_d, "conflicts": conflicts_d,
@@ -332,6 +381,8 @@ class Pipeline:
                 upgraded = refine_pending_scores(parsed, scores, store, llm)
                 if upgraded:
                     print(f"[llm] 评分细则结构化升级 {upgraded} 项")
+        # 评分阶段新增的证据同样回填 source_file（含 LLM quote 字符定位）
+        self._backfill_evidence_sources(parsed, store)
         write_json(ws / "evidence.json", store.model_dump(mode="json"))
         data = {
             "scores": [s.model_dump(mode="json") for s in scores],

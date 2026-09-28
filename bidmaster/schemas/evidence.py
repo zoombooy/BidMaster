@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 class Evidence(BaseModel):
     evidence_id: str
     doc_id: str = ""
+    source_file: str = ""   # 来源文件名（多文件合并时可区分证据出自哪份附件）
     kind: str = "block"  # block | table_cell | llm_quote
     page_no: int = 0
     bbox: Optional[list[float]] = None

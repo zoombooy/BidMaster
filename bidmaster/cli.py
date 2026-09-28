@@ -19,7 +19,8 @@ def _print_report(report_dict: dict) -> None:
           f" | LLM {stats.get('llm')}")
     print("-" * 62)
 
-    print("\n【关键字段】")
+    print("\n【关键字段】（附证据：来源文件 / 原文摘录）")
+    ev_map = {e.get("evidence_id"): e for e in report_dict.get("evidence", [])}
     for key, f in report_dict.get("fields", {}).items():
         mark = "✓" if f.get("status") == "found" else "✗"
         label = f.get("field_label") or key
@@ -27,6 +28,15 @@ def _print_report(report_dict: dict) -> None:
         conf = f.get("confidence") or 0
         flag = " ⚠低置信" if f.get("status") == "found" and conf < 0.7 else ""
         print(f"  {mark} {label:<12} {str(value)[:44]:<46} ({conf:.2f}){flag}")
+        if f.get("status") == "found":
+            for eid in (f.get("evidence_ids") or [])[:1]:
+                ev = ev_map.get(eid)
+                if ev:
+                    loc = (f"表格{ev.get('table_id')}R{ev.get('row')}"
+                           if ev.get("table_id")
+                           else (f"P{ev.get('page_no')}" if ev.get("page_no") else "块级"))
+                    print(f"      ↳ [{ev.get('source_file') or '未知文件'}|{loc}] "
+                          f"{(ev.get('snippet') or '')[:56]}")
 
     conflicts = report_dict.get("conflicts", [])
     if conflicts:

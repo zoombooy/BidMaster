@@ -440,12 +440,10 @@ class RequirementBuilder:
     def _price(self) -> None:
         for s in self.scores:
             if s.category == CAT_PRICE and s.rule_text:
-                ev = self.store.add(make_evidence(
-                    kind="block", source="rules", page_no=0, snippet=s.rule_text[:200]))
                 self.reqs.append(RequirementItem(
                     req_id="", type=REQ_PRICE, subject="投标报价",
                     constraint=s.rule_text[:300], parsed={"formula": s.formula or s.rule_text},
-                    scoring_refs=[s.score_id], evidence_ids=[ev.evidence_id],
+                    scoring_refs=[s.score_id], evidence_ids=list(s.evidence_ids),
                     confidence=0.85))
 
     # ---------- ★号实质性条款 ----------

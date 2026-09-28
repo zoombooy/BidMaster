@@ -21,6 +21,7 @@ class BlockStyle(BaseModel):
 class Block(BaseModel):
     block_id: str
     type: str = "paragraph"  # paragraph | heading | table | figure | header | footer
+    source_file: str = ""    # 来源文件名（多文件合并时由管线标注；单文件为该文件名）
     page_no: int = 0
     bbox: Optional[list[float]] = None  # [x0, y0, x1, y1]，PDF 页面坐标；docx 为空
     char_start: int = 0  # 在 full_text 中的字符偏移
@@ -40,6 +41,7 @@ class TableCell(BaseModel):
 
 class TableModel(BaseModel):
     table_id: str
+    source_file: str = ""   # 来源文件名（多文件合并时标注）
     page_nos: list[int] = []  # 跨页合并后可能包含多个页码
     rows: list[list[str]] = []  # 逻辑展开后的单元格文本（合并单元格已填充）
     header_rows: int = 1

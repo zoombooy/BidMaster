@@ -74,15 +74,29 @@ def get_report(doc_id: str):
 
 @app.get("/api/reports/{doc_id}/evidence/{evidence_id}/page.png")
 def evidence_page_png(doc_id: str, evidence_id: str):
-    """渲染证据所在页并画 bbox 高亮框——前端"点击字段跳原文"的后端。"""
+    """渲染证据所在源文件的对应页——前端"点击字段跳原文"的后端。
+
+    多文件解析时按 evidence.source_file 定位到正确的源文件（不再拿第一份糊弄）。
+    """
     report = pipeline.load_report(doc_id)
     if report is None:
         raise HTTPException(404, f"报告不存在: {doc_id}")
     ev = next((e for e in report.evidence if e.evidence_id == evidence_id), None)
     if ev is None or ev.page_no <= 0:
         raise HTTPException(404, "证据不存在或无页码（docx 链路无页码，请转 PDF）")
-    src = next(Path("work", doc_id).glob("source_*.*"), None) or \
-        next(Path("work", doc_id).glob("source.*"), None)
+    # 按证据的 source_file 找到对应源文件副本
+    intake_path = Path("work", doc_id, "01_intake.json")
+    src = None
+    if intake_path.exists() and ev.source_file:
+        import json
+        meta = json.loads(intake_path.read_text(encoding="utf-8"))
+        for i, finfo in enumerate(meta.get("files", [])):
+            if finfo.get("file_name") == ev.source_file:
+                src = next(Path("work", doc_id).glob(f"source_{i}.*"), None)
+                break
+    if src is None:
+        src = next(Path("work", doc_id).glob("source_*.*"), None) or \
+            next(Path("work", doc_id).glob("source.*"), None)
     if src is None:
         raise HTTPException(404, "源文件不存在")
     import fitz
@@ -96,4 +110,5 @@ def evidence_page_png(doc_id: str, evidence_id: str):
     # bbox 高亮在服务端以 SVG 叠加太重——返回页图 + bbox 坐标由前端画框
     return Response(
         content=png_bytes, media_type="image/png",
-        headers={"X-Bbox": io.StringIO().write("") or str(ev.bbox or [])})
+        headers={"X-Source-File": ev.source_file,
+                 "X-Bbox": str(ev.bbox or [])})
