@@ -19,7 +19,7 @@ from bidmaster.ingestion.ledger import ProcessingLedger
 from bidmaster.llm.client import LLMClient
 from bidmaster.parser.router import route_and_parse
 from bidmaster.schemas.document import ParsedDocument
-from bidmaster.schemas.evidence import EvidenceStore
+from bidmaster.schemas.evidence import EvidenceStore, make_evidence
 from bidmaster.schemas.fields import STATUS_FOUND
 from bidmaster.schemas.report import (AnchorZone, LedgerSummary, SectionNode,
                                       TenderReport)
@@ -66,11 +66,13 @@ class Pipeline:
         meta = self._stage_intake(ws, doc_id, files, force)
         parsed = self._stage_parse(ws, meta, force)
         struct = self._stage_structure(ws, parsed, force)
-        fields, conflicts = self._stage_fields(ws, parsed, struct, use_llm, force)
+        fields, conflicts, lot_fields, lot_info = self._stage_fields(
+            ws, parsed, struct, use_llm, force)
         scoring = self._stage_scoring(ws, parsed, struct, fields, force,
                                       use_llm=use_llm)
         report = self._stage_report(ws, meta, parsed, struct, fields, conflicts,
-                                    scoring, force)
+                                    scoring, force, lot_fields=lot_fields,
+                                    lot_info=lot_info)
         return report
 
     def _expand_archives(self, files: list[str]) -> list[str]:
@@ -192,6 +194,7 @@ class Pipeline:
             tag = f"[文件{i + 1}:{doc.file_name}]"
             b = doc.blocks[0].model_copy(update={
                 "block_id": f"b-{b_seq + 1:05d}", "type": "heading",
+                "text": tag,
                 "style": doc.blocks[0].style.model_copy(update={"heading_level": 1}),
                 "char_start": char_base, "char_end": char_base + len(tag)})
             b_seq += 1
@@ -245,18 +248,66 @@ class Pipeline:
         f = ws / STAGE_FILES["fields"]
         if f.exists() and not force:
             data = read_json(f)
-            return (data["fields"], [c for c in data.get("conflicts", [])])
+            return (data["fields"], [c for c in data.get("conflicts", [])],
+                    data.get("lot_fields", {}), data.get("lot_info", []))
         store = self._load_store(ws)
         zones = [AnchorZone.model_validate(z) for z in struct["zones"]]
         llm = LLMClient() if use_llm else None
         extractor = FieldExtractor(parsed, zones, store, llm)
         fields, conflicts = extractor.extract_all(use_llm=use_llm)
-        # 统一序列化边界：阶段产物一律为 dict（磁盘加载路径同样返回 dict）
         fields_d = {k: v.model_dump(mode="json") for k, v in fields.items()}
         conflicts_d = [c.model_dump(mode="json") for c in conflicts]
+
+        # —— P0 范围解析：分标/包件作用域字段 ——
+        from bidmaster.structure.lot_scope import (infer_file_scope,
+                                                   extract_lot_table_fields,
+                                                   file_block_ranges)
+        lot_fields: dict[str, dict] = {}
+        lot_info: list[dict] = []
+
+        # 1) 公告逐包限价/工期表 → per-lot 字段
+        for lot, bucket in extract_lot_table_fields(parsed, store).items():
+            lot_fields.setdefault(lot, {}).update(bucket)
+
+        # 2) 文件级作用域：包件专属文件（如 结算审核包1新.docx）→ 对该文件的
+        #    块区间跑一次字段抽取，结果只归属该包件（质量要求/工期等不串包）
+        for start, end, fname in file_block_ranges(parsed):
+            scope = infer_file_scope(fname, parsed.blocks[start:end])
+            if not scope:
+                continue
+            lot = scope["lot"]
+            lot_info.append({"lot": lot, "project": scope.get("project", ""),
+                             "source_file": fname})
+            sub = parsed.model_copy(deep=True)
+            sub.blocks = parsed.blocks[start + 1:end]
+            sub.tables = [t for t in parsed.tables
+                          if any(b.table_ref == t.table_id
+                                 for b in sub.blocks if b.table_ref)]
+            sub.full_text = "\n".join(b.text for b in sub.blocks)
+            sub_ex = FieldExtractor(sub, [], store, llm)
+            sub_fields, _ = sub_ex.extract_all(use_llm=use_llm)
+            bucket = lot_fields.setdefault(lot, {})
+            for k, fv in sub_fields.items():
+                if fv.status == STATUS_FOUND and k not in bucket:
+                    fv.scope = lot
+                    bucket[k] = fv.model_dump(mode="json")
+            # 包件项目名：来自文件标题前缀（"浙江特高压交流环网线路工程"），
+            # 优先于子抽取结果（后者可能抓到工程分类行）
+            if scope.get("project"):
+                from bidmaster.schemas.fields import FieldExtraction as _FE
+                proj_ev = store.add(make_evidence(
+                    kind="block", source="rules", page_no=0,
+                    snippet=f"{scope['project']}（来源：{fname}）"))
+                bucket["project_name"] = _FE(
+                    field_key="project_name", scope=lot, field_label="项目名称（包件）",
+                    status=STATUS_FOUND, value_raw=scope["project"],
+                    value_normalized=scope["project"], confidence=0.9,
+                    evidence_ids=[proj_ev.evidence_id]).model_dump(mode="json")
+
         write_json(ws / "evidence.json", store.model_dump(mode="json"))
-        write_json(f, {"fields": fields_d, "conflicts": conflicts_d})
-        return fields_d, conflicts_d
+        write_json(f, {"fields": fields_d, "conflicts": conflicts_d,
+                       "lot_fields": lot_fields, "lot_info": lot_info})
+        return fields_d, conflicts_d, lot_fields, lot_info
 
     def _stage_scoring(self, ws: Path, parsed: ParsedDocument, struct: dict,
                        fields: dict, force: bool, use_llm: bool = True) -> dict:
@@ -294,7 +345,9 @@ class Pipeline:
 
     def _stage_report(self, ws: Path, meta: dict, parsed: ParsedDocument,
                       struct: dict, fields: dict, conflicts: list,
-                      scoring: dict, force: bool) -> TenderReport:
+                      scoring: dict, force: bool,
+                      lot_fields: dict | None = None,
+                      lot_info: list | None = None) -> TenderReport:
         f = ws / STAGE_FILES["report"]
         if f.exists() and not force:
             return TenderReport.model_validate(read_json(f))
@@ -335,6 +388,8 @@ class Pipeline:
             requirements=scoring["requirements"],
             star_clauses=scoring["stars"],
             rejections=scoring.get("rejections", []),
+            lot_fields=lot_fields or {},
+            lot_info=lot_info or [],
             sum_checks=sum_checks,
             issues=issues,
             sections=struct["sections"],
@@ -351,6 +406,7 @@ class Pipeline:
                 "score_items": len(scoring["scores"]),
                 "requirements": len(scoring["requirements"]),
                 "star_clauses": len(scoring["stars"]),
+                "lots": len(lot_fields or {}),
                 "gate": "pending_review",
                 "llm": "on" if (use_llm_flag() and self.settings.llm_enabled) else "off",
             },

@@ -64,8 +64,14 @@ def _clean_duration(value: str, field_key: str) -> str | None:
 
 
 def _clean_number(value: str, field_key: str) -> str | None:
-    """编号字段：字母数字 + 分隔符。"""
-    return value.strip() if V.is_tender_no_like(value) else None
+    """编号字段：字母数字 + 分隔符；X 占位密集（模板示例值如 0711-XXOTLXXX13XXX）淘汰。"""
+    v = value.strip()
+    if not V.is_tender_no_like(v):
+        return None
+    xs = len(re.findall(r"[Xx]{2,}", v))
+    if xs >= 2 or (v.count("X") + v.count("x")) >= 3:
+        return None  # 模板占位编号，不是真实编号
+    return v
 
 
 def _clean_contact(value: str, field_key: str) -> str | None:

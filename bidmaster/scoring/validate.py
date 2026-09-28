@@ -36,21 +36,30 @@ def validate_scores(scores: list, declared: list[dict],
                              and not (s.parsed_rule or {}).get("penalty")), 2)
         dec = group_declared[0]["total"] if group_declared else None
         ok = True
+        state = "passed"
         notes: list[str] = []
-        if dec is not None and abs(computed - dec) > 0.01:
+        if dec is None:
+            # 无明示总分可供核验 → 无法判断（不算通过）
+            state = "unverifiable"
+            ok = None
+            notes.append("文件未明示该组总分，无法机械校验")
+        elif abs(computed - dec) > 0.01:
+            state = "failed"
             ok = False
             notes.append(f"评分项合计 {computed} ≠ 大类标签合计 {dec}")
         bad = [s.score_id for s in group
                if s.max_score <= 0 and s.status == "confirmed"]
         if bad:
+            state = "failed"
             ok = False
             notes.append(f"分值异常项: {bad}")
         label = f"{_CATEGORY_LABEL.get(cat, cat)}/{lot}"
         checks.append(ScoreSumCheck(
             category=cat, declared_total=dec, computed_total=computed,
-            item_count=len(group), ok=ok,
+            item_count=len(group), state=state, ok=ok,
+            lot=lot,
             note=("；".join(notes) if notes else "") + (f" [lot={lot}]" if lot else "")))
-        if not ok and notes:
+        if state == "failed" and notes:
             issues.append(f"{label}：{'；'.join(notes)}")
 
     # ---- 分组2：权重字段（技:商:价）合计参考线 ----

@@ -241,9 +241,14 @@ FIELD_RULES: dict[str, RulePack] = {
     ),
     "quality_standard": RulePack(
         field_key="quality_standard",
-        patterns=[_std(r"质量标准|工程质量标准|质量要求",
-                       vh=r"([^\n，。;；]{2,28}?)(?=[，。;；\n]|$)", conf=0.92, desc="标注-质量标准")],
-        preferred_zones=["instructions_front", "notice"],
+        patterns=[
+            _std(r"质量标准|工程质量标准|质量要求",
+                 vh=r"([^\n，。;；]{2,28}?)(?=[，。;；\n]|$)", conf=0.92, desc="标注-质量标准"),
+            # "结算审核质量要求\n误差率<1%"（标签行 + 值行）
+            P(r"质量要求\s*[：:]?\s*\n\s*([^\n，。;；]{4,50}?)(?=[。;；\n]|$)",
+              0.88, "跨行-质量要求"),
+        ],
+        preferred_zones=["instructions_front", "notice", "tech_requirements"],
     ),
     # —— 商务风险 ——
     "performance_bond": RulePack(

@@ -27,6 +27,7 @@ class FieldCandidate(BaseModel):
 
 class FieldExtraction(BaseModel):
     field_key: str
+    scope: str = "global"   # global=全项目 ｜ 包件名（多分标文件按包隔离）
     field_label: str = ""
     group: str = ""
     required: bool = False

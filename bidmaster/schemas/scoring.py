@@ -67,7 +67,9 @@ class ScoreSumCheck(BaseModel):
     declared_total: Optional[float] = None   # 文件明示的类别总分
     computed_total: float = 0.0              # 评分项合计
     item_count: int = 0
-    ok: bool = True
+    state: str = "passed"  # passed通过 | failed未通过 | unverifiable无法校验（无声明分值）
+    ok: Optional[bool] = True  # 兼容字段：passed=True / failed=False / unverifiable=None
+    lot: str = "-"
     note: str = ""
 
 

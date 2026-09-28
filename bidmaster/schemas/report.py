@@ -45,6 +45,8 @@ class TenderReport(BaseModel):
     file_name: str = ""
     generated_at: str = ""
     fields: dict[str, FieldExtraction] = {}
+    lot_fields: dict[str, dict[str, FieldExtraction]] = {}  # 分标/包件级字段（多分标公告按包隔离）
+    lot_info: list[dict] = []
     conflicts: list[FieldConflict] = []
     scores: list[ScoreItem] = []
     requirements: list[RequirementItem] = []
