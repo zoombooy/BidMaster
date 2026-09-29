@@ -32,7 +32,7 @@ def validate_scores(scores: list, declared: list[dict],
         group = [s for s in scores if s.category == cat and lot_of(s) == lot]
         group_declared = [d for d in declared
                           if d.get("category") == cat and d.get("lot", "-") == lot]
-        computed = round(sum(s.max_score for s in group if s.status == "confirmed"
+        computed = round(sum(s.max_score for s in group if s.status in ("confirmed", "pending_review")
                              and not (s.parsed_rule or {}).get("penalty")), 2)
         dec = group_declared[0]["total"] if group_declared else None
         ok = True
@@ -48,7 +48,7 @@ def validate_scores(scores: list, declared: list[dict],
             ok = False
             notes.append(f"评分项合计 {computed} ≠ 大类标签合计 {dec}")
         bad = [s.score_id for s in group
-               if s.max_score <= 0 and s.status == "confirmed"]
+               if s.max_score <= 0 and s.status in ("confirmed", "pending_review")]
         if bad:
             state = "failed"
             ok = False

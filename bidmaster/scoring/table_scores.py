@@ -146,7 +146,7 @@ def _parse_price_matrix(tb: TableModel, store: EvidenceStore,
                          "commercial_weight": comm_w, "lot": lot,
                          **{k: v for k, v in coefs.items()}},
             formula=formula_text,
-            evidence_ids=[ev.evidence_id], confidence=0.88, status="confirmed"))
+            evidence_ids=[ev.evidence_id], confidence=0.88, status="pending_review"))
 
 
 def _collect_zone_tables(parsed: ParsedDocument, zones: list[AnchorZone]):
@@ -300,7 +300,7 @@ def _parse_grid_table(tb: TableModel, category: str, lot: str,
             formula=rule if (category == CAT_PRICE and _FORMULA_KW.search(rule)) else None,
             evidence_required=_find_proofs(rule),
             evidence_ids=[ev.evidence_id],
-            confidence=0.75 if penalty else 0.9, status="confirmed"))
+            confidence=0.75 if penalty else 0.9, status="pending_review"))
 
     # 声明总分 = 大类标签合计（表内自洽校验基准）
     if parent_declared:
@@ -395,7 +395,7 @@ def _parse_classic_table(tb: TableModel, default_cat: str, lot: str,
             parsed_rule=parsed_rule,
             formula=rule if (cat == CAT_PRICE and _FORMULA_KW.search(rule)) else None,
             evidence_required=_find_proofs(rule),
-            evidence_ids=[ev.evidence_id], confidence=0.9, status="confirmed"))
+            evidence_ids=[ev.evidence_id], confidence=0.9, status="pending_review"))
 
 
 # ---------------- 公共工具 ----------------

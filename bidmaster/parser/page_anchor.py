@@ -81,7 +81,7 @@ def anchor_blocks(blocks: list, pdf_path: str | Path,
     for b in blocks:
         probe = _norm_text((b.text or ""))[:max_probe]
         if len(probe) < 6:
-            b.page_no = last_page
+            b.page_no = 0  # 文本太短无法定位 → 不伪装
             continue
         found = 0
         for pi, pt in enumerate(page_texts, 1):
@@ -93,5 +93,5 @@ def anchor_blocks(blocks: list, pdf_path: str | Path,
             last_page = found
             anchored += 1
         else:
-            b.page_no = last_page  # 找不到 → 沿用上一块页码（顺序文档）
+            b.page_no = 0  # 未定位 → 不伪装为有页码
     return anchored
