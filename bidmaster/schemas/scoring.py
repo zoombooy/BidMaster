@@ -48,6 +48,7 @@ class ScoreItem(BaseModel):
     evidence_ids: list[str] = []
     confidence: float = 0.0
     status: str = "confirmed"           # confirmed | pending_review | failed
+    note: str = ""                      # LLM 兜底备注
 
 
 class RequirementItem(BaseModel):
