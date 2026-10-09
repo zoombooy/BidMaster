@@ -9,7 +9,7 @@ from __future__ import annotations
 import io
 from pathlib import Path
 
-from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import Response
 
 from bidmaster.a2a.routes import router as a2a_router
@@ -35,7 +35,8 @@ MAX_UPLOAD_BYTES = 200 * 1024 * 1024  # 200MB
 
 
 @app.post("/api/analyze")
-async def analyze(file: UploadFile = File(...)):
+async def analyze(file: UploadFile = File(...), force: bool = Form(False)):
+    """force=true → 忽略缓存强制重跑（同一文件重复解析时默认走缓存秒回）。"""
     ext = Path(file.filename or "").suffix.lower()
     if ext not in ALLOWED_EXT:
         raise HTTPException(400, f"不支持的文件类型 {ext}；支持 {sorted(ALLOWED_EXT)}")
@@ -56,7 +57,7 @@ async def analyze(file: UploadFile = File(...)):
         save_path.unlink(missing_ok=True)
         raise HTTPException(400, "文件内容是老式 .doc（仅改了扩展名），请用 Word 另存为 .docx 后重新上传")
     try:
-        report = pipeline.run(str(save_path))
+        report = pipeline.run(str(save_path), force=force)
     except NotImplementedError as e:
         raise HTTPException(422, str(e))
     except ValueError as e:
