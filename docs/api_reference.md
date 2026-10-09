@@ -31,6 +31,7 @@ Content-Type: multipart/form-data
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
 | `file` | file | 是 | 招标文件（.docx / .pdf / .xlsx / .zip 整包） |
+| `force` | boolean | 否 | `true` = 忽略缓存强制重跑。同一文件（按内容 SHA-256 识别）重复解析默认走缓存秒回；改代码/想看实时耗时解析时传 `true` |
 
 **同步返回**：完整解析报告 JSON（挂起解析，最长 10-60 秒取决于文件大小和分标数量）。
 
@@ -39,6 +40,11 @@ Content-Type: multipart/form-data
 ```bash
 curl -X POST http://172.19.136.137:8200/api/analyze \
   -F "file=@招标文件.docx"
+
+# 强制重跑（不走缓存）
+curl -X POST http://172.19.136.137:8200/api/analyze \
+  -F "file=@招标文件.docx" \
+  -F "force=true"
 ```
 
 **返回结构**：
