@@ -124,7 +124,10 @@ class Pipeline:
             except Exception:  # noqa: BLE001 损坏文件视同过期
                 stale = True
         if stale:
-            for name in [STAGE_FILES[s] for s in stages] + ["ledger.json"]:
+            # evidence.json 一并失效：证据登记表由各阶段重建，
+            # 残留会把上一次运行（可能换了上传文件名）的旧证据带进新报告
+            for name in [STAGE_FILES[s] for s in stages] + ["ledger.json",
+                                                            "evidence.json"]:
                 f = ws / name
                 if f.exists():
                     f.unlink()
