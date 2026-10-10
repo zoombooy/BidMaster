@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BidMaster · 招标文件解析</title>
+<style>
+:root{
+  --bg:#f4f6fa; --panel:#fff; --line:#e4e8f0; --txt:#1c2333; --sub:#6b7688;
+  --blue:#2456e6; --blue-d:#1a41b8; --green:#0e9f6e; --amber:#c27803; --red:#d64545;
+  --radius:10px; --shadow:0 1px 3px rgba(16,24,40,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+  background:var(--bg);color:var(--txt);font-size:14px;height:100vh;display:flex;flex-direction:column}
+header{background:var(--panel);border-bottom:1px solid var(--line);padding:0 20px;
+  height:52px;display:flex;align-items:center;gap:14px;flex-shrink:0}
+header .logo{font-size:17px;font-weight:700;color:var(--blue)}
+header .logo small{color:var(--sub);font-weight:400;margin-left:8px;font-size:12px}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:2px 10px;border-radius:20px;
+  font-size:12px;background:#eef2ff;color:var(--blue)}
+.badge.ok{background:#e6f7f0;color:var(--green)}
+.badge.warn{background:#fef3e2;color:var(--amber)}
+header .right{margin-left:auto;display:flex;gap:8px;align-items:center}
+button{cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--txt);
+  border-radius:8px;padding:6px 14px;font-size:13px}
+button:hover{border-color:var(--blue);color:var(--blue)}
+button.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+button.primary:hover{background:var(--blue-d)}
+main{flex:1;display:flex;overflow:hidden}
+/* ---- 左栏 ---- */
+.left{width:290px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--line);
+  display:flex;flex-direction:column;overflow:hidden}
+.drop{margin:14px;border:2px dashed #c8d2e4;border-radius:var(--radius);padding:22px 12px;
+  text-align:center;color:var(--sub);cursor:pointer;transition:.15s}
+.drop:hover,.drop.over{border-color:var(--blue);background:#f5f8ff;color:var(--blue)}
+.drop b{display:block;font-size:14px;color:var(--txt);margin-bottom:4px}
+.drop .hint{font-size:12px}
+.drop .force{margin-top:10px;font-size:12px;color:var(--sub);display:flex;
+  align-items:center;justify-content:center;gap:5px}
+.upbar{margin:0 14px 8px;height:6px;border-radius:4px;background:#edf0f6;overflow:hidden;display:none}
+.upbar i{display:block;height:100%;background:var(--blue);width:0;transition:.2s}
+.upstate{margin:0 14px 10px;font-size:12px;color:var(--sub);display:none}
+.hist{flex:1;overflow-y:auto;border-top:1px solid var(--line);padding:10px 14px}
+.hist h3{font-size:12px;color:var(--sub);font-weight:500;margin:4px 0 8px}
+.hist-item{padding:9px 10px;border-radius:8px;cursor:pointer;margin-bottom:4px;border:1px solid transparent}
+.hist-item:hover{background:#f4f7ff}
+.hist-item.on{background:#eef2ff;border-color:#c9d8ff}
+.hist-item .fn{font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap;max-width:230px}
+.hist-item .meta{font-size:11px;color:var(--sub);margin-top:3px;display:flex;gap:8px}
+.hist-empty{color:var(--sub);font-size:12px;text-align:center;padding:24px 0}
+/* ---- 右侧 ---- */
+.right{flex:1;overflow-y:auto;padding:18px 22px}
+.placeholder{height:100%;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;color:var(--sub);gap:10px}
+.placeholder .big{font-size:44px}
+.rep-head{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:14px 18px;box-shadow:var(--shadow)}
+.rep-head .fn{font-size:16px;font-weight:600;word-break:break-all}
+.rep-head .sub{color:var(--sub);font-size:12px;margin-top:6px;display:flex;gap:14px;flex-wrap:wrap}
+.rep-head .sub b{color:var(--txt);font-weight:600}
+.stat-chips{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.chip{font-size:12px;padding:3px 10px;border-radius:14px;background:#f0f3f9;color:var(--sub)}
+.chip b{color:var(--txt)}
+.tabs{display:flex;gap:2px;margin:16px 0 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.tab{padding:9px 16px;cursor:pointer;color:var(--sub);font-size:14px;border-radius:8px 8px 0 0;
+  border:1px solid transparent;border-bottom:none;margin-bottom:-1px;user-select:none}
+.tab:hover{color:var(--blue)}
+.tab.on{background:var(--panel);border-color:var(--line);color:var(--blue);font-weight:600}
+.tab .n{font-size:11px;background:#eef2ff;color:var(--blue);border-radius:8px;padding:1px 6px;margin-left:4px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  margin-top:14px;overflow:hidden;box-shadow:var(--shadow)}
+.card h4{font-size:13px;color:var(--sub);font-weight:500;padding:10px 16px;
+  border-bottom:1px solid var(--line);background:#fafbfe}
+table{width:100%;border-collapse:collapse}
+td,th{padding:9px 14px;text-align:left;font-size:13px;border-bottom:1px solid #f0f2f8;vertical-align:top}
+th{font-size:12px;color:var(--sub);font-weight:500;background:#fafbfe;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr.rowh:hover{background:#f8faff}
+.pill{display:inline-block;padding:1px 9px;border-radius:12px;font-size:12px;white-space:nowrap}
+.pill.found{background:#e6f7f0;color:var(--green)}
+.pill.not_found{background:#f0f2f7;color:var(--sub)}
+.pill.na{background:#f0f2f7;color:var(--sub)}
+.pill.failed{background:#fdeaea;color:var(--red)}
+.pill.pending_review{background:#fef3e2;color:var(--amber)}
+.pill.confirmed{background:#e6f7f0;color:var(--green)}
+.pill.cat-technical{background:#e8f0ff;color:var(--blue)}
+.pill.cat-commercial{background:#f3e8ff;color:#7c3aed}
+.pill.cat-price{background:#fef3e2;color:var(--amber)}
+.val{cursor:pointer;border-bottom:1px dashed #b9c6e8}
+.val:hover{color:var(--blue)}
+.val.empty{color:var(--sub);cursor:default;border:none}
+.conf{display:inline-block;width:44px;height:5px;border-radius:3px;background:#edf0f6;
+  overflow:hidden;vertical-align:middle;margin-right:5px}
+.conf i{display:block;height:100%}
+.conf.hi i{background:var(--green)}.conf.mid i{background:var(--amber)}.conf.lo i{background:var(--red)}
+.note{color:var(--sub);font-size:12px;margin-top:2px}
+.req-flag{font-size:11px;color:var(--red);border:1px solid #f3c1c1;border-radius:4px;
+  padding:0 4px;margin-left:6px;white-space:nowrap}
+.issue{padding:9px 16px;border-bottom:1px solid #f0f2f8;font-size:13px}
+.issue:last-child{border:none}
+.issue.warn{color:var(--amber)}
+.sec-tree{padding:10px 16px}
+.sec-item{padding:3px 0;font-size:13px}
+.pass{color:var(--green)}.fail{color:var(--red)}.unv{color:var(--sub)}
+/* ---- 证据抽屉 ---- */
+.drawer{position:fixed;top:0;right:-560px;width:540px;height:100vh;background:var(--panel);
+  border-left:1px solid var(--line);box-shadow:-6px 0 24px rgba(16,24,40,.10);
+  transition:right .22s;display:flex;flex-direction:column;z-index:50}
+.drawer.open{right:0}
+.drawer .dh{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center}
+.drawer .dh b{font-size:15px}
+.drawer .dh .x{margin-left:auto;cursor:pointer;color:var(--sub);font-size:20px;line-height:1;
+  padding:2px 8px;border-radius:6px}
+.drawer .dh .x:hover{background:#f0f2f7;color:var(--txt)}
+.drawer .db{flex:1;overflow-y:auto;padding:14px 18px}
+.ev-block{border:1px solid var(--line);border-radius:8px;margin-bottom:14px;overflow:hidden}
+.ev-h{padding:7px 12px;background:#fafbfe;font-size:12px;color:var(--sub);display:flex;gap:8px;
+  align-items:center;border-bottom:1px solid var(--line)}
+.ev-kind{background:#eef2ff;color:var(--blue);border-radius:4px;padding:0 6px;font-size:11px}
+.ev-src{margin-left:auto}
+.ev-snip{padding:10px 12px;font-size:13px;line-height:1.65;white-space:pre-wrap;word-break:break-all}
+.ev-img{position:relative;font-size:0;background:#dfe4ec;max-height:520px;overflow:auto}
+.ev-img img{width:100%;display:block}
+.ev-img .hl{position:absolute;border:2px solid rgba(214,69,69,.9);background:rgba(214,69,69,.16);
+  border-radius:3px;pointer-events:none}
+.ev-img .hl.mine{border-color:rgba(36,86,230,.95);background:rgba(36,86,230,.18)}
+.ev-img .hl.other{border-color:rgba(14,159,110,.8);background:rgba(14,159,110,.10)}
+.page-sel{padding:6px 12px;border-bottom:1px solid var(--line);display:flex;gap:6px;flex-wrap:wrap}
+.page-sel button{padding:3px 10px;font-size:12px;border-radius:6px}
+.page-sel button.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.spin{width:14px;height:14px;border:2px solid #c9d8ff;border-top-color:var(--blue);border-radius:50%;
+  display:inline-block;animation:r 0.8s linear infinite;vertical-align:-2px;margin-right:6px}
+@keyframes r{to{transform:rotate(360deg)}}
+.lotbar{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.lotbar button.on{background:#eef2ff;color:var(--blue);border-color:#c9d8ff}
+@media(max-width:860px){.left{display:none}.drawer{width:100vw;right:-100vw}}
+</style>
+</head>
+<body>
+<header>
+  <span class="logo">BidMaster<small>招标文件解析 Agent</small></span>
+  <span class="badge" id="health">检查服务中…</span>
+  <div class="right">
+    <button id="btn-export" style="display:none">导出报告 JSON</button>
+    <button id="btn-copy" style="display:none">复制 doc_id</button>
+  </div>
+</header>
+<main>
+  <aside class="left">
+    <div class="drop" id="drop">
+      <b>拖入或点击选择招标文件</b>
+      <span class="hint">支持 .docx / .doc / .pdf（可整包压缩后再看多文件）</span>
+      <label class="force"><input type="checkbox" id="force"> force 强制重跑（忽略缓存）</label>
+      <input type="file" id="file" accept=".docx,.doc,.pdf" hidden>
+    </div>
+    <div class="upbar" id="upbar"><i></i></div>
+    <div class="upstate" id="upstate"></div>
+    <div class="hist" id="hist"><h3>历史报告</h3><div class="hist-empty">暂无</div></div>
+  </aside>
+  <section class="right" id="right">
+    <div class="placeholder">
+      <div class="big">📄</div>
+      <div>上传招标文件，或在左侧选择历史报告</div>
+      <div class="note">解析完成后可点击任意字段值查看原文证据（PDF 支持 bbox 高亮定位）</div>
+    </div>
+  </section>
+</main>
+<div class="drawer" id="drawer">
+  <div class="dh"><b id="d-title">证据原文</b><span class="x" onclick="closeDrawer()">×</span></div>
+  <div class="db" id="d-body"></div>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+let REPORT=null, EV_BY_ID={}, CUR_PAGE=null;
+const API="";
+
+/* ---------- 服务状态 ---------- */
+fetch(API+"/healthz").then(r=>r.json()).then(d=>{
+  const el=$("#health");
+  const llm=d.llm&&d.llm.startsWith("on")?"LLM 兜底开启":"纯规则模式";
+  const ocr=d.ocr_backend&&d.ocr_backend!=="未配置"?" · OCR:"+d.ocr_backend:"";
+  el.textContent="服务正常 · "+llm+ocr; el.className="badge ok";
+}).catch(()=>{$("#health").textContent="服务不可达";$("#health").className="badge warn";});
+
+/* ---------- 上传 ---------- */
+const drop=$("#drop"),fileInput=$("#file");
+drop.onclick=()=>fileInput.click();
+drop.ondragover=e=>{e.preventDefault();drop.classList.add("over")};
+drop.ondragleave=()=>drop.classList.remove("over");
+drop.ondrop=e=>{e.preventDefault();drop.classList.remove("over");
+  if(e.dataTransfer.files.length)upload(e.dataTransfer.files[0])};
+fileInput.onchange=()=>{if(fileInput.files.length)upload(fileInput.files[0])};
+
+function upload(f){
+  const fd=new FormData();
+  fd.append("file",f);
+  if($("#force").checked)fd.append("force","true");
+  const bar=$("#upbar"),state=$("#upstate");
+  bar.style.display="block";state.style.display="block";
+  bar.firstElementChild.style.width="0";
+  const xhr=new XMLHttpRequest();
+  xhr.open("POST",API+"/api/analyze");
+  xhr.upload.onprogress=e=>{
+    if(e.lengthComputable){
+      const p=Math.round(e.loaded/e.total*100);
+      bar.firstElementChild.style.width=p+"%";
+      state.innerHTML='<span class="spin"></span>上传中 '+p+"%（"+fmtMB(f.size)+"）";
+    }};
+  xhr.upload.onload=()=>state.innerHTML='<span class="spin"></span>解析中…规则抽取 + LLM 兜底，约 10-60 秒，请勿关闭';
+  xhr.onload=()=>{
+    bar.style.display="none";
+    try{
+      const d=JSON.parse(xhr.responseText);
+      if(xhr.status===200){state.style.display="none";showReport(d);loadHistory();}
+      else state.innerHTML='<span style="color:var(--red)">失败：'+esc(d.detail||xhr.statusText)+"</span>";
+    }catch(e){state.innerHTML='<span style="color:var(--red)">返回解析失败</span>';}
+  };
+  xhr.onerror=()=>{state.innerHTML='<span style="color:var(--red)">网络错误</span>'};
+  xhr.send(fd);
+}
+const fmtMB=b=>(b/1048576).toFixed(1)+" MB";
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+/* HTML 属性内单引号 JS 字符串转义：esc 管住 HTML 层，再把 ' 转义管住 JS 层 */
+const jsq=s=>esc(s).replace(/'/g,"\\'");
+/* 内联 onclick 的数组参数：JSON 含双引号会截断 HTML 属性，须实体转义 */
+const evAttr=ids=>esc(JSON.stringify(ids||[]));
+
+/* ---------- 历史列表 ---------- */
+function loadHistory(){
+  fetch(API+"/api/reports").then(r=>r.json()).then(list=>{
+    const h=$("#hist");h.innerHTML="<h3>历史报告</h3>";
+    if(!list.length){h.innerHTML+='<div class="hist-empty">暂无</div>';return;}
+    list.forEach(r=>{
+      const it=document.createElement("div");
+      it.className="hist-item";it.dataset.doc=r.doc_id;
+      it.innerHTML=`<div class="fn" title="${esc(r.file_name)}">${esc(r.file_name)}</div>
+        <div class="meta"><span>${esc((r.generated_at||"").replace("T"," "))}</span>
+        <span>字段 ${r.stats?.fields_found??0}/${r.stats?.fields_total??31}</span>
+        ${r.issues?`<span style="color:var(--amber)">⚠${r.issues}</span>`:""}</div>`;
+      it.onclick=()=>openReport(r.doc_id,it);
+      h.appendChild(it);
+    });
+  }).catch(()=>{});
+}
+function openReport(docId,el){
+  document.querySelectorAll(".hist-item").forEach(i=>i.classList.remove("on"));
+  if(el)el.classList.add("on");
+  fetch(API+"/api/reports/"+docId).then(r=>r.json()).then(d=>showReport(d));
+}
+
+/* ---------- 报告渲染 ---------- */
+const TABS=[["fields","字段提取"],["lots","包件字段"],["scores","评分标准"],
+  ["reqs","商务要求"],["rej","否决条款"],["checks","校验与问题"],["sections","章节结构"]];
+let CUR_TAB="fields";
+function showReport(d){
+  REPORT=d;EV_BY_ID={};
+  (d.evidence||[]).forEach(e=>EV_BY_ID[e.evidence_id]=e);
+  $("#btn-export").style.display=$("#btn-copy").style.display="inline-block";
+  const s=d.stats||{};
+  const chips=[`字段 <b>${s.fields_found??0}/${s.fields_total??""}</b>`,
+    `评分项 <b>${s.score_items??0}</b>`,`要求 <b>${s.requirements??0}</b>`,
+    `否决 <b>${(d.rejections||[]).length}</b>`,`分标 <b>${s.lots??0}</b>`,
+    `块 <b>${s.blocks??0}</b>`,`表 <b>${s.tables??0}</b>`,
+    `闸门 <b>${s.gate==="pending_review"?"待人工确认":esc(s.gate||"")}</b>`];
+  $("#right").innerHTML=`
+  <div class="rep-head">
+    <div class="fn">${esc(d.file_name)}</div>
+    <div class="sub"><span>doc_id <b>${esc(d.doc_id)}</b></span>
+      <span>生成于 <b>${esc((d.generated_at||"").replace("T"," "))}</b></span>
+      ${d.quality?.ocr_used?'<span class="pill failed">OCR 链路</span>':""}</div>
+    <div class="stat-chips">${chips.map(c=>`<span class="chip">${c}</span>`).join("")}</div>
+  </div>
+  <div class="tabs">${TABS.map(([k,n])=>
+    `<div class="tab${k===CUR_TAB?" on":""}" data-t="${k}" onclick="switchTab('${k}')">${n}</div>`).join("")}
+  </div>
+  <div id="tab-body"></div>`;
+  renderTab();
+}
+function switchTab(k){CUR_TAB=k;
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on",t.dataset.t===k));renderTab();}
+function renderTab(){
+  const el=$("#tab-body");if(!REPORT)return;
+  if(CUR_TAB==="fields")el.innerHTML=fieldsTable(REPORT.fields);
+  else if(CUR_TAB==="lots")el.innerHTML=lotsHtml();
+  else if(CUR_TAB==="scores")el.innerHTML=scoresHtml();
+  else if(CUR_TAB==="reqs")el.innerHTML=reqsHtml();
+  else if(CUR_TAB==="rej")el.innerHTML=rejHtml();
+  else if(CUR_TAB==="checks")el.innerHTML=checksHtml();
+  else if(CUR_TAB==="sections")el.innerHTML=sectionsHtml();
+}
+const STATUS_TXT={found:"已提取",not_found:"未找到",na:"不适用",failed:"提取失败",
+  confirmed:"已确认",pending_review:"待确认"};
+function pill(st){const cls=st==="na"?"na":st;
+  return `<span class="pill ${cls}">${STATUS_TXT[st]||esc(st)}</span>`;}
+function confBar(c){
+  if(!c)return "";
+  const cls=c>=0.9?"hi":c>=0.75?"mid":"lo";
+  return `<span class="conf ${cls}"><i style="width:${Math.round(c*100)}%"></i></span>${Math.round(c*100)}%`;}
+
+function fieldsTable(fields){
+  if(!fields||!Object.keys(fields).length)return emptyCard("无字段数据");
+  const groups={};
+  Object.values(fields).forEach(f=>{(groups[f.group||"其他"]=groups[f.group||"其他"]||[]).push(f)});
+  let html="";
+  for(const[g,fs]of Object.entries(groups)){
+    const found=fs.filter(f=>f.status==="found").length;
+    html+=`<div class="card"><h4>${esc(g)} · ${found}/${fs.length}</h4><table>
+      <tr><th style="width:150px">字段</th><th style="width:120px">状态</th>
+      <th>提取值（点击看原文证据）</th><th style="width:90px">置信度</th></tr>`;
+    fs.forEach(f=>{
+      const hasEv=(f.evidence_ids||[]).length>0;
+      const val=f.status==="found"
+        ?`<span class="val" onclick="showEvidence('${jsq(f.field_key)}','${jsq(f.value_raw||"")}',${evAttr(f.evidence_ids)})">${esc(f.value_raw)}</span>`
+        :`<span class="val empty">—</span>`;
+      html+=`<tr class="rowh"><td><b>${esc(f.field_label)}</b>${f.required?'<span class="req-flag">必填</span>':""}</td>
+        <td>${pill(f.status)}</td><td>${val}
+        ${f.note?`<div class="note">${esc(f.note)}</div>`:""}</td>
+        <td>${f.status==="found"?confBar(f.confidence):""}</td></tr>`;
+    });
+    html+="</table></div>";
+  }
+  return html;
+}
+function lotsHtml(){
+  const lf=REPORT.lot_fields||{};
+  const lots=Object.keys(lf);
+  if(!lots.length)return emptyCard("本文件未识别出分标/包件级字段");
+  let html=`<div class="card"><div class="lotbar">${lots.map((l,i)=>
+    `<button class="${i===0?"on":""}" data-lot="${esc(l)}" onclick="selLot('${jsq(l)}',this)">${esc(l)}</button>`).join("")}
+    </div><div id="lot-body"></div></div>`;
+  setTimeout(()=>selLot(lots[0],document.querySelector(".lotbar button")),0);
+  return html;
+}
+function selLot(lot,btn){
+  document.querySelectorAll(".lotbar button").forEach(b=>b.classList.remove("on"));
+  btn.classList.add("on");
+  $("#lot-body").innerHTML=fieldsTable(REPORT.lot_fields[lot]||{});
+}
+function scoresHtml(){
+  const sc=REPORT.scores||[];
+  if(!sc.length)return emptyCard("未解析出评分项（该文件可能无评分办法章节）");
+  const cats={technical:"技术标",commercial:"商务标",price:"价格标"};
+  let html="";
+  for(const[ck,cn]of Object.entries(cats)){
+    const items=sc.filter(s=>s.category===ck);
+    if(!items.length)continue;
+    const total=items.reduce((a,b)=>a+(+b.max_score||0),0);
+    html+=`<div class="card"><h4>${cn} · ${items.length} 项 · 合计 ${round1(total)} 分</h4><table>
+      <tr><th style="width:70px">编号</th><th>评分项</th><th style="width:70px">分值</th>
+      <th style="width:90px">状态</th><th style="width:80px">置信度</th></tr>`;
+    items.forEach(s=>{
+      const hasEv=(s.evidence_ids||[]).length>0;
+      html+=`<tr class="rowh"><td>${esc(s.score_id)}</td>
+        <td><b>${esc(s.name)}</b><div class="note">${esc((s.rule_text||"").slice(0,220))}${(s.rule_text||"").length>220?"…":""}</div>
+        ${(s.parsed_rule&&Object.keys(s.parsed_rule).length)?`<div class="note">结构化：${esc(JSON.stringify(s.parsed_rule))}</div>`:""}</td>
+        <td><b>${round1(s.max_score)}</b></td>
+        <td>${pill(s.status)}</td>
+        <td>${hasEv?`<span class="val" onclick="showEvidence('${jsq(s.score_id)}','${jsq(s.name)}',${evAttr(s.evidence_ids)})">证据</span>`:confBar(s.confidence)}</td></tr>`;
+    });
+    html+="</table></div>";
+  }
+  return html||emptyCard("无评分项");
+}
+function reqsHtml(){
+  const rs=REPORT.requirements||[];
+  if(!rs.length)return emptyCard("未解析出商务/资格要求");
+  return `<div class="card"><table>
+    <tr><th style="width:70px">编号</th><th style="width:110px">类型</th><th>要求原文</th>
+    <th style="width:90px">状态</th><th style="width:60px">证据</th></tr>
+    ${rs.map(r=>`<tr class="rowh"><td>${esc(r.req_id)}</td>
+      <td>${esc(r.subject||r.type)}</td><td>${esc(r.constraint)}
+      ${(r.parsed&&Object.keys(r.parsed).length)?`<div class="note">结构化：${esc(JSON.stringify(r.parsed))}</div>`:""}</td>
+      <td>${pill(r.status)}</td>
+      <td>${(r.evidence_ids||[]).length?`<span class="val" onclick="showEvidence('${jsq(r.req_id)}','',${evAttr(r.evidence_ids)})">查看</span>`:"—"}</td></tr>`).join("")}
+  </table></div>`;
+}
+function rejHtml(){
+  const rj=REPORT.rejections||[],st=REPORT.star_clauses||[];
+  if(!rj.length&&!st.length)return emptyCard("未解析出否决/废标条款（该文件可能无否决情形表）");
+  let html="";
+  if(rj.length)html+=`<div class="card"><h4>否决情形 · ${rj.length} 条</h4><table>
+    <tr><th style="width:70px">编号</th><th style="width:110px">分类</th><th>条款原文</th>
+    <th style="width:70px">严重度</th></tr>
+    ${rj.map(r=>`<tr class="rowh"><td>${esc(r.rej_id)}</td><td>${esc(r.category||"-")}</td>
+      <td>${esc(r.text)}${(r.evidence_ids||[]).length?` <span class="val" onclick="showEvidence('${jsq(r.rej_id)}','',${evAttr(r.evidence_ids)})">[证据]</span>`:""}</td>
+      <td><span class="pill ${r.severity==="high"?"failed":r.severity==="medium"?"pending_review":"na"}">${esc(r.severity)}</span></td></tr>`).join("")}
+  </table></div>`;
+  if(st.length)html+=`<div class="card"><h4>星号条款 · ${st.length} 条</h4><table>
+    ${st.map(s=>`<tr class="rowh"><td>${esc(s.clause_id)}</td><td>${esc(s.text)}</td></tr>`).join("")}
+  </table></div>`;
+  return html;
+}
+function checksHtml(){
+  const sc=REPORT.sum_checks||[],iss=REPORT.issues||[];
+  let html="";
+  if(sc.length)html+=`<div class="card"><h4>分值合计校验</h4><table>
+    <tr><th>类别</th><th style="width:110px">声明总分</th><th style="width:110px">评分项合计</th>
+    <th style="width:110px">结果</th><th>备注</th></tr>
+    ${sc.map(c=>`<tr class="rowh"><td>${esc(c.category==="technical"?"技术":c.category==="commercial"?"商务":c.category==="price"?"价格":esc(c.category))}${c.lot&&c.lot!=="-"?"（"+esc(c.lot)+"）":""}</td>
+      <td>${c.declared_total==null?"—":round1(c.declared_total)}</td>
+      <td>${round1(c.computed_total)}</td>
+      <td class="${c.state==="passed"?"pass":c.state==="failed"?"fail":"unv"}">${
+        c.state==="passed"?"✓ 一致":c.state==="failed"?"✗ 不一致":"无法校验"}</td>
+      <td class="note">${esc(c.note||"")}</td></tr>`).join("")}
+  </table></div>`;
+  html+=`<div class="card"><h4>问题清单 · ${iss.length} 条</h4>
+    ${iss.length?iss.map(i=>`<div class="issue warn">⚠ ${esc(i)}</div>`).join("")
+      :'<div class="issue">无问题</div>'}</div>`;
+  const led=REPORT.ledger;
+  if(led)html+=`<div class="card"><h4>处理台账</h4><table><tr>
+    <td>文件总数 <b>${led.total}</b></td><td>完成 <b>${led.done}</b></td>
+    <td>排除 <b>${led.excluded}</b></td><td>复核失败 <b>${led.failed_review}</b></td>
+    <td>完成闸门 ${led.complete_gate_passed?'<span class="pass">✓ 通过</span>':'<span class="fail">未通过</span>'}</td></tr></table></div>`;
+  return html;
+}
+function sectionsHtml(){
+  const flat=[];
+  (function walk(ns,d){(ns||[]).forEach(n=>{flat.push([n,d]);walk(n.children,d+1)})})(REPORT.sections,0);
+  if(!flat.length)return emptyCard("无章节树");
+  return `<div class="card"><div class="sec-tree">${flat.map(([n,d])=>
+    `<div class="sec-item" style="padding-left:${d*22}px">${n.no?`<b>${esc(n.no)}</b> `:""}${esc(n.title)||"(无标题)"}
+     <span class="note">${n.block_end-n.block_start>0?`块 ${n.block_start}-${n.block_end}`:""}</span></div>`).join("")}</div></div>`;
+}
+const emptyCard=msg=>`<div class="card"><div class="issue" style="padding:26px;text-align:center;color:var(--sub)">${msg}</div></div>`;
+const round1=n=>Math.round((+n||0)*10)/10;
+
+/* ---------- 证据抽屉 ---------- */
+function showEvidence(key,name,evIds){
+  evIds=evIds||[];
+  $("#d-title").textContent=`证据 · ${name||key}`;
+  const body=$("#d-body");
+  if(!evIds.length){body.innerHTML=emptyCard("该字段无证据引用");openDrawer();return;}
+  body.innerHTML=`<div class="note" style="margin-bottom:10px">共 ${evIds.length} 条证据，点击页码切换原文页（蓝色框为该证据定位）</div><div id="d-list"></div>`;
+  const list=$("#d-list");
+  evIds.forEach(eid=>{
+    const e=EV_BY_ID[eid];
+    if(!e){list.insertAdjacentHTML("beforeend",
+      `<div class="ev-block"><div class="ev-snip note">证据 ${esc(eid)} 不在当前报告中</div></div>`);return;}
+    const kindTxt={table_cell:"表格",block:"原文块",llm_quote:"LLM 引用（已回查原文）"}[e.kind]||e.kind;
+    let h=`<div class="ev-block"><div class="ev-h"><span class="ev-kind">${kindTxt}</span>
+      <span>${esc(eid)}</span>
+      ${e.page_no>0?`<span>第 ${e.page_no} 页</span>`:'<span class="note">docx 无页码</span>'}
+      <span class="ev-src">${esc(e.source_file||"")}</span></div>
+      <div class="ev-snip">${esc(e.snippet||"(无文本片段)")}</div>`;
+    if(e.page_no>0)h+=`<div class="ev-img" id="img-${eid}" data-page="${e.page_no}" data-bbox='${JSON.stringify(e.bbox||null)}' data-eid="${eid}"><div class="note" style="padding:10px">加载原文页…</div></div>`;
+    h+="</div>";
+    list.insertAdjacentHTML("beforeend",h);
+  });
+  // 逐个加载原文页图（有页码的证据才加载）
+  document.querySelectorAll(".ev-img[data-page]").forEach(div=>loadEvPage(div));
+  openDrawer();
+}
+function loadEvPage(div){
+  const eid=div.dataset.eid;
+  fetch(API+`/api/reports/${REPORT.doc_id}/evidence/${eid}/page.png`)
+  .then(r=>{
+    if(!r.ok)throw 0;
+    const pr=(r.headers.get("X-Page-Rect")||"").split(",").map(Number);
+    const bbox=JSON.parse(div.dataset.bbox||"null");
+    return r.blob().then(b=>{
+      const url=URL.createObjectURL(b);
+      div.innerHTML=`<img src="${url}">`+
+        (bbox&&bbox.length===4&&pr.length===2?bboxHtml(bbox,pr,eid):"");
+    });
+  }).catch(()=>{
+    div.innerHTML='<div class="note" style="padding:10px">原文页渲染失败（可能为 docx 链路或源文件缺失）</div>';
+  });
+}
+function bboxHtml(bbox,pageRect,focusEid){
+  // 同页其他证据一起淡显，当前证据蓝框高亮（百分比定位，与渲染 DPI 无关）
+  const others=REPORT.evidence.filter(e=>e.page_no==pageNoOf(focusEid)&&e.evidence_id!==focusEid&&e.bbox&&e.bbox.length===4);
+  let h="";
+  others.forEach(e=>{
+    const[b0,b1,b2,b3]=norm(e.bbox,pageRect);
+    h+=`<div class="hl other" style="left:${b0}%;top:${b1}%;width:${b2-b0}%;height:${b3-b1}%"></div>`;
+  });
+  const[x0,y0,x1,y1]=norm(bbox,pageRect);
+  return `<div class="hl mine" style="left:${x0}%;top:${y0}%;width:${x1-x0}%;height:${y1-y0}%"></div>`+h;
+}
+function pageNoOf(eid){const e=EV_BY_ID[eid];return e?e.page_no:-1}
+function norm(bbox,pr){
+  const[x0,y0,x1,y1]=bbox;
+  return [x0/pr[0]*100,y0/pr[1]*100,x1/pr[0]*100,y1/pr[1]*100];
+}
+function openDrawer(){$("#drawer").classList.add("open")}
+function closeDrawer(){$("#drawer").classList.remove("open")}
+
+/* ---------- 顶栏按钮 ---------- */
+$("#btn-export").onclick=()=>{
+  if(!REPORT)return;
+  const blob=new Blob([JSON.stringify(REPORT,null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);a.download=`report_${REPORT.doc_id}.json`;a.click();
+};
+$("#btn-copy").onclick=()=>{
+  if(REPORT)navigator.clipboard.writeText(REPORT.doc_id).then(()=>$("#btn-copy").textContent="已复制 ✓");
+  setTimeout(()=>$("#btn-copy").textContent="复制 doc_id",1500);
+};
+loadHistory();
+</script>
+</body>
+</html>

@@ -1,7 +1,9 @@
 """FastAPI 服务：
   POST /api/analyze                     上传文件 → 跑完整管线 → 返回解析报告
+  GET  /api/reports                     历史报告列表（供 UI 侧栏）
   GET  /api/reports/{doc_id}            获取历史报告
   GET  /api/reports/{doc_id}/evidence/{eid}/page.png   证据原文页渲染（bbox 高亮）
+  GET  /ui                              Web 界面（上传/字段/评分/证据原文对照）
   GET  /healthz
 """
 from __future__ import annotations
@@ -22,6 +24,14 @@ app.include_router(a2a_router)
 from bidmaster.mcp_server import router as mcp_router
 app.include_router(mcp_router)
 ALLOWED_EXT = {".docx", ".doc", ".pdf"}
+
+
+@app.get("/ui")
+def ui():
+    """Web 界面（零依赖单页应用，模式参考 MinerU 上传即解析 / RAGFlow 引用高亮）。"""
+    from fastapi.responses import FileResponse
+    return FileResponse(Path(__file__).parent / "web" / "index.html",
+                        media_type="text/html")
 
 
 @app.get("/healthz")
@@ -65,6 +75,30 @@ async def analyze(file: UploadFile = File(...), force: bool = Form(False)):
     return report.model_dump(mode="json")
 
 
+@app.get("/api/reports")
+def list_reports():
+    """历史报告列表（UI 侧栏用）：扫 work/*/06_report.json 取摘要。"""
+    out = []
+    for rep_file in sorted(pipeline.work_root.glob("*/06_report.json"),
+                           key=lambda p: p.stat().st_mtime, reverse=True):
+        try:
+            r = pipeline.load_report(rep_file.parent.name)
+        except Exception:  # noqa: BLE001 损坏报告跳过
+            continue
+        if r is None:
+            continue
+        out.append({
+            "doc_id": r.doc_id,
+            "file_name": r.file_name,
+            "generated_at": r.generated_at,
+            "stats": r.stats,
+            "issues": len(r.issues),
+        })
+        if len(out) >= 100:
+            break
+    return out
+
+
 @app.get("/api/reports/{doc_id}")
 def get_report(doc_id: str):
     report = pipeline.load_report(doc_id)
@@ -105,11 +139,14 @@ def evidence_page_png(doc_id: str, evidence_id: str):
     if ev.page_no > doc.page_count:
         raise HTTPException(404, "页码越界")
     page = doc[ev.page_no - 1]
+    rect = page.rect  # 关文档前取页面尺寸（关闭后页面对象失效）
     pix = page.get_pixmap(dpi=120)
     png_bytes = pix.tobytes("png")
     doc.close()
-    # bbox 高亮在服务端以 SVG 叠加太重——返回页图 + bbox 坐标由前端画框
+    # bbox 高亮在服务端以 SVG 叠加太重——返回页图 + bbox 坐标由前端画框；
+    # X-Page-Rect 提供页面点尺寸，前端把 bbox 换算成百分比定位（与渲染 DPI 无关）
     return Response(
         content=png_bytes, media_type="image/png",
         headers={"X-Source-File": ev.source_file,
+                 "X-Page-Rect": f"{rect.width:.2f},{rect.height:.2f}",
                  "X-Bbox": str(ev.bbox or [])})
