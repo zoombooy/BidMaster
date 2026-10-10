@@ -17,6 +17,7 @@ from fastapi.responses import Response
 from bidmaster.a2a.routes import router as a2a_router
 from bidmaster.config import get_settings
 from bidmaster.orchestration.pipeline import Pipeline
+from bidmaster.storage.json_store import read_json
 
 app = FastAPI(title="BidMaster 招标文件解析 Agent", version="0.1.0")
 pipeline = Pipeline(work_root=Path("work"))
@@ -105,6 +106,79 @@ def get_report(doc_id: str):
     if report is None:
         raise HTTPException(404, f"报告不存在: {doc_id}")
     return report.model_dump(mode="json")
+
+
+@app.get("/api/reports/{doc_id}/evidence/{evidence_id}/context")
+def evidence_context(doc_id: str, evidence_id: str):
+    """docx 证据的原文上下文（无页码时的"查看原文"）。
+
+    从已解析的源文档结构还原证据周边原文，三类证据三种还原：
+    - table_cell → 整张原表（含全部行列），标记命中单元格
+    - block      → 命中块 + 前后各 3 块原文
+    - llm_quote  → full_text 引用区间 ±120 字，引用段加标记
+    """
+    report = pipeline.load_report(doc_id)
+    if report is None:
+        raise HTTPException(404, f"报告不存在: {doc_id}")
+    ev = next((e for e in report.evidence if e.evidence_id == evidence_id), None)
+    if ev is None:
+        raise HTTPException(404, "证据不存在")
+    parsed_file = Path("work", doc_id, "02_parsed.json")
+    if not parsed_file.exists():
+        raise HTTPException(404, "解析产物不存在")
+    from bidmaster.schemas.document import ParsedDocument
+    parsed = ParsedDocument.model_validate(read_json(parsed_file))
+
+    if ev.kind == "table_cell" and ev.table_id:
+        tb = next((t for t in parsed.tables if t.table_id == ev.table_id), None)
+        if tb is None:
+            raise HTTPException(404, "原表不存在（可能被跨页合并重排）")
+        hit = None
+        if ev.row is not None and 0 <= ev.row < len(tb.rows):
+            col = ev.col if (ev.col is not None and 0 <= ev.col
+                             < len(tb.rows[ev.row])) else None
+            hit = {"row": ev.row, "col": col}
+        # 值单元格定位：片段为"label → value"形态时，在表内搜值文本
+        # （跨行 label:value 的证据记的是标签位，值在相邻行，一并标出让原文一眼可读）
+        hit_value = None
+        if hit and " → " in (ev.snippet or ""):
+            want = (ev.snippet.split(" → ", 1)[1] or "").strip()
+            if want:
+                order = (list(range(hit["row"], len(tb.rows)))
+                         + list(range(0, hit["row"])))
+                for ri in order:
+                    if want in tb.rows[ri]:
+                        hit_value = {"row": ri,
+                                     "col": tb.rows[ri].index(want)}
+                        break
+        return {"kind": "table", "table_id": tb.table_id,
+                "caption": tb.caption, "rows": tb.rows, "hit": hit,
+                "hit_value": hit_value}
+
+    if ev.kind == "llm_quote" and ev.char_end > ev.char_start:
+        lo, hi = max(0, ev.char_start - 120), min(len(parsed.full_text),
+                                                  ev.char_end + 120)
+        return {"kind": "quote",
+                "text": parsed.full_text[lo:hi],
+                "quote_start": ev.char_start - lo,
+                "quote_end": ev.char_end - lo}
+
+    # block 或其他：按 block_id 取上下文；无 block_id 时退回片段本身
+    ctx_blocks = []
+    if ev.block_id:
+        idx = next((i for i, b in enumerate(parsed.blocks)
+                    if b.block_id == ev.block_id), None)
+        if idx is not None:
+            for j in range(max(0, idx - 3), min(len(parsed.blocks), idx + 4)):
+                b = parsed.blocks[j]
+                text = b.text or (f"［表格 {b.table_ref}］" if b.table_ref else "")
+                if text.strip():
+                    ctx_blocks.append({"text": text, "type": b.type,
+                                       "highlight": j == idx})
+    if not ctx_blocks and ev.snippet:
+        ctx_blocks.append({"text": ev.snippet, "type": "paragraph",
+                           "highlight": True})
+    return {"kind": "blocks", "blocks": ctx_blocks}
 
 
 @app.get("/api/reports/{doc_id}/evidence/{evidence_id}/page.png")

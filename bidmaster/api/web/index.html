@@ -121,6 +121,21 @@ tr.rowh:hover{background:#f8faff}
 .ev-kind{background:#eef2ff;color:var(--blue);border-radius:4px;padding:0 6px;font-size:11px}
 .ev-src{margin-left:auto}
 .ev-snip{padding:10px 12px;font-size:13px;line-height:1.65;white-space:pre-wrap;word-break:break-all}
+.orig-wrap{padding:10px 12px;overflow-x:auto}
+.orig-tag{font-size:11px;color:var(--blue);background:#eef2ff;border-radius:4px;
+  padding:1px 7px;display:inline-block;margin-bottom:8px}
+table.orig{width:100%;border-collapse:collapse;font-size:12px}
+table.orig td{border:1px solid #e0e5ef;padding:5px 8px;white-space:pre-wrap;word-break:break-all}
+table.orig td.hit{outline:2px solid var(--blue);outline-offset:-2px;background:#eef4ff;font-weight:600}
+table.orig td.val-hit{outline:2px solid var(--green);outline-offset:-2px;background:#e6f7f0;font-weight:600}
+.orig-legend{font-size:11px;color:var(--sub);margin-top:6px}
+.orig-legend i{display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:-1px;margin:0 3px 0 10px}
+.orig-legend .lg-label{background:#eef4ff;outline:1.5px solid var(--blue)}
+.orig-legend .lg-val{background:#e6f7f0;outline:1.5px solid var(--green)}
+.ctx-text{font-size:13px;line-height:1.8;white-space:pre-wrap;word-break:break-all}
+.ctx-text .blk{padding:1px 4px;border-radius:4px;display:block}
+.ctx-text .blk.hit{background:#eef4ff;outline:1.5px solid var(--blue);font-weight:600}
+.ctx-text mark{background:#ffe9a8;padding:1px 2px;border-radius:3px}
 .ev-img{position:relative;font-size:0;background:#dfe4ec;max-height:520px;overflow:auto}
 .ev-img img{width:100%;display:block}
 .ev-img .hl{position:absolute;border:2px solid rgba(214,69,69,.9);background:rgba(214,69,69,.16);
@@ -432,7 +447,7 @@ function showEvidence(key,name,evIds){
   $("#d-title").textContent=`证据 · ${name||key}`;
   const body=$("#d-body");
   if(!evIds.length){body.innerHTML=emptyCard("该字段无证据引用");openDrawer();return;}
-  body.innerHTML=`<div class="note" style="margin-bottom:10px">共 ${evIds.length} 条证据，点击页码切换原文页（蓝色框为该证据定位）</div><div id="d-list"></div>`;
+  body.innerHTML=`<div class="note" style="margin-bottom:10px">共 ${evIds.length} 条证据 · PDF 证据显示原文页高亮，docx 证据附原文上下文（原表/原文块）</div><div id="d-list"></div>`;
   const list=$("#d-list");
   evIds.forEach(eid=>{
     const e=EV_BY_ID[eid];
@@ -441,16 +456,48 @@ function showEvidence(key,name,evIds){
     const kindTxt={table_cell:"表格",block:"原文块",llm_quote:"LLM 引用（已回查原文）"}[e.kind]||e.kind;
     let h=`<div class="ev-block"><div class="ev-h"><span class="ev-kind">${kindTxt}</span>
       <span>${esc(eid)}</span>
-      ${e.page_no>0?`<span>第 ${e.page_no} 页</span>`:'<span class="note">docx 无页码</span>'}
+      ${e.page_no>0?`<span>第 ${e.page_no} 页</span>`:'<span class="note">无页码 · 附原文上下文</span>'}
       <span class="ev-src">${esc(e.source_file||"")}</span></div>
       <div class="ev-snip">${esc(e.snippet||"(无文本片段)")}</div>`;
     if(e.page_no>0)h+=`<div class="ev-img" id="img-${eid}" data-page="${e.page_no}" data-bbox='${JSON.stringify(e.bbox||null)}' data-eid="${eid}"><div class="note" style="padding:10px">加载原文页…</div></div>`;
+    else h+=`<div class="orig-wrap" id="ctx-${eid}"><div class="note" style="padding:10px">加载原文上下文…</div></div>`;
     h+="</div>";
     list.insertAdjacentHTML("beforeend",h);
   });
-  // 逐个加载原文页图（有页码的证据才加载）
+  // 有页码的加载原文页图，无页码的加载原文上下文
   document.querySelectorAll(".ev-img[data-page]").forEach(div=>loadEvPage(div));
+  document.querySelectorAll(".orig-wrap[id^=ctx-]").forEach(div=>loadEvContext(div));
   openDrawer();
+}
+async function loadEvContext(div){
+  const eid=div.id.slice(4);
+  try{
+    const r=await fetch(API+`/api/reports/${REPORT.doc_id}/evidence/${eid}/context`);
+    if(!r.ok)throw 0;
+    const ctx=await r.json();
+    if(ctx.kind==="table"){
+      let h=`<span class="orig-tag">原文表格 ${esc(ctx.table_id||"")}${ctx.caption?" · "+esc(ctx.caption):""}</span><table class="orig">`;
+      (ctx.rows||[]).forEach((row,ri)=>{
+        h+="<tr>"+row.map((c,ci)=>{
+          const isLabel=ctx.hit&&ctx.hit.row===ri&&(ctx.hit.col==null||ctx.hit.col===ci);
+          const isVal=ctx.hit_value&&ctx.hit_value.row===ri&&ctx.hit_value.col===ci;
+          return `<td class="${isLabel?"hit":""}${isVal?" val-hit":""}">${esc(c)||"&nbsp;"}</td>`;
+        }).join("")+"</tr>";
+      });
+      div.innerHTML=h+"</table>"+(ctx.hit&&ctx.hit_value?
+        '<div class="orig-legend">图例<i class="lg-label"></i>标签单元格<i class="lg-val"></i>取值单元格</div>':"");
+    }else if(ctx.kind==="quote"){
+      const t=ctx.text||"";
+      div.innerHTML='<span class="orig-tag">原文引用区间（黄色为 LLM 引用，已回查核对）</span><div class="ctx-text">'+
+        esc(t.slice(0,ctx.quote_start))+"<mark>"+esc(t.slice(ctx.quote_start,ctx.quote_end))+"</mark>"+
+        esc(t.slice(ctx.quote_end))+"</div>";
+    }else{
+      div.innerHTML='<span class="orig-tag">原文上下文（命中块前后各 3 块）</span><div class="ctx-text">'+
+        (ctx.blocks||[]).map(b=>`<span class="blk ${b.highlight?"hit":""}">${esc(b.text)}</span>`).join("")+"</div>";
+    }
+  }catch(e){
+    div.innerHTML='<div class="note" style="padding:10px">原文上下文不可用</div>';
+  }
 }
 function loadEvPage(div){
   const eid=div.dataset.eid;
