@@ -412,23 +412,35 @@ function scoresHtml(){
 const TYPE_LABELS={performance:"业绩要求",leader:"人员要求",team:"人员要求",
   qualification:"资质要求",finance:"财务能力",credit:"信用记录",honor:"奖项荣誉",
   commitment:"服务承诺",plan:"编制要求",price:"报价要求",star_clause:"实质性条款"};
+/* 用户口径的用途×内容组合标签：评分要求-业绩要求 / 标书要求-人员简历；双标→"评分/标书-…" */
+function reqTypeLabel(r){
+  const usage=[];
+  if(r.usage_scoring)usage.push("评分要求");
+  if(r.usage_document)usage.push("标书要求");
+  if(!usage.length)return TYPE_LABELS[r.type]||r.type||"—";
+  let content=TYPE_LABELS[r.type]||r.type||"—";
+  if(usage.includes("标书要求")&&(r.type==="leader"||r.type==="team"))content="人员简历";
+  return usage.join("/")+"-"+content;
+}
 function reqsHtml(){
   const rs=REPORT.requirements||[];
   if(!rs.length)return emptyCard("未解析出商务/资格要求");
   return `<div class="card"><table>
-    <tr><th style="width:70px">编号</th><th style="width:170px">类型</th><th>要求原文</th>
+    <tr><th style="width:70px">编号</th><th style="width:200px">类型</th><th>要求原文</th>
     <th style="width:90px">状态</th><th style="width:60px">证据</th></tr>
     ${rs.map(r=>{
-      const t=TYPE_LABELS[r.type]||r.type||"—";
       const subj=r.subject&&r.subject!==r.type&&/[\u4e00-\u9fa5]/.test(r.subject)
         ?" · "+r.subject:"";
+      const dual=r.usage_scoring&&r.usage_document;
       return `<tr class="rowh"><td>${esc(r.req_id)}</td>
-      <td><span class="pill cat-technical">${esc(t)}</span>${esc(subj)}</td><td>${esc(r.constraint)}
+      <td><span class="pill ${dual?"pending_review":"cat-technical"}">${esc(reqTypeLabel(r))}</span>${esc(subj)}</td><td>${esc(r.constraint)}
       ${(r.parsed&&Object.keys(r.parsed).length)?`<div class="note">结构化：${esc(JSON.stringify(r.parsed))}</div>`:""}</td>
       <td>${pill(r.status)}</td>
       <td>${(r.evidence_ids||[]).length?`<span class="val" onclick="showEvidence('${jsq(r.req_id)}','',${evAttr(r.evidence_ids)})">查看</span>`:"—"}</td></tr>`;
     }).join("")}
-  </table></div>`;
+  </table>
+  <div class="note" style="padding:9px 16px">类型 = 用途 × 内容：评分要求（怎么拿分）/ 标书要求（备什么材料）；双标（黄标）表示两者皆是。</div>
+  </div>`;
 }
 function rejHtml(){
   const rj=REPORT.rejections||[],st=REPORT.star_clauses||[];

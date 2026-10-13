@@ -53,10 +53,12 @@ class ScoreItem(BaseModel):
 
 class RequirementItem(BaseModel):
     req_id: str                         # R-001
-    type: str                           # REQ_* 常量
+    type: str                           # REQ_* 常量（内容维度：业绩/人员/资质…）
     subject: str = ""                   # 主体（如"项目负责人"/"技术负责人"）
     constraint: str = ""                # 要求原文
     parsed: dict = {}                   # 结构化字段（数量/金额/年限/证书…）
+    usage_scoring: bool = False         # 用途维度：评分相关（怎么拿分）
+    usage_document: bool = False        # 用途维度：标书构成相关（要备什么材料/格式）
     scoring_refs: list[str] = []        # 关联 ScoreItem.score_id
     evidence_ids: list[str] = []
     confidence: float = 0.0

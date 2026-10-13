@@ -181,27 +181,59 @@ _REQ_TYPE_MAP = [("qualification", "资质要求"), ("performance", "业绩要�
                  ("finance", "财务要求"), ("credit", "信用要求")]
 
 
+_REQ_TYPE_LABELS = {"performance": "业绩要求", "leader": "人员要求", "team": "人员要求",
+                    "qualification": "资质要求", "finance": "财务能力", "credit": "信用要求",
+                    "honor": "奖项荣誉", "commitment": "服务承诺", "plan": "编制要求",
+                    "price": "报价要求", "star_clause": "实质性条款"}
+
+
+def _usage_label(r) -> str:
+    """用途×内容组合标签：评分要求-业绩要求 / 标书要求-人员简历；双标→"评分/标书-…"。"""
+    usage = []
+    if _attr(r, "usage_scoring"):
+        usage.append("评分要求")
+    if _attr(r, "usage_document"):
+        usage.append("标书要求")
+    if not usage:
+        return ""
+    content = _REQ_TYPE_LABELS.get(_attr(r, "type"), _attr(r, "type"))
+    if "标书要求" in usage and _attr(r, "type") in ("leader", "team"):
+        content = "人员简历"
+    return "/".join(usage) + "-" + content
+
+
 def _req_sheet(wb, report, target_lot: str) -> None:
-    ws = _sheet(wb, "专用资格要求", [20, 14, 40, 52, 40])
-    ws.cell(row=1, column=1, value="专用资格要求（按类型归并，原文见证据）").font = _TITLE_FONT
-    _head(ws, 2, ["分标名称", "包号", "资质要求", "业绩要求", "人员要求"])
+    ws = _sheet(wb, "专用资格要求", [6, 18, 10, 10, 12, 78, 14])
+    ws.cell(row=1, column=1, value="专用资格要求（模板三列）").font = _TITLE_FONT
+    _head(ws, 2, ["", "分标名称", "包号", "资质要求", "业绩要求", "人员要求", ""])
     grouped: dict[str, list[str]] = {}
     for req in report.requirements or []:
         t = (_attr(req, "type") or "").replace("REQ_", "").lower()
         text = _attr(req, "constraint")
         if text:
             grouped.setdefault(t, []).append(text)
-    col_map = {"qualification": 3, "performance": 4, "leader": 5, "team": 5}
     lots = report.lot_info or []
     lot_name = lots[0].get("lot", "") if lots else ""
-    r = 3
-    _row(ws, r, [
-        _fv(report.fields, "project_name"),
-        target_lot or lot_name or "全部包",
-        "\n".join(grouped.get("qualification", [])) or _MISSING,
-        "\n".join(grouped.get("performance", [])) or _MISSING,
-        "\n".join(grouped.get("leader", []) + grouped.get("team", [])) or _MISSING,
-    ], target=True)
+    _row(ws, 3, ["", _fv(report.fields, "project_name"),
+                 target_lot or lot_name or "全部包",
+                 "\n".join(grouped.get("qualification", [])) or _MISSING,
+                 "\n".join(grouped.get("performance", [])) or _MISSING,
+                 "\n".join(grouped.get("leader", []) + grouped.get("team", [])) or _MISSING,
+                 ""], target=True)
+    # 块2：用途×内容分类清单（评分要求=怎么拿分；标书要求=备什么材料；可双标）
+    r0 = 5
+    ws.cell(row=r0, column=1,
+            value="要求分类清单（用途×内容；评分要求/标书要求 可双标）").font = _TITLE_FONT
+    _head(ws, r0 + 1, ["序号", "用途-内容", "状态", "", "", "要求原文", "关联评分项"])
+    reqs = report.requirements or []
+    for i, req in enumerate(reqs, 1):
+        refs = _attr(req, "scoring_refs")
+        _row(ws, r0 + 1 + i, [
+            i, _usage_label(req) or "—", _attr(req, "status"), "", "",
+            _attr(req, "constraint"),
+            "、".join(refs) if isinstance(refs, list) else ""])
+    if not reqs:
+        _row(ws, r0 + 2, ["—", "—", "", "", "", "未识别到要求", ""])
 
 
 # ------------------------------------------------------ 投标文件构成
@@ -234,6 +266,17 @@ def _outline_sheet(wb, report) -> None:
         seq += 1
         _row(ws, r, [seq, it.get("level", ""), it.get("name", ""), "其他"])
         r += 1
+    # 标书资料清单：标书构成类要求（应附材料/格式）→ 编标备料核对单
+    doc_reqs = [rq for rq in (report.requirements or []) if _attr(rq, "usage_document")]
+    if doc_reqs:
+        r += 1
+        ws.cell(row=r, column=1,
+                value="标书资料清单（来自标书构成类要求，编标备料核对）").font = _TITLE_FONT
+        r += 1
+        _head(ws, r, ["序", "内容类别", "要求原文（材料/格式）", "备注"])
+        for i, rq in enumerate(doc_reqs, 1):
+            _row(ws, r + i, [i, _REQ_TYPE_LABELS.get(_attr(rq, "type"),
+                _attr(rq, "type")), _attr(rq, "constraint"), "待备料"])
 
 
 # ------------------------------------------------------ 评分/否决 sheets

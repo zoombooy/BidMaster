@@ -161,9 +161,31 @@ class RequirementBuilder:
         self._from_scores()
         self._dedupe_team()
         self._link()
+        self._infer_usage()
         for i, r in enumerate(self.reqs, 1):
             r.req_id = f"R-{i:03d}"
         return self.reqs, self.stars
+
+    # ---------- 用途推断：评分要求（怎么拿分）× 标书要求（备什么材料），可双标 ----------
+    # 用户口径：评分要求-业绩要求 / 标书要求-人员简历 等；两维独立判定，不做四选一。
+    _SCORE_HINT = re.compile(
+        r"(得|加|扣)\s*[0-9０-９]+\s*分|[0-9０-９]+\s*分[的，,；]|评分|评标|优先|否决|不予|扣分")
+    _DOC_HINT = re.compile(
+        r"应附|复印件|原件|扫描件|加盖|盖章|简历表|基本情况表|样表|见.{0,8}格式|"
+        r"须提供|提供.{0,10}(?:证书|证明|报告|合同|发票|截图)|填报")
+
+    def _infer_usage(self) -> None:
+        """_link 之后调用。评分信号只看文本本身（关联评分项的关键词链接太松，
+        简历表要求也会挂上负责人评分项，不能作为"评分要求"的依据）；
+        无信号默认标书构成（材料/格式/表格类要求）。"""
+        for r in self.reqs:
+            text = r.constraint or ""
+            hit_score = bool(self._SCORE_HINT.search(text)) or r.type == REQ_PRICE
+            hit_doc = bool(self._DOC_HINT.search(text))
+            if hit_score:
+                r.usage_scoring = True
+            if hit_doc or not hit_score:
+                r.usage_document = True
 
     # ---------- 从评分项细则提取（国网格式：业绩/人员要求嵌在评分表"项目内容"列） ----------
     def _from_scores(self) -> None:

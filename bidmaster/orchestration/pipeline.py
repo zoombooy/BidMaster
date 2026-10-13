@@ -40,7 +40,7 @@ STAGE_FILES = {
 }
 # 产物格式版本：解析/评分逻辑升级导致旧缓存不兼容时必须 bump，
 # 管线启动时检测版本不符会自动级联失效全部缓存（防止新旧逻辑结果混杂）。
-CODE_VERSION = "0.3.0"
+CODE_VERSION = "0.4.0"
 _DOWNSTREAM = {  # 级联失效表
     "intake": ["parse", "structure", "fields", "scoring", "report"],
     "parse": ["structure", "fields", "scoring", "report"],
