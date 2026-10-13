@@ -62,27 +62,32 @@ def _find_format_section(tops: list) -> tuple[object, list]:  # (SectionNode, an
 
 
 def _walk(node) -> list[dict]:
-    """展开子树为扁平条目（跳过包装层与噪音行）。"""
+    """递归展开子树为扁平条目（跳过包装层与噪音行），保留层级。"""
     kids = list(node.children)
     # 包装层：唯一子节点且名字就是"…目录"，直接下钻
     while len(kids) == 1 and _clean(kids[0].title).endswith("目录"):
         kids = list(kids[0].children)
-    out = []
-    for n in kids:
-        title = _clean(n.title)
+    out: list[dict] = []
+
+    def _collect(n, depth: int) -> None:
+        for c in n.children:
+            title = _clean(c.title)
+            if not title or _JUNK_TITLE.match(title):
+                continue
+            no, name = _split_no(title)
+            out.append({"no": no, "name": name or title,
+                        "level": depth, "title": title})
+            _collect(c, depth + 1)
+
+    for k in kids:
+        title = _clean(k.title)
         if not title or _JUNK_TITLE.match(title):
             continue
         no, name = _split_no(title)
         out.append({"no": no, "name": name or title,
-                    "level": n.level, "title": title})
+                    "level": kids[0].level or 2, "title": title})
+        _collect(k, (k.level or 2) + 1)
     return out
-
-
-def _bucket_of(name: str, current: str | None) -> str | None:
-    for bucket, pat in _BUCKET_HINTS:
-        if pat.search(name):
-            return bucket
-    return current
 
 
 def extract_bid_format_outline(parsed: ParsedDocument,
@@ -99,9 +104,18 @@ def extract_bid_format_outline(parsed: ParsedDocument,
     if found:
         source_title = _clean(node.title)
         current = None
+        root_no = re.compile(r"^[一二三四五六七八九十]+、")
         for it in _walk(node):
-            current = _bucket_of(it["name"], current)
-            it["bucket_root"] = current is not None and _NUM_TOP.match(it["title"] or "") is not None
+            title = it.pop("title", "") or it["name"]
+            # 桶切换只在两处发生：编号根（"一、价格文件"）或尚未归属任何桶——
+            # 桶内条目（如商务文件下的"报价偏差说明"）跟随所属桶，防误切
+            m = None
+            for bucket, pat in _BUCKET_HINTS:
+                if pat.search(it["name"]):
+                    m = bucket
+                    break
+            if m and (root_no.match(title) or current is None):
+                current = m
             (buckets[current] if current else others).append(it)
     else:
         source_title = "未找到'投标文件格式'章节"
@@ -142,6 +156,13 @@ def _covered(item_names: str, score_name: str) -> bool:
     return bool(tokens) and tokens in item_names
 
 
+def _attr(s, key: str, default: str = "") -> str:
+    """评分项可能是 dict（管线阶段产物）或模型对象，统一取值。"""
+    if isinstance(s, dict):
+        return s.get(key) or default
+    return getattr(s, key, default) or default
+
+
 def _supplement_from_scores(buckets: dict, scores: list) -> int:
     added = 0
     cat_bucket = {"technical": "technical", "commercial": "commercial"}
@@ -149,13 +170,14 @@ def _supplement_from_scores(buckets: dict, scores: list) -> int:
         items = buckets[bucket]
         joined = "".join(i["name"] for i in items)
         for s in scores:
-            if s.category != cat or not s.name:
+            if _attr(s, "category") != cat or not _attr(s, "name"):
                 continue
-            if _covered(joined, s.name):
+            name = _attr(s, "name")
+            if _covered(joined, name):
                 continue
             buckets[bucket].append({
-                "no": "", "name": s.name, "level": 2,
-                "title": s.name, "generated": True})
-            joined += s.name
+                "no": "", "name": name, "level": 2,
+                "title": name, "generated": True})
+            joined += name
             added += 1
     return added

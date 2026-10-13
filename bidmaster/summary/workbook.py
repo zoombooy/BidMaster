@@ -55,11 +55,20 @@ def _row(ws, row: int, values: list, target: bool = False) -> None:
             cell.fill = _TARGET_FILL
 
 
+def _attr(obj, key: str, default=""):
+    """字段/评分/要求可能是模型对象（load_report）或 dict，统一取值。"""
+    if isinstance(obj, dict):
+        v = obj.get(key, default)
+    else:
+        v = getattr(obj, key, default)
+    return v if v is not None else default
+
+
 def _fv(fields: dict, key: str) -> str:
     f = fields.get(key)
-    if not f or f.get("status") != "found":
+    if not f or _attr(f, "status") != "found":
         return _MISSING
-    return f.get("value_normalized") or f.get("value_raw") or ""
+    return _attr(f, "value_normalized") or _attr(f, "value_raw") or ""
 
 
 def _cn_num(n: int) -> str:
@@ -100,12 +109,13 @@ def _basic_sheet(wb, report, target_lot: str) -> None:
     skip = {"project_name"}
     r = 2
     for f in report.fields.values():
-        if f.field_key in skip or f.group == "评标总纲":
+        if _attr(f, "field_key") in skip or _attr(f, "group") == "评标总纲":
             continue
-        conf = f"{round(f.confidence * 100)}%" if f.status == "found" else ""
-        _row(ws, r, [f.field_label,
-                     f.value_normalized if f.status == "found" else _MISSING,
-                     conf, f.status])
+        status = _attr(f, "status")
+        conf = f"{round(float(_attr(f, 'confidence') or 0) * 100)}%" if status == "found" else ""
+        _row(ws, r, [_attr(f, "field_label"),
+                     _attr(f, "value_normalized") if status == "found" else _MISSING,
+                     conf, status])
         r += 1
     # 分标信息块（对齐客户模板第一块）
     lots = report.lot_info or []
@@ -138,16 +148,16 @@ def _lot_sheet(wb, report, target_lot: str) -> None:
         fields = lf.get(lot, {})
         price = ""
         pf = fields.get("price_limit")
-        if pf and pf.get("status") == "found":
-            price = pf.get("value_normalized") or pf.get("value_raw")
+        if pf and _attr(pf, "status") == "found":
+            price = _attr(pf, "value_normalized") or _attr(pf, "value_raw")
         dur = ""
         df = fields.get("duration")
-        if df and df.get("status") == "found":
-            dur = df.get("value_normalized") or df.get("value_raw")
+        if df and _attr(df, "status") == "found":
+            dur = _attr(df, "value_normalized") or _attr(df, "value_raw")
         site = ""
         sf = fields.get("site")
-        if sf and sf.get("status") == "found":
-            site = sf.get("value_normalized") or sf.get("value_raw")
+        if sf and _attr(sf, "status") == "found":
+            site = _attr(sf, "value_normalized") or _attr(sf, "value_raw")
         _row(ws, r, [_fv(report.fields, "project_name"), lot, lot,
                      li.get("project", ""), "见招标公告", "见技术规范书",
                      site or _MISSING, dur or _MISSING,
@@ -177,8 +187,8 @@ def _req_sheet(wb, report, target_lot: str) -> None:
     _head(ws, 2, ["分标名称", "包号", "资质要求", "业绩要求", "人员要求"])
     grouped: dict[str, list[str]] = {}
     for req in report.requirements or []:
-        t = (req.type or "").replace("REQ_", "").lower()
-        text = req.constraint or ""
+        t = (_attr(req, "type") or "").replace("REQ_", "").lower()
+        text = _attr(req, "constraint")
         if text:
             grouped.setdefault(t, []).append(text)
     col_map = {"qualification": 3, "performance": 4, "leader": 5, "team": 5}
@@ -231,7 +241,7 @@ def _rej_sheet(wb, report) -> None:
     ws = _sheet(wb, "初步评审标准", [8, 14, 90])
     _head(ws, 1, ["序号", "情形分类", "否决/无效条款原文"])
     for i, rj in enumerate(report.rejections or [], 1):
-        _row(ws, i + 1, [i, rj.category or "", rj.text or ""])
+        _row(ws, i + 1, [i, _attr(rj, "category"), _attr(rj, "text")])
     if not (report.rejections or []):
         _row(ws, 2, ["—", "—", "未识别到否决条款（该文件可能无否决情形表）"])
 
@@ -239,10 +249,10 @@ def _rej_sheet(wb, report) -> None:
 def _score_sheet(wb, report, category: str, sheet: str) -> None:
     ws = _sheet(wb, sheet, [8, 26, 10, 80, 12])
     _head(ws, 1, ["序号", "评分项", "分值", "评分标准", "状态"])
-    items = [s for s in (report.scores or []) if s.category == category]
+    items = [s for s in (report.scores or []) if _attr(s, "category") == category]
     for i, s in enumerate(items, 1):
-        _row(ws, i + 1, [i, s.name, s.max_score or "",
-                         s.rule_text or "", s.status])
+        _row(ws, i + 1, [i, _attr(s, "name"), _attr(s, "max_score"),
+                         _attr(s, "rule_text"), _attr(s, "status")])
     if not items:
         _row(ws, 2, ["—", "—", "—", "未识别到该类评分项", ""])
 
