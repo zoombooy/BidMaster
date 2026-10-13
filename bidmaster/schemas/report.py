@@ -47,6 +47,8 @@ class TenderReport(BaseModel):
     fields: dict[str, FieldExtraction] = {}
     lot_fields: dict[str, dict[str, FieldExtraction]] = {}  # 分标/包件级字段（多分标公告按包隔离）
     lot_info: list[dict] = []
+    target_lot: str = ""                 # 单包聚焦：多包项目客户只编一个包的标书（默认包号最小的包）
+    bid_outline: dict = {}               # 投标文件构成目录（来自"第X章 投标文件格式"标题树 + 评分项补充）
     conflicts: list[FieldConflict] = []
     scores: list[ScoreItem] = []
     requirements: list[RequirementItem] = []

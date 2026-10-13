@@ -72,7 +72,10 @@ main{flex:1;display:flex;overflow:hidden}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
   margin-top:14px;overflow:hidden;box-shadow:var(--shadow)}
 .card h4{font-size:13px;color:var(--sub);font-weight:500;padding:10px 16px;
-  border-bottom:1px solid var(--line);background:#fafbfe}
+  border-bottom:1px solid var(--line);background:#fafbfe;display:flex;align-items:center;gap:8px}
+.btn-dl{margin-left:auto;border:1px solid var(--blue);color:var(--blue);background:#fff;
+  border-radius:7px;padding:4px 12px;font-size:12px;cursor:pointer}
+.btn-dl:hover{background:var(--blue);color:#fff}
 table{width:100%;border-collapse:collapse}
 td,th{padding:9px 14px;text-align:left;font-size:13px;border-bottom:1px solid #f0f2f8;vertical-align:top}
 th{font-size:12px;color:var(--sub);font-weight:500;background:#fafbfe;white-space:nowrap}
@@ -158,6 +161,7 @@ table.orig td.val-hit{outline:2px solid var(--green);outline-offset:-2px;backgro
   <span class="logo">BidMaster<small>招标文件解析 Agent</small></span>
   <span class="badge" id="health">检查服务中…</span>
   <div class="right">
+    <button id="btn-summary" style="display:none">⬇ 下载汇总表</button>
     <button id="btn-export" style="display:none">导出报告 JSON</button>
     <button id="btn-copy" style="display:none">复制 doc_id</button>
   </div>
@@ -266,13 +270,13 @@ function openReport(docId,el){
 }
 
 /* ---------- 报告渲染 ---------- */
-const TABS=[["fields","字段提取"],["lots","包件字段"],["scores","评分标准"],
+const TABS=[["fields","字段提取"],["lots","包件字段"],["outline","投标文件构成"],["scores","评分标准"],
   ["reqs","商务要求"],["rej","否决条款"],["checks","校验与问题"],["sections","章节结构"]];
 let CUR_TAB="fields";
 function showReport(d){
   REPORT=d;EV_BY_ID={};
   (d.evidence||[]).forEach(e=>EV_BY_ID[e.evidence_id]=e);
-  $("#btn-export").style.display=$("#btn-copy").style.display="inline-block";
+  $("#btn-export").style.display=$("#btn-copy").style.display=$("#btn-summary").style.display="inline-block";
   const s=d.stats||{};
   const chips=[`字段 <b>${s.fields_found??0}/${s.fields_total??""}</b>`,
     `评分项 <b>${s.score_items??0}</b>`,`要求 <b>${s.requirements??0}</b>`,
@@ -299,6 +303,7 @@ function renderTab(){
   const el=$("#tab-body");if(!REPORT)return;
   if(CUR_TAB==="fields")el.innerHTML=fieldsTable(REPORT.fields);
   else if(CUR_TAB==="lots")el.innerHTML=lotsHtml();
+  else if(CUR_TAB==="outline")el.innerHTML=outlineHtml();
   else if(CUR_TAB==="scores")el.innerHTML=scoresHtml();
   else if(CUR_TAB==="reqs")el.innerHTML=reqsHtml();
   else if(CUR_TAB==="rej")el.innerHTML=rejHtml();
@@ -347,6 +352,32 @@ function lotsHtml(){
     </div><div id="lot-body"></div></div>`;
   setTimeout(()=>selLot(lots[0],document.querySelector(".lotbar button")),0);
   return html;
+}
+function outlineHtml(){
+  const o=REPORT.bid_outline||{};
+  if(!o.buckets)return emptyCard("无投标文件构成目录（旧报告，force 重跑后生成）");
+  let html=`<div class="card"><h4>目录来源：${esc(o.source_section||"—")}
+    ${o.found?"":"<span class='pill failed'>未找到原文章节，按评分项生成</span>"}
+    ${o.supplemented?`<span class="pill pending_review">${o.supplemented} 项由评分项补充</span>`:""}
+    <button class="btn-dl" onclick="location.href='/api/reports/${esc(REPORT.doc_id)}/summary.xlsx'">⬇ 下载投标要点汇总表 xlsx</button></h4>`;
+  for(const b of o.buckets){
+    if(!(b.items||[]).length)continue;
+    html+=`<table><tr><th style="width:120px">${esc(b.label)}</th><th>目录条目</th></tr>`;
+    let lastLevel=1;
+    b.items.forEach(it=>{
+      const indent=Math.max(0,(it.level-lastLevel))*18;
+      html+=`<tr class="rowh"><td>${esc(it.no||"")}</td>
+        <td style="padding-left:${14+indent}px">${esc(it.name||it.title)}
+        ${it.generated?'<span class="pill pending_review">评分项补充</span>':""}</td></tr>`;
+      lastLevel=it.level;
+    });
+    html+="</table>";
+  }
+  if((o.others||[]).length){
+    html+=`<table><tr><th style="width:120px">其他</th><th>目录条目</th></tr>`+
+      o.others.map(it=>`<tr class="rowh"><td>${esc(it.no||"")}</td><td style="padding-left:14px">${esc(it.name||it.title)}</td></tr>`).join("")+"</table>";
+  }
+  return html+"</div>";
 }
 function selLot(lot,btn){
   document.querySelectorAll(".lotbar button").forEach(b=>b.classList.remove("on"));
@@ -535,6 +566,9 @@ function openDrawer(){$("#drawer").classList.add("open")}
 function closeDrawer(){$("#drawer").classList.remove("open")}
 
 /* ---------- 顶栏按钮 ---------- */
+$("#btn-summary").onclick=()=>{
+  if(REPORT)location.href=`/api/reports/${REPORT.doc_id}/summary.xlsx`;
+};
 $("#btn-export").onclick=()=>{
   if(!REPORT)return;
   const blob=new Blob([JSON.stringify(REPORT,null,2)],{type:"application/json"});

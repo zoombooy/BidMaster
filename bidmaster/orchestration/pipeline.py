@@ -40,7 +40,7 @@ STAGE_FILES = {
 }
 # 产物格式版本：解析/评分逻辑升级导致旧缓存不兼容时必须 bump，
 # 管线启动时检测版本不符会自动级联失效全部缓存（防止新旧逻辑结果混杂）。
-CODE_VERSION = "0.2.0"
+CODE_VERSION = "0.3.0"
 _DOWNSTREAM = {  # 级联失效表
     "intake": ["parse", "structure", "fields", "scoring", "report"],
     "parse": ["structure", "fields", "scoring", "report"],
@@ -433,6 +433,11 @@ class Pipeline:
             [s for s in (scoring["scores"])],
             scoring.get("declared", []), field_values, issues)
         required_fields_check(fields, issues)
+        # 投标文件构成目录（"第X章 投标文件格式"标题树 + 评分项补充）与单包聚焦
+        from bidmaster.summary.outline import extract_bid_format_outline, pick_target_lot
+        score_items = [s for s in (scoring["scores"])]
+        bid_outline = extract_bid_format_outline(parsed, score_items)
+        target_lot = pick_target_lot(lot_info or [])
         # 置信度复核队列
         review = [k for k, v in fields.items()
                   if isinstance(v, dict) and v.get("status") == STATUS_FOUND
@@ -463,6 +468,8 @@ class Pipeline:
             rejections=scoring.get("rejections", []),
             lot_fields=lot_fields or {},
             lot_info=lot_info or [],
+            target_lot=target_lot,
+            bid_outline=bid_outline,
             sum_checks=sum_checks,
             issues=issues,
             sections=struct["sections"],

@@ -108,6 +108,25 @@ def get_report(doc_id: str):
     return report.model_dump(mode="json")
 
 
+@app.get("/api/reports/{doc_id}/summary.xlsx")
+def summary_xlsx(doc_id: str, lot: str = ""):
+    """投标要点汇总表下载（客户编制标书前的依据表）。
+
+    lot 参数可指定聚焦包；默认取报告识别的目标包（包号最小的包）。
+    """
+    report = pipeline.load_report(doc_id)
+    if report is None:
+        raise HTTPException(404, f"报告不存在: {doc_id}")
+    from bidmaster.summary.workbook import build_summary_xlsx
+    data = build_summary_xlsx(report, target_lot=lot)
+    from urllib.parse import quote
+    name = quote(f"投标要点汇总表_{doc_id}.xlsx")
+    return Response(
+        content=data,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": f"attachment; filename*=UTF-8''{name}"})
+
+
 @app.get("/api/reports/{doc_id}/evidence/{evidence_id}/context")
 def evidence_context(doc_id: str, evidence_id: str):
     """docx 证据的原文上下文（无页码时的"查看原文"）。
