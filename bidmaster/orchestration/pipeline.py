@@ -40,7 +40,7 @@ STAGE_FILES = {
 }
 # 产物格式版本：解析/评分逻辑升级导致旧缓存不兼容时必须 bump，
 # 管线启动时检测版本不符会自动级联失效全部缓存（防止新旧逻辑结果混杂）。
-CODE_VERSION = "0.5.1"
+CODE_VERSION = "0.5.2"
 _DOWNSTREAM = {  # 级联失效表
     "intake": ["parse", "structure", "fields", "scoring", "report"],
     "parse": ["structure", "fields", "scoring", "report"],
@@ -428,26 +428,47 @@ class Pipeline:
                     value_normalized=scope["project"], confidence=0.9,
                     evidence_ids=[proj_ev.evidence_id]).model_dump(mode="json")
 
-        # 3) 包清单并集：公告表格抽出的包（按包号主键）若不在文件级包清单里，
-        #    也补进 lot_info——否则只有公告表、无包件专属文件时，汇总表遍历
-        #    lot_info 会漏掉已抽到的包
+        # 3) 包清单并集：公告表格抽出的包若不在文件级包清单里，补进 lot_info。
+        # 同包判定用"包号数字相等"（包1 与 结算审核包1 同包；与 包10 不同——
+        # 子串包含判断会把包1 误判成已存在于 结算审核包10 造成漏包）。
+        # 命中已有条目时把表格字段重键并入规范名，导出按 lot_info 名才查得到。
         import re as _re
 
-        def _lot_known(lot: str) -> bool:
-            num = _re.search(r"\d+", lot)
+        def _lot_num(lot: str) -> int | None:
+            m = _re.search(r"\d+", lot or "")
+            return int(m.group(0)) if m else None
+
+        def _fe_get(f, key: str) -> str:
+            if f is None:
+                return ""
+            v = f.get(key) if isinstance(f, dict) else getattr(f, key, "")
+            return v or ""
+
+        def _canonical(lot: str) -> str | None:
+            num = _lot_num(lot)
             for info in lot_info:
                 nm = info.get("lot", "")
-                if lot == nm or (num and num.group(0) in nm) or nm in lot:
-                    return True
-            return False
+                if lot == nm:
+                    return nm
+                if num is not None and _lot_num(nm) == num:
+                    return nm
+            return None
 
-        for lot, bucket in lot_fields.items():
-            if _lot_known(lot):
+        for lot in list(lot_fields.keys()):
+            canon = _canonical(lot)
+            if canon is None:
+                bucket = lot_fields[lot]
+                pkg = bucket.get("project_name") or bucket.get("package_name")
+                lot_info.append({"lot": lot,
+                                 "project": _fe_get(pkg, "value_normalized"),
+                                 "source_file": "公告包件表"})
                 continue
-            pkg = bucket.get("package_name") or bucket.get("package_no")
-            proj = (pkg.get("value_normalized", "") if isinstance(pkg, dict) else "") or ""
-            lot_info.append({"lot": lot, "project": proj,
-                             "source_file": "公告包件表"})
+            if canon == lot:
+                continue
+            tgt = lot_fields.setdefault(canon, {})
+            for k, v in lot_fields[lot].items():
+                tgt.setdefault(k, v)
+            del lot_fields[lot]
 
         self._backfill_evidence_sources(parsed, store)
 

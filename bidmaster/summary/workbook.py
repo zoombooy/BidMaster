@@ -154,14 +154,15 @@ def _lot_sheet(wb, report, target_lot: str) -> None:
             return ""
 
         def _lv_wan(key: str) -> str:
-            """限价列头是（万元）：内部归一化值为元，导出统一换算成万元；
-            非纯数值（如"见技术规范书"）原样返回。"""
+            """限价列头是（万元）：内部归一化值为元，导出用 Decimal 精确换算，
+            不做两位四舍五入（忠实原始限价精度）；非纯数值原样返回。"""
             v = _lv(key)
             if not v:
                 return ""
             try:
-                return str(round(float(v) / 10000, 2))
-            except ValueError:
+                from decimal import Decimal
+                return format((Decimal(v) / Decimal(10000)).normalize(), "f")
+            except Exception:  # noqa: BLE001 非数值（如"见技术规范书"）原样
                 return v
 
         pkg_name = _lv("package_name") or lot
@@ -315,27 +316,38 @@ def _score_lot(s) -> str:
 def _score_sheet(wb, report, category: str, sheet: str,
                  target_lot: str = "") -> None:
     """单包贯穿：lot 有归属且不等于目标包的评分项不进目标包交付物；
-    lot 归属不明（"-"）不自动当通用，标注待确认。"""
-    ws = _sheet(wb, sheet, [8, 26, 10, 80, 12, 14])
-    _head(ws, 1, ["序号", "评分项", "分值", "评分标准", "状态", "适用包"])
-    items = [s for s in (report.scores or []) if _attr(s, "category") == category]
-    if target_lot:
-        keep, deferred = [], []
-        for s in items:
+    归属不明（"-"）不自动当通用，标注待确认。"""
+    all_items = [s for s in (report.scores or []) if _attr(s, "category") == category]
+    items, deferred = all_items, []
+    filter_note = ""
+    if target_lot and all_items:
+        keep = []
+        for s in all_items:
             lot = _score_lot(s)
-            (deferred if lot not in ("-", "", None) and lot != target_lot
-             else keep).append(s)
+            if lot not in ("-", "", None) and lot != target_lot:
+                deferred.append(s)
+            else:
+                keep.append(s)
+        items = keep
         if deferred:
-            _row(ws, 2, ["", "", "", f"已按目标包 {target_lot} 过滤掉 "
-                         f"{len(deferred)} 条其他包评分项（见完整报告）", "", ""])
+            filter_note = (f"已按目标包 {target_lot} 过滤掉 "
+                           f"{len(deferred)} 条其他包评分项")
+    ws = _sheet(wb, sheet, [8, 26, 10, 80, 12, 14])
+    head_row = 1
+    if filter_note:
+        ws.cell(row=1, column=1, value=filter_note).font = _TITLE_FONT
+        head_row = 2  # 说明行与表头/数据行分开，避免覆盖
+    _head(ws, head_row, ["序号", "评分项", "分值", "评分标准", "状态", "适用包"])
     for i, s in enumerate(items, 1):
         lot = _score_lot(s)
         lot_label = "待确认" if lot in ("-", "", None) else lot
-        _row(ws, i + 1, [i, _attr(s, "name"), _attr(s, "max_score"),
-                         _attr(s, "rule_text"), _attr(s, "status"), lot_label],
-             target=(lot == target_lot))
+        _row(ws, head_row + i, [i, _attr(s, "name"), _attr(s, "max_score"),
+                                _attr(s, "rule_text"), _attr(s, "status"),
+                                lot_label], target=(lot == target_lot))
     if not items:
-        _row(ws, 2, ["—", "—", "—", "未识别到该类评分项", "", ""])
+        _row(ws, head_row + 1, ["—", "—", "—",
+                                "未识别到该类评分项" + ("（或已全部被单包过滤）"
+                                if filter_note else ""), "", ""])
 
 
 def build_summary_xlsx(report, target_lot: str = "") -> bytes:

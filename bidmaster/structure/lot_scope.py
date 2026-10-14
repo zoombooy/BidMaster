@@ -61,6 +61,16 @@ def _find_col(header_cells: list[str], keywords: tuple[str, ...]) -> int | None:
     return None
 
 
+def _col(header_cells: list[str], primary: tuple[str, ...],
+         secondary: tuple[str, ...] = ()) -> int | None:
+    """主关键词优先、显式 None 判定的列查找——列下标 0 会被 or 当假值，
+    "包名称"恰好在第一列时会错落到后备列甚至 None 导致整表跳过。"""
+    ci = _find_col(header_cells, primary)
+    if ci is not None:
+        return ci
+    return _find_col(header_cells, secondary) if secondary else None
+
+
 def extract_lot_table_fields(parsed: ParsedDocument,
                              store: EvidenceStore) -> dict[str, dict[str, FieldExtraction]]:
     """从公告逐包限价表 / 包件工期表按行解析 per-lot 字段。
@@ -91,27 +101,27 @@ def extract_lot_table_fields(parsed: ParsedDocument,
             continue
         header = tb.rows[0]
         # 客户汇总表字段：单项最高限价与包最高限价是两列，须分别抽取；
-        # 通用"最高限价"匹配只作为无细分列时的兜底
-        unit_ci = _find_col(header, ("单项最高限价", "单项限价"))
-        lotp_ci = _find_col(header, ("包最高限价", "包限价"))
-        price_ci = (unit_ci or lotp_ci
-                    or _find_col(header, ("最高限价",))
-                    or _find_col(header, ("分项限价",)))
+        # 通用"最高限价"匹配只作为无细分列时的兜底（显式 None 判定，防列 0 陷阱）
+        unit_ci = _col(header, ("单项最高限价", "单项限价"))
+        lotp_ci = _col(header, ("包最高限价", "包限价"))
+        price_ci = _col(header, ("最高限价",))
+        if price_ci is None:
+            price_ci = _find_col(header, ("分项限价",))
         start_ci = _find_col(header, ("开始时间", "计划开工日期", "计划开始"))
         end_ci = _find_col(header, ("完成时间", "计划竣工日期", "计划完成"))
         # 包名称列优先于分标名称列：客户表头是 分标名称|包号|包名称|项目名称，
-        # _find_col 按列序扫描，把"分标名称"排前面会导致整分标各包共用一条记录
-        lot_ci = (_find_col(header, ("标包名称", "包名称"))
-                  or _find_col(header, ("标包划分", "分标名称")))
+        # 按列序扫描把"分标名称"排前面会导致整分标各包共用一条记录
+        lot_ci = _col(header, ("标包名称", "包名称"), ("标包划分", "分标名称"))
         pkgno_ci = _find_col(header, ("包号", "标段号", "包件号"))
         apply_ci = _find_col(header, ("采购申请号", "申请编号"))
         scope_ci = _find_col(header, ("招标范围", "服务范围", "工作内容"))
+        proj_ci = _find_col(header, ("项目名称",))
         if lot_ci is None:
             continue
         is_price = price_ci is not None
         is_dur = start_ci is not None and end_ci is not None
         has_extra = any(c is not None for c in (pkgno_ci, apply_ci, scope_ci,
-                                                unit_ci, lotp_ci))
+                                                unit_ci, lotp_ci, proj_ci))
         if not (is_price or is_dur or has_extra):
             continue
         unit_wan = is_price and "万" in header[price_ci]
@@ -150,7 +160,8 @@ def extract_lot_table_fields(parsed: ParsedDocument,
                 _put(lot_name, "package_name", cells[lot_ci][:60],
                      cells[lot_ci][:60], 0.9, ev)
             for ci, key, conf in ((apply_ci, "apply_no", 0.9),
-                                  (scope_ci, "scope", 0.85)):
+                                  (scope_ci, "scope", 0.85),
+                                  (proj_ci, "project_name", 0.9)):
                 v = _cell(cells, ci)
                 if v and v not in ("/", "—", "-", "无"):
                     _put(lot_name, key, v, v, conf, ev)
