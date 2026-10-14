@@ -49,11 +49,19 @@ def extract_zip(zip_path: Path, out_dir: Path, depth: int = 0,
                 raise ValueError(f"{zip_path.name}: 解压总量超上限，疑似压缩炸弹")
             if info.file_size > MAX_ENTRY_SIZE:
                 continue
-            target = out_dir / Path(name).name if depth > 0 else out_dir / name
+            # 保留归档内相对路径：嵌套 zip 里 "包01/技术规范书.docx" 与
+            # "包02/技术规范书.docx" 拍平会互相覆盖，导致文件丢失、读错包
+            target = out_dir / name
             # 路径穿越防护：规范化后的严格父子关系判断（非字符串前缀）
             if not target.resolve().is_relative_to(out_dir.resolve()):
                 continue
             target.parent.mkdir(parents=True, exist_ok=True)
+            if target.exists():  # 同名冲突（同一归档内真重复）：追加序号，不覆盖
+                stem, suf = target.stem, target.suffix
+                n = 1
+                while target.exists():
+                    target = target.with_name(f"{stem}_{n}{suf}")
+                    n += 1
             target.write_bytes(z.read(info))
 
     # 分类：文档收集 / 内层归档递归 / 无关文件忽略

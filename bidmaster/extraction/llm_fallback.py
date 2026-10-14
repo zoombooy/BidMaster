@@ -70,12 +70,19 @@ def llm_fill_missing(parsed: ParsedDocument, zones: list[AnchorZone],
             f.status = STATUS_FAILED
             f.note = "LLM 返回值未获引文支撑（值不在引文中），已拒绝采纳"
             continue
-        # 证据字符定位：原文精确匹配优先，退化用引文前缀锚定（严格校验已在上面的归一化闸完成）
-        pos = full_text.find(quote)
-        if pos < 0:
-            pos = full_text.find(quote[:15])
-        if pos < 0:
-            pos = 0
+        # 坐标定位：归一化命中位置 → 原始字符位置（归一化只删空白，
+        # 因此"归一化串第 i 个字符"对应原文中第 i 个非空白字符），不伪造 0 坐标
+        def _norm_span_pos(norm_idx: int) -> int:
+            seen = -1
+            for raw_idx, ch in enumerate(full_text):
+                if not ch.isspace():
+                    seen += 1
+                    if seen == norm_idx:
+                        return raw_idx
+            return len(full_text)
+        n_start = ft_norm.find(q_norm)
+        raw_start = _norm_span_pos(n_start)
+        raw_end = _norm_span_pos(n_start + len(q_norm) - 1) + 1
         pack = catalog[key]
         norm_str = _normalize_for(key, value)
         if norm_str is None or not str(norm_str).strip():
@@ -89,8 +96,8 @@ def llm_fill_missing(parsed: ParsedDocument, zones: list[AnchorZone],
             f.note = "LLM 返回值未通过字段类型清洗（引用语/格式不符），已拒绝采纳"
             continue
         ev = store.add(make_evidence(
-            kind="llm_quote", source="llm", char_start=pos,
-            char_end=pos + len(quote), snippet=quote[:200]))
+            kind="llm_quote", source="llm", char_start=raw_start,
+            char_end=raw_end, snippet=quote[:200]))
         f = results[key]
         f.status = STATUS_FOUND
         f.value_raw = value

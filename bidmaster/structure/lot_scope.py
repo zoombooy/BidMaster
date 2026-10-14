@@ -90,18 +90,31 @@ def extract_lot_table_fields(parsed: ParsedDocument,
         if not tb.rows or len(tb.rows) < 2:
             continue
         header = tb.rows[0]
-        price_ci = (_find_col(header, ("最高限价",))
+        # 客户汇总表字段：单项最高限价与包最高限价是两列，须分别抽取；
+        # 通用"最高限价"匹配只作为无细分列时的兜底
+        unit_ci = _find_col(header, ("单项最高限价", "单项限价"))
+        lotp_ci = _find_col(header, ("包最高限价", "包限价"))
+        price_ci = (unit_ci or lotp_ci
+                    or _find_col(header, ("最高限价",))
                     or _find_col(header, ("分项限价",)))
         start_ci = _find_col(header, ("开始时间", "计划开工日期", "计划开始"))
         end_ci = _find_col(header, ("完成时间", "计划竣工日期", "计划完成"))
         lot_ci = _find_col(header, ("标包名称", "包名称", "标包划分", "分标名称"))
+        pkgno_ci = _find_col(header, ("包号", "标段号", "包件号"))
+        apply_ci = _find_col(header, ("采购申请号", "申请编号"))
+        scope_ci = _find_col(header, ("招标范围", "服务范围", "工作内容"))
         if lot_ci is None:
             continue
         is_price = price_ci is not None
         is_dur = start_ci is not None and end_ci is not None
-        if not (is_price or is_dur):
+        has_extra = any(c is not None for c in (pkgno_ci, apply_ci, scope_ci,
+                                                unit_ci, lotp_ci))
+        if not (is_price or is_dur or has_extra):
             continue
         unit_wan = is_price and "万" in header[price_ci]
+
+        def _cell(cells, ci):
+            return cells[ci] if ci is not None and ci < len(cells) else ""
 
         for ri, row in enumerate(tb.rows[1:], 1):
             cells = [c.strip() for c in row]
@@ -121,6 +134,19 @@ def extract_lot_table_fields(parsed: ParsedDocument,
                 table_id=tb.table_id, row=ri,
                 snippet=" | ".join(cells)[:200]))
 
+            # 客户模板字段：真实包号 / 包名称 / 采购申请号 / 招标范围（占位符不收录）
+            pkg_no = _cell(cells, pkgno_ci)
+            if pkg_no:
+                _put(lot_name, "package_no", pkg_no, pkg_no, 0.9, ev)
+            if cells[lot_ci]:
+                _put(lot_name, "package_name", cells[lot_ci][:60],
+                     cells[lot_ci][:60], 0.9, ev)
+            for ci, key, conf in ((apply_ci, "apply_no", 0.9),
+                                  (scope_ci, "scope", 0.85)):
+                v = _cell(cells, ci)
+                if v and v not in ("/", "—", "-", "无"):
+                    _put(lot_name, key, v, v, conf, ev)
+
             if is_price and price_ci < len(cells):
                 raw = cells[price_ci]
                 if raw and re.match(r"^\d", raw):
@@ -133,11 +159,26 @@ def extract_lot_table_fields(parsed: ParsedDocument,
                             y = str(int(amt[0])) if float(amt[0]).is_integer() else str(amt[0])
                             _put(lot_name, "price_limit", cand_val, y, 0.95, ev)
 
+            # 单项/包两列限价分开入账（表头各自判断万元单位）
+            for ci, key in ((unit_ci, "unit_price_limit"),
+                            (lotp_ci, "lot_price_limit")):
+                raw = _cell(cells, ci)
+                if raw and re.match(r"^\d", raw):
+                    wan = "万" in header[ci]
+                    cand_val = raw + ("万元" if wan and "万" not in raw else "")
+                    from bidmaster.extraction.field_types import _clean_amount
+                    from bidmaster.extraction.normalize import normalize_amount
+                    if _clean_amount(cand_val, "price_limit") is not None:
+                        amt = normalize_amount(cand_val)
+                        if amt:
+                            y = str(int(amt[0])) if float(amt[0]).is_integer() else str(amt[0])
+                            _put(lot_name, key, cand_val, y, 0.95, ev)
+
             if is_dur and max(start_ci, end_ci) < len(cells):
                 sm, em = _DATE.search(cells[start_ci]), _DATE.search(cells[end_ci])
                 if sm and em:
                     dur = (f"{sm.group(1)}年{int(sm.group(2))}月"
-                           f"至{em.group(1)}年{int(em.group(2))}月")
+                           f"至{em.group(1)}年{int(sm.group(2))}月")
                     _put(lot_name, "duration", dur, dur, 0.9, ev)
 
     return lot_fields

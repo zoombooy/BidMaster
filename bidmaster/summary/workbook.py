@@ -146,22 +146,26 @@ def _lot_sheet(wb, report, target_lot: str) -> None:
         lot = li.get("lot", "")
         is_target = lot == target_lot
         fields = lf.get(lot, {})
-        price = ""
-        pf = fields.get("price_limit")
-        if pf and _attr(pf, "status") == "found":
-            price = _attr(pf, "value_normalized") or _attr(pf, "value_raw")
-        dur = ""
-        df = fields.get("duration")
-        if df and _attr(df, "status") == "found":
-            dur = _attr(df, "value_normalized") or _attr(df, "value_raw")
-        site = ""
-        sf = fields.get("site")
-        if sf and _attr(sf, "status") == "found":
-            site = _attr(sf, "value_normalized") or _attr(sf, "value_raw")
-        _row(ws, r, [_fv(report.fields, "project_name"), lot, lot,
-                     li.get("project", ""), "见招标公告", "见技术规范书",
-                     site or _MISSING, dur or _MISSING,
-                     price or _MISSING, price or _MISSING],
+
+        def _lv(key: str) -> str:
+            f = fields.get(key)
+            if f and _attr(f, "status") == "found":
+                return _attr(f, "value_normalized") or _attr(f, "value_raw") or ""
+            return ""
+
+        price = _lv("price_limit")
+        pkg_name = _lv("package_name") or lot
+        pkg_no = _lv("package_no") or lot
+        # 客户模板逐字段落实业务含义：未抽取到的格子如实标注，
+        # 不再用"见招标公告/见技术规范书"这类固定文案顶替
+        _row(ws, r, [_fv(report.fields, "project_name"), pkg_no, pkg_name,
+                     li.get("project", ""),
+                     _lv("apply_no") or _MISSING,
+                     _lv("scope") or _MISSING,
+                     _lv("site") or _MISSING,
+                     _lv("duration") or _MISSING,
+                     _lv("unit_price_limit") or _MISSING,
+                     _lv("lot_price_limit") or price or _MISSING],
              target=is_target)
         r += 1
     if not lots:
@@ -289,15 +293,24 @@ def _rej_sheet(wb, report) -> None:
         _row(ws, 2, ["—", "—", "未识别到否决条款（该文件可能无否决情形表）"])
 
 
-def _score_sheet(wb, report, category: str, sheet: str) -> None:
-    ws = _sheet(wb, sheet, [8, 26, 10, 80, 12])
-    _head(ws, 1, ["序号", "评分项", "分值", "评分标准", "状态"])
+def _score_sheet(wb, report, category: str, sheet: str,
+                 target_lot: str = "") -> None:
+    """单包贯穿：lot 有归属且不等于目标包的评分项不进目标包交付物；
+    lot 归属不明（"-"）视为项目通用保留。"""
+    ws = _sheet(wb, sheet, [8, 26, 10, 80, 12, 14])
+    _head(ws, 1, ["序号", "评分项", "分值", "评分标准", "状态", "适用包"])
     items = [s for s in (report.scores or []) if _attr(s, "category") == category]
+    if target_lot:
+        items = [s for s in items
+                 if _attr(s, "lot") in ("-", "", None) or _attr(s, "lot") == target_lot]
     for i, s in enumerate(items, 1):
+        lot = _attr(s, "lot")
+        lot_label = "通用" if lot in ("-", "", None) else lot
         _row(ws, i + 1, [i, _attr(s, "name"), _attr(s, "max_score"),
-                         _attr(s, "rule_text"), _attr(s, "status")])
+                         _attr(s, "rule_text"), _attr(s, "status"), lot_label],
+             target=(lot == target_lot))
     if not items:
-        _row(ws, 2, ["—", "—", "—", "未识别到该类评分项", ""])
+        _row(ws, 2, ["—", "—", "—", "未识别到该类评分项", "", ""])
 
 
 def build_summary_xlsx(report, target_lot: str = "") -> bytes:
@@ -310,9 +323,9 @@ def build_summary_xlsx(report, target_lot: str = "") -> bytes:
     _req_sheet(wb, report, target_lot)
     _outline_sheet(wb, report)
     _rej_sheet(wb, report)
-    _score_sheet(wb, report, "commercial", "商务评分标准")
-    _score_sheet(wb, report, "technical", "技术评分标准")
-    _score_sheet(wb, report, "price", "报价评分标准")
+    _score_sheet(wb, report, "commercial", "商务评分标准", target_lot)
+    _score_sheet(wb, report, "technical", "技术评分标准", target_lot)
+    _score_sheet(wb, report, "price", "报价评分标准", target_lot)
     buf = io.BytesIO()
     wb.save(buf)
     return buf.getvalue()

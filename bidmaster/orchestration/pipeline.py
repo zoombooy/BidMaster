@@ -40,7 +40,7 @@ STAGE_FILES = {
 }
 # 产物格式版本：解析/评分逻辑升级导致旧缓存不兼容时必须 bump，
 # 管线启动时检测版本不符会自动级联失效全部缓存（防止新旧逻辑结果混杂）。
-CODE_VERSION = "0.4.0"
+CODE_VERSION = "0.5.0"
 _DOWNSTREAM = {  # 级联失效表
     "intake": ["parse", "structure", "fields", "scoring", "report"],
     "parse": ["structure", "fields", "scoring", "report"],
@@ -209,6 +209,16 @@ class Pipeline:
                     doc_blocks = [b for b in parsed.blocks
                                   if b.source_file == Path(fp).name]
                     n = anchor_blocks(doc_blocks, pdf_path)
+                    # 表格页码同步：表格证据取的是表级页码，锚定只写块——
+                    # 由成员块的页码汇总回写 TableModel.page_nos（跨页表多个页码）
+                    tbl_pages: dict[str, set[int]] = {}
+                    for b2 in doc_blocks:
+                        if b2.table_ref and b2.page_no:
+                            tbl_pages.setdefault(b2.table_ref, set()).add(b2.page_no)
+                    for t2 in parsed.tables:
+                        if (t2.source_file == Path(fp).name
+                                and t2.table_id in tbl_pages):
+                            t2.page_nos = sorted(tbl_pages[t2.table_id])
                     if n:
                         print(f"[页码锚定] {Path(fp).name}: {n} 块已定位页码")
             except Exception as exc:  # noqa: BLE001  页码锚定失败不影响主链
@@ -364,10 +374,25 @@ class Pipeline:
             sub_ex = FieldExtractor(sub, [], store, llm)
             n_before = len(store.items)
             sub_fields, _ = sub_ex.extract_all(use_llm=use_llm)
-            # 子抽取新增的证据（含 LLM quote，其字符偏移基于子文档）直接归属该包件文件
+            # 子抽取 llm_quote 的字符偏移基于子文档全文，与主文档全文不一致，
+            # 证据定位会错位——按子块在主文档中的运行位置重映射回主文档坐标
+            # （子块是主块副本，其 char_start 即主文档坐标；子全文同为单换行连接）
+            sub_spans = []
+            p2 = 0
+            for b2 in sub.blocks:
+                t2 = len(b2.text or "")
+                sub_spans.append((p2, p2 + t2, b2.char_start))
+                p2 += t2 + 1
             for ev in store.items[n_before:]:
                 if not ev.source_file:
                     ev.source_file = fname
+                if ev.kind != "llm_quote" or ev.char_end <= ev.char_start:
+                    continue
+                for (s0, e0, main0) in sub_spans:
+                    if s0 <= ev.char_start < e0:
+                        ev.char_start = main0 + (ev.char_start - s0)
+                        ev.char_end = main0 + min(ev.char_end - s0, e0 - s0)
+                        break
             bucket = lot_fields.setdefault(lot, {})
             for k, fv in sub_fields.items():
                 if fv.status == STATUS_FOUND and k not in bucket:

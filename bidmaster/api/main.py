@@ -232,6 +232,12 @@ def evidence_page_png(doc_id: str, evidence_id: str):
             next(Path("work", doc_id).glob("source.*"), None)
     if src is None:
         raise HTTPException(404, "源文件不存在")
+    # docx 源 → 优先用锚定阶段生成的预览 PDF（_pdf/，LibreOffice 转换，
+    # 与 docx 排版一致且块页码按它回写）；没有预览才回退源文件
+    if src.suffix.lower() == ".docx":
+        preview = src.parent / "_pdf" / (src.stem + ".pdf")
+        if preview.exists():
+            src = preview
     import fitz
     doc = fitz.open(src)
     if ev.page_no > doc.page_count:

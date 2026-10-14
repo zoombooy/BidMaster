@@ -562,8 +562,15 @@ function loadEvPage(div){
       div.innerHTML=`<img src="${url}">`+
         (bbox&&bbox.length===4&&pr.length===2?bboxHtml(bbox,pr,eid):"");
     });
-  }).catch(()=>{
-    div.innerHTML='<div class="note" style="padding:10px">原文页渲染失败（可能为 docx 链路或源文件缺失）</div>';
+  }).catch(async () => {
+    // 页图失败（无预览 PDF/源缺失）→ 回退原文上下文，不让证据变成"看不了"
+    const eid = div.dataset.eid;
+    const wrap = document.createElement('div');
+    wrap.className = 'orig-wrap';
+    wrap.id = 'ctx-' + eid;
+    wrap.innerHTML = '<div class="note" style="padding:10px">原文页不可用，回退原文上下文…</div>';
+    div.replaceWith(wrap);
+    await loadEvContext(wrap);
   });
 }
 function bboxHtml(bbox,pageRect,focusEid){
