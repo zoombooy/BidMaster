@@ -169,8 +169,9 @@ def _lot_sheet(wb, report, target_lot: str) -> None:
         pkg_no = _lv("package_no") or lot
         # 客户模板逐字段落实业务含义：未抽取到的格子如实标注；
         # 包限价缺失即标缺失（单项限价不能替代包限价）
+        proj = _lv("project_name") or li.get("project", "") or _MISSING
         _row(ws, r, [_fv(report.fields, "project_name"), pkg_no, pkg_name,
-                     li.get("project", ""),
+                     proj,
                      _lv("apply_no") or _MISSING,
                      _lv("scope") or _MISSING,
                      _lv("site") or _MISSING,
@@ -229,7 +230,11 @@ def _req_sheet(wb, report, target_lot: str) -> None:
             grouped.setdefault(t, []).append(text)
     lots = report.lot_info or []
     lot_name = lots[0].get("lot", "") if lots else ""
-    _row(ws, 3, ["", _fv(report.fields, "project_name"),
+    caveat = ("要求按全部分标汇总（要求条目尚未按包归属区分），"
+              "适用范围请人工确认" if len(lots) > 1 else "")
+    if caveat:
+        ws.cell(row=3, column=1, value=caveat).font = Font(color="C27803")
+    _row(ws, 4, ["", _fv(report.fields, "project_name"),
                  target_lot or lot_name or "全部包",
                  "\n".join(grouped.get("qualification", [])) or _MISSING,
                  "\n".join(grouped.get("performance", [])) or _MISSING,
@@ -304,46 +309,31 @@ def _rej_sheet(wb, report) -> None:
         _row(ws, 2, ["—", "—", "未识别到否决条款（该文件可能无否决情形表）"])
 
 
-def _score_lot(s) -> str:
-    """包归属统一读取：ScoreItem 无顶层 lot，包归属写在 parsed_rule["lot"]
-    （table_scores 写入、validate_scores 同源），抽取/校验/导出共用此入口。"""
-    pr = _attr(s, "parsed_rule")
-    if isinstance(pr, dict) and pr.get("lot"):
-        return str(pr["lot"])
-    return _attr(s, "lot") or "-"
-
-
 def _score_sheet(wb, report, category: str, sheet: str,
                  target_lot: str = "") -> None:
-    """单包贯穿：lot 有归属且不等于目标包的评分项不进目标包交付物；
-    归属不明（"-"）不自动当通用，标注待确认。"""
+    """单包贯穿（统一范围模型）：目标包交付物 = 项目通用 + 分标通用 + 目标包专属；
+    仅双方包号明确不等的条目排除，归属不明保留并标"待确认"。"""
+    from bidmaster.summary.scope import classify, filter_for_target, read_lot
     all_items = [s for s in (report.scores or []) if _attr(s, "category") == category]
     items, deferred = all_items, []
     filter_note = ""
     if target_lot and all_items:
-        keep = []
-        for s in all_items:
-            lot = _score_lot(s)
-            if lot not in ("-", "", None) and lot != target_lot:
-                deferred.append(s)
-            else:
-                keep.append(s)
-        items = keep
+        items, deferred = filter_for_target(all_items, target_lot)
         if deferred:
             filter_note = (f"已按目标包 {target_lot} 过滤掉 "
-                           f"{len(deferred)} 条其他包评分项")
+                           f"{len(deferred)} 条明确属于其他包的评分项")
     ws = _sheet(wb, sheet, [8, 26, 10, 80, 12, 14])
     head_row = 1
     if filter_note:
         ws.cell(row=1, column=1, value=filter_note).font = _TITLE_FONT
         head_row = 2  # 说明行与表头/数据行分开，避免覆盖
-    _head(ws, head_row, ["序号", "评分项", "分值", "评分标准", "状态", "适用包"])
+    _head(ws, head_row, ["序号", "评分项", "分值", "评分标准", "状态", "适用范围"])
     for i, s in enumerate(items, 1):
-        lot = _score_lot(s)
-        lot_label = "待确认" if lot in ("-", "", None) else lot
+        _, label = classify(read_lot(s), target_lot) if target_lot \
+            else ("", "待确认" if not read_lot(s) else read_lot(s))
         _row(ws, head_row + i, [i, _attr(s, "name"), _attr(s, "max_score"),
                                 _attr(s, "rule_text"), _attr(s, "status"),
-                                lot_label], target=(lot == target_lot))
+                                label], target=(label == target_lot))
     if not items:
         _row(ws, head_row + 1, ["—", "—", "—",
                                 "未识别到该类评分项" + ("（或已全部被单包过滤）"

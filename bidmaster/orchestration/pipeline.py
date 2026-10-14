@@ -40,7 +40,7 @@ STAGE_FILES = {
 }
 # 产物格式版本：解析/评分逻辑升级导致旧缓存不兼容时必须 bump，
 # 管线启动时检测版本不符会自动级联失效全部缓存（防止新旧逻辑结果混杂）。
-CODE_VERSION = "0.5.2"
+CODE_VERSION = "0.5.3"
 _DOWNSTREAM = {  # 级联失效表
     "intake": ["parse", "structure", "fields", "scoring", "report"],
     "parse": ["structure", "fields", "scoring", "report"],
@@ -458,7 +458,8 @@ class Pipeline:
             canon = _canonical(lot)
             if canon is None:
                 bucket = lot_fields[lot]
-                pkg = bucket.get("project_name") or bucket.get("package_name")
+                # 项目名称只取真实抽取的项目名称列；包名称不再冒充项目名称
+                pkg = bucket.get("project_name")
                 lot_info.append({"lot": lot,
                                  "project": _fe_get(pkg, "value_normalized"),
                                  "source_file": "公告包件表"})
@@ -530,11 +531,17 @@ class Pipeline:
             [s for s in (scoring["scores"])],
             scoring.get("declared", []), field_values, issues)
         required_fields_check(fields, issues)
-        # 投标文件构成目录（"第X章 投标文件格式"标题树 + 评分项补充）与单包聚焦
+        # 投标文件构成目录（"第X章 投标文件格式"标题树 + 评分项补充）与单包聚焦。
+        # 目标包先定：目录补充使用统一范围模型过滤后的评分项
+        # （项目通用/分标通用/目标包专属保留，仅明确属于其他包的排除）
         from bidmaster.summary.outline import extract_bid_format_outline, pick_target_lot
+        from bidmaster.summary.scope import filter_for_target
         score_items = [s for s in (scoring["scores"])]
-        bid_outline = extract_bid_format_outline(parsed, score_items)
         target_lot = pick_target_lot(lot_info or [])
+        scores_for_outline = score_items
+        if target_lot:
+            scores_for_outline, _dropped = filter_for_target(score_items, target_lot)
+        bid_outline = extract_bid_format_outline(parsed, scores_for_outline)
         # 置信度复核队列
         review = [k for k, v in fields.items()
                   if isinstance(v, dict) and v.get("status") == STATUS_FOUND
