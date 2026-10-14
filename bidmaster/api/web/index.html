@@ -227,7 +227,10 @@ function upload(f){
       bar.firstElementChild.style.width=p+"%";
       state.innerHTML='<span class="spin"></span>上传中 '+p+"%（"+fmtMB(f.size)+"）";
     }};
-  xhr.upload.onload=()=>state.innerHTML='<span class="spin"></span>解析中…规则抽取 + LLM 兜底，约 10-60 秒，请勿关闭';
+  xhr.upload.onload=()=>{
+    bar.style.display="none";  // 上传完成收起进度条，只留解析状态文案
+    state.innerHTML='<span class="spin"></span>解析中…规则抽取 + LLM 兜底，约 10-60 秒，请勿关闭';
+  };
   xhr.onload=()=>{
     bar.style.display="none";
     try{
