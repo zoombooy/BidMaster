@@ -174,8 +174,9 @@ def classify(lot_str: str, target_lot: str) -> tuple[str, str]:
     if not l_nums or t_num is None:
         return _UNKNOWN, f"待确认·{lot_str[:16]}"
     if t_num in l_nums:
-        return _UNIVERSAL, f"通用·含目标包（{lot_str[:14]}）" if len(l_nums) > 1 \
-            else (_TARGET, "目标包")
+        if len(l_nums) > 1:
+            return _UNIVERSAL, f"通用·含目标包（{lot_str[:14]}）"
+        return _TARGET, "目标包"
     # 提取到明确包号且目标不在其中 → 明确其他包（唯一可排除）
     return _OTHER, f"其他包·{ba[:14]}"
 
