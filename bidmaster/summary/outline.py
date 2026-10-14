@@ -139,13 +139,20 @@ def extract_bid_format_outline(parsed: ParsedDocument,
 
 
 def pick_target_lot(lot_info: list[dict]) -> str:
-    """单包聚焦：多包项目客户只编一个包的标书，默认取包号最小的包。"""
+    """单包聚焦：多包项目客户只编一个包的标书，默认取包号最小的包。
+    复合键（分标::包号）适配：先按分标名排序，再比包号数字——
+    不再拿分标名里恰好出现的数字（如电压等级 500）当包号。"""
     if not lot_info:
         return ""
+    from bidmaster.summary.scope import package_numbers, split_fenbiao
+
     def key(li: dict):
         name = str(li.get("lot", ""))
-        m = re.search(r"\d+", name)
-        return (0, int(m.group())) if m else (1, name)
+        fb, bare = split_fenbiao(name)
+        ns = package_numbers(bare)
+        num = min(ns) if ns else 10 ** 9
+        return (fb or name, num, name)
+
     return sorted(lot_info, key=key)[0].get("lot", "")
 
 

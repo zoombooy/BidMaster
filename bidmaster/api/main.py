@@ -122,8 +122,17 @@ def summary_xlsx(doc_id: str, lot: str = ""):
     report = pipeline.load_report(doc_id)
     if report is None:
         raise HTTPException(404, f"报告不存在: {doc_id}")
+    # 传入解析产物：切换目标包导出时，目录按本次目标包重算（不复用旧筛选）
+    parsed = None
+    parsed_file = Path("work", doc_id, "02_parsed.json")
+    if parsed_file.exists():
+        try:
+            from bidmaster.schemas.document import ParsedDocument
+            parsed = ParsedDocument.model_validate(read_json(parsed_file))
+        except Exception:  # noqa: BLE001 解析产物损坏则回退报告缓存目录
+            parsed = None
     from bidmaster.summary.workbook import build_summary_xlsx
-    data = build_summary_xlsx(report, target_lot=lot)
+    data = build_summary_xlsx(report, target_lot=lot, parsed=parsed)
     from urllib.parse import quote
     name = quote(f"投标要点汇总表_{doc_id}.xlsx")
     return Response(

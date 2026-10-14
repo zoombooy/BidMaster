@@ -23,6 +23,8 @@ _PKG_PATTERNS = [
     re.compile(r"(\d+)\s*号包"),
     re.compile(r"标段\s*0*(\d+)"),
 ]
+# 包号列表分隔符（顿号/逗号/分号/空白）
+_LIST_SEP_RE = re.compile(r"[、,，;；\s]+")
 # 包号区间："包1-包3" / "包1~包3" / "包1至包3"（可出现多个，全部收集）
 _RANGE_RE = re.compile(r"包\s*0*(\d+)\s*[-~～至到]\s*(?:包\s*)?0*(\d+)")
 
@@ -33,24 +35,65 @@ def _full2half(s: str) -> str:
 
 
 def package_numbers(lot: str | None) -> set[int]:
-    """从明确的包号语法提取包号集合：全部区间 + 全部独立包号取并集；
-    提取不到包号语法返回空集（空集不作为排除依据）。"""
+    """兼容入口：只返回包号集合。需要"解析是否完整"信息时用 parse_packages()。"""
+    return parse_packages(lot)[0]
+
+
+def parse_packages(lot: str | None) -> tuple[set[int], bool]:
+    """解析包号表达式 → (包号集合, 是否完整解析)。
+
+    支持：包N / 第N包 / N号包 / 标段N / 区间"包N-包M"（可多段）/
+    共享前缀列表（"包1、2、3"、"包1-包3、5、7"）。
+    存在带数字但无法归类的片段时 complete=False——调用方不得据此排除评分
+    （如"500千伏线路工程"：数字是电压等级，解析不完整 → 待确认保留）。
+    """
+    s = _full2half(lot)
+    if not s:
+        return set(), True
+    nums: set[int] = set()
+    complete = True
+    segments = [seg for seg in _LIST_SEP_RE.split(s) if seg]
+    has_pkg_prefix = False
+    for seg in segments:
+        seg = seg.strip()
+        m = _RANGE_RE.fullmatch(seg)
+        if m:
+            lo, hi = int(m.group(1)), int(m.group(2))
+            if hi >= lo:
+                nums.update(range(lo, hi + 1))
+            else:
+                complete = False
+            has_pkg_prefix = True
+            continue
+        matched = False
+        for pat in _PKG_PATTERNS:
+            mm = pat.fullmatch(seg)
+            if mm:
+                nums.add(int(mm.group(1)))
+                matched = True
+                has_pkg_prefix = True
+                break
+        if matched:
+            continue
+        md = re.fullmatch(r"0*(\d+)", seg)
+        if md and has_pkg_prefix:
+            nums.add(int(md.group(1)))  # 共享前缀列表：包1、2、3 / 包1-包3、5
+            continue
+        if re.search(r"\d", seg):
+            complete = False  # 带数字但无法归类（可能是没写全的列表项）
+    return nums, complete
+
+
+def search_numbers(lot: str | None) -> set[int]:
+    """搜索式提取：全文扫描显式包号语法（包N/第N包/N号包/标段N），
+    不要求整段匹配。用于表达式解析不完整时的回退——仍只认"包"类关键词，
+    电压等级（500千伏）、年份（2026年度）不含包号语法，安全返回空集。"""
     s = _full2half(lot)
     if not s:
         return set()
     nums: set[int] = set()
-    rest: list[str] = []
-    last = 0
-    for m in _RANGE_RE.finditer(s):
-        rest.append(s[last:m.start()])
-        lo, hi = int(m.group(1)), int(m.group(2))
-        if hi >= lo:
-            nums.update(range(lo, hi + 1))
-        last = m.end()
-    rest.append(s[last:])
-    remainder = " ".join(rest)
     for pat in _PKG_PATTERNS:
-        for m in pat.finditer(remainder):
+        for m in pat.finditer(s):
             nums.add(int(m.group(1)))
     return nums
 
@@ -79,8 +122,15 @@ def split_fenbiao(lot: str | None) -> tuple[str, str]:
     return "", s.strip()
 
 
+def _embedded_pkg_num(name: str) -> int | None:
+    """名称内嵌包号宽松提取（"结算审核包1"/"监理包12" → 1/12）。
+    用于包名称匹配；范围表达式请用 parse_packages（严格语法+完整性）。"""
+    m = re.search(r"包\s*0*(\d+)", _full2half(name or ""))
+    return int(m.group(1)) if m else None
+
+
 def same_lot(a: str, b: str) -> bool:
-    """同包判定：字符串相等；或分标一致（双方都无分标视为一致）且包号集合有交集。
+    """同包判定（名称语义）：分标一致（双方都无分标视为一致）且内嵌包号相等。
     分标明确冲突 → False。缺分标依据的场景请走 classify（返回待确认）。"""
     if not a or not b:
         return False
@@ -90,8 +140,8 @@ def same_lot(a: str, b: str) -> bool:
     fb_, bb = split_fenbiao(b)
     if (fa or fb_) and fa != fb_:
         return False
-    na, nb = package_numbers(ba), package_numbers(bb)
-    return bool(na and nb and na & nb)
+    na, nb = _embedded_pkg_num(ba), _embedded_pkg_num(bb)
+    return na is not None and nb is not None and na == nb
 
 
 def classify(lot_str: str, target_lot: str) -> tuple[str, str]:
@@ -104,21 +154,30 @@ def classify(lot_str: str, target_lot: str) -> tuple[str, str]:
     fa, ba = split_fenbiao(lot_str)
     fbt, bt = split_fenbiao(target_lot)
     if same_lot(lot_str, target_lot):
-        t_nums = package_numbers(bt)
-        l_nums = package_numbers(ba)
-        if t_nums and l_nums and len(l_nums) > 1:  # 区间/列表覆盖多包
+        # 覆盖多包的表达式（"包1、2、3"/"包1-包3"）→ 通用；单一包 → 目标包
+        l_nums, l_complete = parse_packages(ba)
+        if l_complete and len(l_nums) > 1:
             return _UNIVERSAL, f"通用·含目标包（{lot_str[:14]}）"
         return _TARGET, "目标包"
     if fa and fbt and fa != fbt:
         # 双方分标明确不同：即使包号数字相同也不是同一个包
         return _OTHER, f"其他分标·{lot_str[:12]}"
-    t_nums = package_numbers(bt)
-    l_nums = package_numbers(ba)
-    if t_nums and l_nums and not (t_nums & l_nums):
-        # 双方分标一致（或均无）且包号无交集 → 明确其他包
-        return _OTHER, f"其他包·{ba[:14]}"
-    # 分标依据不足 / 无包号语法 → 待确认保留
-    return _UNKNOWN, f"待确认·{lot_str[:16]}"
+    if (fa or fbt) and fa != fbt:
+        # 仅一方有分标：归属依据不足，即便包号无交集也不据此排除
+        return _UNKNOWN, f"待确认·{lot_str[:16]}"
+    # 范围表达式严格解析；不完整时回退搜索式提取（仍只认显式包号语法）——
+    # 如"监理包12"这类名称内嵌包号可判定，电压/年份依旧安全
+    l_nums, l_complete = parse_packages(ba)
+    if not l_complete:
+        l_nums = search_numbers(ba)
+    t_num = _embedded_pkg_num(bt)  # 目标是包名称 → 宽松内嵌提取
+    if not l_nums or t_num is None:
+        return _UNKNOWN, f"待确认·{lot_str[:16]}"
+    if t_num in l_nums:
+        return _UNIVERSAL, f"通用·含目标包（{lot_str[:14]}）" if len(l_nums) > 1 \
+            else (_TARGET, "目标包")
+    # 提取到明确包号且目标不在其中 → 明确其他包（唯一可排除）
+    return _OTHER, f"其他包·{ba[:14]}"
 
 
 def filter_for_target(items: list, target_lot: str):

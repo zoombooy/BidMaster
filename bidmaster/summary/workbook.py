@@ -256,10 +256,28 @@ def _req_sheet(wb, report, target_lot: str) -> None:
         _row(ws, r0 + 2, ["—", "—", "", "", "", "未识别到要求", ""])
 
 
+def _outline_for(report, target_lot: str, parsed=None) -> dict:
+    """目录视图：与本次导出目标包一致。无法重算时回退报告缓存结果。"""
+    outline = getattr(report, "bid_outline", None)
+    if parsed is None:
+        return outline or {}
+    try:
+        from bidmaster.summary.outline import extract_bid_format_outline
+        from bidmaster.summary.scope import filter_for_target, scope_pending
+        scores = report.scores or []
+        if target_lot:
+            keep, _dropped = filter_for_target(scores, target_lot)
+            pending = {_attr(s, "score_id") for s in scope_pending(scores, target_lot)}
+            return extract_bid_format_outline(parsed, keep, pending_ids=pending)
+        return extract_bid_format_outline(parsed, scores)
+    except Exception:  # noqa: BLE001 重算失败回退缓存
+        return outline or {}
+
+
 # ------------------------------------------------------ 投标文件构成
-def _outline_sheet(wb, report) -> None:
+def _outline_sheet(wb, outline: dict) -> None:
     ws = _sheet(wb, "投标文件构成", [10, 8, 74, 12])
-    outline = getattr(report, "bid_outline", None) or {}
+    outline = outline or {}
     ws.cell(row=1, column=1,
             value=f"目录来源：{outline.get('source_section') or '—'}"
             ).font = _TITLE_FONT
@@ -343,15 +361,20 @@ def _score_sheet(wb, report, category: str, sheet: str,
                                 if filter_note else ""), "", ""])
 
 
-def build_summary_xlsx(report, target_lot: str = "") -> bytes:
-    """生成投标要点汇总表；target_lot 为空时自动取报告中的目标包。"""
+def build_summary_xlsx(report, target_lot: str = "", parsed=None) -> bytes:
+    """生成投标要点汇总表；target_lot 为空时自动取报告中的目标包。
+
+    parsed（02_parsed 的模型对象）可选传入：切换目标包导出时按本次目标包
+    重算投标文件构成目录，避免复用报告生成时按旧目标包筛选的缓存结果。
+    """
     target_lot = target_lot or getattr(report, "target_lot", "") or ""
+    outline = _outline_for(report, target_lot, parsed)
     wb = openpyxl.Workbook()
     _cover(wb, report, target_lot)
     _basic_sheet(wb, report, target_lot)
     _lot_sheet(wb, report, target_lot)
     _req_sheet(wb, report, target_lot)
-    _outline_sheet(wb, report)
+    _outline_sheet(wb, outline)
     _rej_sheet(wb, report)
     _score_sheet(wb, report, "commercial", "商务评分标准", target_lot)
     _score_sheet(wb, report, "technical", "技术评分标准", target_lot)
