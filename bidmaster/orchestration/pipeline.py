@@ -125,8 +125,12 @@ class Pipeline:
                 stale = True
         if stale:
             # evidence.json 一并失效：证据登记表由各阶段重建，
-            # 残留会把上一次运行（可能换了上传文件名）的旧证据带进新报告
-            for name in [STAGE_FILES[s] for s in stages] + ["ledger.json",
+            # 残留会把上一次运行（可能换了上传文件名）的旧证据带进新报告。
+            # intake 也要失效：否则旧 intake 里过期的 code_version 会让后续
+            # 每次运行都误判缓存过期，同一文件永远全量重跑（_stage_intake
+            # 在文件缺失时会重建并写入当前 CODE_VERSION）。
+            for name in [STAGE_FILES[s] for s in stages] + [STAGE_FILES["intake"],
+                                                            "ledger.json",
                                                             "evidence.json"]:
                 f = ws / name
                 if f.exists():
@@ -188,12 +192,16 @@ class Pipeline:
                     t.source_file = fname
         parsed.sha256 = meta.get("sha256", "")
 
-        # DOCX 页码锚定：有 LibreOffice 时转 PDF 并回写块页码（证据定位用）
-        if parsed.file_type == "docx":
+        # DOCX 页码锚定：有 LibreOffice 时转 PDF 并回写块页码（证据定位用）。
+        # 单文件 docx 与 multi 合并（逐个源文件锚定各自块）都覆盖；
+        # 源文件路径从 intake meta 取（本方法签名里没有 file_paths）。
+        if parsed.file_type in ("docx", "multi"):
             try:
                 from bidmaster.parser.page_anchor import anchor_blocks, docx_to_pdf
-                for fi, fp in enumerate(file_paths):
-                    if Path(fp).suffix.lower() != ".docx":
+                src_paths = [fi.get("path") or fi.get("file_name", "")
+                             for fi in meta.get("files", [])]
+                for fp in src_paths:
+                    if not fp or Path(fp).suffix.lower() != ".docx":
                         continue
                     pdf_path = docx_to_pdf(fp, ws / "_pdf")
                     if not pdf_path:
@@ -203,8 +211,8 @@ class Pipeline:
                     n = anchor_blocks(doc_blocks, pdf_path)
                     if n:
                         print(f"[页码锚定] {Path(fp).name}: {n} 块已定位页码")
-            except Exception:  # noqa: BLE001  页码锚定失败不影响主链
-                pass
+            except Exception as exc:  # noqa: BLE001  页码锚定失败不影响主链
+                print(f"[页码锚定] 失败（不影响主链）: {exc}")
         write_json(ws / "ledger.json",
                    {**ledger.model_dump(mode="json"), "summary": ledger.summary()})
         write_json(f, parsed.model_dump(mode="json"))
@@ -230,6 +238,10 @@ class Pipeline:
             b_seq += 1
             blocks.append(b.model_copy(update={"source_file": doc.file_name}))
             char_base += len(tag) + 1
+            # 合并全文 = 各块文本以单换行连接（见下方 "\n".join），
+            # 块偏移按运行位置重算——原块偏移基于各文档自身全文，
+            # 直接累加会把文档内块间隙重复计入（偏移漂移、证据回查错位）
+            pos = char_base
             for blk in doc.blocks:
                 new_ref = blk.table_ref
                 if blk.table_ref:
@@ -237,13 +249,15 @@ class Pipeline:
                     new_ref = f"t-{t_seq:04d}"
                     id_map[(i, blk.table_ref)] = new_ref
                 b_seq += 1
+                tlen = len(blk.text or "")
                 blocks.append(blk.model_copy(update={
                     "block_id": f"b-{b_seq:05d}",
                     "source_file": doc.file_name,
-                    "char_start": blk.char_start + char_base,
-                    "char_end": blk.char_end + char_base,
+                    "char_start": pos,
+                    "char_end": pos + tlen,
                     "table_ref": new_ref}))
-                char_base += (blk.char_end - blk.char_start) + 1
+                pos += tlen + 1
+            char_base = pos
             for t in doc.tables:
                 t_seq += 1
                 new_id = id_map.get((i, t.table_id), t.table_id)

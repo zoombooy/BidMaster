@@ -2,6 +2,8 @@
 代码在原文中回查（前缀匹配）验证——引用查不到 = 丢弃该值（无证据不采纳）。"""
 from __future__ import annotations
 
+import re
+
 from bidmaster.extraction.normalize import normalize_amount, normalize_datetime, normalize_duration
 from bidmaster.extraction.rules import NORM_AMOUNT, NORM_DATETIME, NORM_DURATION, FIELD_RULES
 from bidmaster.llm.client import LLMClient
@@ -52,13 +54,28 @@ def llm_fill_missing(parsed: ParsedDocument, zones: list[AnchorZone],
         quote = str(item.get("quote", "")).strip()
         if not value or not quote:
             continue
-        # 证据回查：quote 前 15 字符必须能在原文中找到
-        pos = full_text.find(quote[:15])
-        if pos < 0:
+        # 证据回查（双闸）：
+        # ① 完整引文必须能在原文中找到（去空白比对，容忍换行差异）——
+        #    只验前缀会放过"开头真实、后半编造"的引用；
+        # ② 字段值必须被引文支撑：值（或其归一化形式）出现在引文中。
+        _ws = lambda s: re.sub(r"\s+", "", s or "")
+        q_norm, ft_norm = _ws(quote), _ws(full_text)
+        if q_norm not in ft_norm:
             f = results[key]
             f.status = STATUS_FAILED
-            f.note = "LLM 返回值无法回查到原文，已拒绝采纳（无证据不采纳）"
+            f.note = "LLM 返回的引文未通过全文回查，已拒绝采纳（无证据不采纳）"
             continue
+        if _ws(value) not in q_norm:
+            f = results[key]
+            f.status = STATUS_FAILED
+            f.note = "LLM 返回值未获引文支撑（值不在引文中），已拒绝采纳"
+            continue
+        # 证据字符定位：原文精确匹配优先，退化用引文前缀锚定（严格校验已在上面的归一化闸完成）
+        pos = full_text.find(quote)
+        if pos < 0:
+            pos = full_text.find(quote[:15])
+        if pos < 0:
+            pos = 0
         pack = catalog[key]
         norm_str = _normalize_for(key, value)
         if norm_str is None or not str(norm_str).strip():

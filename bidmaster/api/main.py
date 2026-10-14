@@ -12,6 +12,7 @@ import io
 from pathlib import Path
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import Response
 
 from bidmaster.a2a.routes import router as a2a_router
@@ -24,7 +25,7 @@ pipeline = Pipeline(work_root=Path("work"))
 app.include_router(a2a_router)
 from bidmaster.mcp_server import router as mcp_router
 app.include_router(mcp_router)
-ALLOWED_EXT = {".docx", ".doc", ".pdf"}
+ALLOWED_EXT = {".docx", ".doc", ".pdf", ".xlsx", ".zip"}
 
 
 @app.get("/ui")
@@ -67,8 +68,12 @@ async def analyze(file: UploadFile = File(...), force: bool = Form(False)):
     if ext == ".docx" and save_path.read_bytes()[:4] == b"\xd0\xcf\x11\xe0":
         save_path.unlink(missing_ok=True)
         raise HTTPException(400, "文件内容是老式 .doc（仅改了扩展名），请用 Word 另存为 .docx 后重新上传")
+    if ext == ".zip" and save_path.read_bytes()[:2] != b"PK":
+        save_path.unlink(missing_ok=True)
+        raise HTTPException(400, "zip 内容校验失败（非标准 zip 魔数），请确认文件未损坏")
     try:
-        report = pipeline.run(str(save_path), force=force)
+        # 线程池执行：完整管线含 LLM 调用可达数分钟，直接在事件循环里跑会占死服务
+        report = await run_in_threadpool(pipeline.run, str(save_path), force=force)
     except NotImplementedError as e:
         raise HTTPException(422, str(e))
     except ValueError as e:

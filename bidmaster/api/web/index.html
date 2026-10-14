@@ -170,9 +170,9 @@ table.orig td.val-hit{outline:2px solid var(--green);outline-offset:-2px;backgro
   <aside class="left">
     <div class="drop" id="drop">
       <b>拖入或点击选择招标文件</b>
-      <span class="hint">支持 .docx / .doc / .pdf（可整包压缩后再看多文件）</span>
+      <span class="hint">支持 .zip 整包 / .docx / .pdf / .xlsx（压缩包自动展开多文件）</span>
       <label class="force"><input type="checkbox" id="force"> force 强制重跑（忽略缓存）</label>
-      <input type="file" id="file" accept=".docx,.doc,.pdf" hidden>
+      <input type="file" id="file" accept=".docx,.doc,.pdf,.xlsx,.zip" hidden>
     </div>
     <div class="upbar" id="upbar"><i></i></div>
     <div class="upstate" id="upstate"></div>
