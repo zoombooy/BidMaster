@@ -40,7 +40,7 @@ STAGE_FILES = {
 }
 # 产物格式版本：解析/评分逻辑升级导致旧缓存不兼容时必须 bump，
 # 管线启动时检测版本不符会自动级联失效全部缓存（防止新旧逻辑结果混杂）。
-CODE_VERSION = "0.5.0"
+CODE_VERSION = "0.5.1"
 _DOWNSTREAM = {  # 级联失效表
     "intake": ["parse", "structure", "fields", "scoring", "report"],
     "parse": ["structure", "fields", "scoring", "report"],
@@ -200,12 +200,21 @@ class Pipeline:
                 from bidmaster.parser.page_anchor import anchor_blocks, docx_to_pdf
                 src_paths = [fi.get("path") or fi.get("file_name", "")
                              for fi in meta.get("files", [])]
-                for fp in src_paths:
+                for fi, fp in enumerate(src_paths):
                     if not fp or Path(fp).suffix.lower() != ".docx":
                         continue
                     pdf_path = docx_to_pdf(fp, ws / "_pdf")
                     if not pdf_path:
                         continue
+                    # 重命名对齐源副本命名：原文页接口按 source_N 查预览
+                    # （docx_to_pdf 用的是原始文件名，两者对不上会白转）
+                    wanted = ws / "_pdf" / f"source_{fi}.pdf"
+                    if Path(pdf_path) != wanted:
+                        try:
+                            Path(pdf_path).replace(wanted)
+                            pdf_path = wanted
+                        except OSError:
+                            pass
                     doc_blocks = [b for b in parsed.blocks
                                   if b.source_file == Path(fp).name]
                     n = anchor_blocks(doc_blocks, pdf_path)
@@ -388,11 +397,18 @@ class Pipeline:
                     ev.source_file = fname
                 if ev.kind != "llm_quote" or ev.char_end <= ev.char_start:
                     continue
-                for (s0, e0, main0) in sub_spans:
-                    if s0 <= ev.char_start < e0:
-                        ev.char_start = main0 + (ev.char_start - s0)
-                        ev.char_end = main0 + min(ev.char_end - s0, e0 - s0)
-                        break
+                # 起止分别定位所在子块再映射：引文跨段时终点在后面的块里，
+                # 截断到起点所在块会丢掉跨段部分（主文档坐标连续，跨块区间完整）
+                def _to_main(offset: int) -> int | None:
+                    for (s0, e0, main0) in sub_spans:
+                        if s0 <= offset < e0:
+                            return main0 + (offset - s0)
+                    return None
+                m_start = _to_main(ev.char_start)
+                m_end = _to_main(ev.char_end - 1)
+                if m_start is not None and m_end is not None:
+                    ev.char_start = m_start
+                    ev.char_end = m_end + 1
             bucket = lot_fields.setdefault(lot, {})
             for k, fv in sub_fields.items():
                 if fv.status == STATUS_FOUND and k not in bucket:
@@ -411,6 +427,27 @@ class Pipeline:
                     status=STATUS_FOUND, value_raw=scope["project"],
                     value_normalized=scope["project"], confidence=0.9,
                     evidence_ids=[proj_ev.evidence_id]).model_dump(mode="json")
+
+        # 3) 包清单并集：公告表格抽出的包（按包号主键）若不在文件级包清单里，
+        #    也补进 lot_info——否则只有公告表、无包件专属文件时，汇总表遍历
+        #    lot_info 会漏掉已抽到的包
+        import re as _re
+
+        def _lot_known(lot: str) -> bool:
+            num = _re.search(r"\d+", lot)
+            for info in lot_info:
+                nm = info.get("lot", "")
+                if lot == nm or (num and num.group(0) in nm) or nm in lot:
+                    return True
+            return False
+
+        for lot, bucket in lot_fields.items():
+            if _lot_known(lot):
+                continue
+            pkg = bucket.get("package_name") or bucket.get("package_no")
+            proj = (pkg.get("value_normalized", "") if isinstance(pkg, dict) else "") or ""
+            lot_info.append({"lot": lot, "project": proj,
+                             "source_file": "公告包件表"})
 
         self._backfill_evidence_sources(parsed, store)
 

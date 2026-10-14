@@ -99,7 +99,10 @@ def extract_lot_table_fields(parsed: ParsedDocument,
                     or _find_col(header, ("分项限价",)))
         start_ci = _find_col(header, ("开始时间", "计划开工日期", "计划开始"))
         end_ci = _find_col(header, ("完成时间", "计划竣工日期", "计划完成"))
-        lot_ci = _find_col(header, ("标包名称", "包名称", "标包划分", "分标名称"))
+        # 包名称列优先于分标名称列：客户表头是 分标名称|包号|包名称|项目名称，
+        # _find_col 按列序扫描，把"分标名称"排前面会导致整分标各包共用一条记录
+        lot_ci = (_find_col(header, ("标包名称", "包名称"))
+                  or _find_col(header, ("标包划分", "分标名称")))
         pkgno_ci = _find_col(header, ("包号", "标段号", "包件号"))
         apply_ci = _find_col(header, ("采购申请号", "申请编号"))
         scope_ci = _find_col(header, ("招标范围", "服务范围", "工作内容"))
@@ -128,6 +131,11 @@ def extract_lot_table_fields(parsed: ParsedDocument,
                 lot = m2
             lot_name = (lot.group(0) if lot and len(lot.group(0)) >= 4
                         else cells[lot_ci][:40])
+            # 有包号列时用包号作记录主键（"包01"），避免同分标各包串档；
+            # 包名称列原值另存 package_name 字段
+            pkg_no_val = _cell(cells, pkgno_ci)
+            if pkg_no_val:
+                lot_name = pkg_no_val
             ev = store.add(make_evidence(
                 kind="table_cell", source="table",
                 page_no=(tb.page_nos[0] if tb.page_nos else 0),
@@ -178,7 +186,7 @@ def extract_lot_table_fields(parsed: ParsedDocument,
                 sm, em = _DATE.search(cells[start_ci]), _DATE.search(cells[end_ci])
                 if sm and em:
                     dur = (f"{sm.group(1)}年{int(sm.group(2))}月"
-                           f"至{em.group(1)}年{int(sm.group(2))}月")
+                           f"至{em.group(1)}年{int(em.group(2))}月")
                     _put(lot_name, "duration", dur, dur, 0.9, ev)
 
     return lot_fields
