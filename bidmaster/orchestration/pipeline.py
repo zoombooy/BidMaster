@@ -40,7 +40,7 @@ STAGE_FILES = {
 }
 # 产物格式版本：解析/评分逻辑升级导致旧缓存不兼容时必须 bump，
 # 管线启动时检测版本不符会自动级联失效全部缓存（防止新旧逻辑结果混杂）。
-CODE_VERSION = "0.5.3"
+CODE_VERSION = "0.5.4"
 _DOWNSTREAM = {  # 级联失效表
     "intake": ["parse", "structure", "fields", "scoring", "report"],
     "parse": ["structure", "fields", "scoring", "report"],
@@ -435,8 +435,9 @@ class Pipeline:
         import re as _re
 
         def _lot_num(lot: str) -> int | None:
-            m = _re.search(r"\d+", lot or "")
-            return int(m.group(0)) if m else None
+            bare = (lot or "").split("::", 1)[-1]
+            m = _re.search(r"包?0*(\d+)", bare)
+            return int(m.group(1)) if m else None
 
         def _fe_get(f, key: str) -> str:
             if f is None:
@@ -446,10 +447,15 @@ class Pipeline:
 
         def _canonical(lot: str) -> str | None:
             num = _lot_num(lot)
+            fb = (lot or "").split("::", 1)[0] if "::" in (lot or "") else ""
             for info in lot_info:
                 nm = info.get("lot", "")
                 if lot == nm:
                     return nm
+                nfb = (nm or "").split("::", 1)[0] if "::" in (nm or "") else ""
+                # 双方都带分标前缀时必须同分标；缺分标依据时不凭包号数字合并
+                if fb and nfb and fb != nfb:
+                    continue
                 if num is not None and _lot_num(nm) == num:
                     return nm
             return None
@@ -541,7 +547,11 @@ class Pipeline:
         scores_for_outline = score_items
         if target_lot:
             scores_for_outline, _dropped = filter_for_target(score_items, target_lot)
-        bid_outline = extract_bid_format_outline(parsed, scores_for_outline)
+        from bidmaster.summary.scope import scope_pending
+        pending_ids = {_fe_get(s, "score_id")
+                       for s in scope_pending(score_items, target_lot)}
+        bid_outline = extract_bid_format_outline(parsed, scores_for_outline,
+                                                 pending_ids=pending_ids)
         # 置信度复核队列
         review = [k for k, v in fields.items()
                   if isinstance(v, dict) and v.get("status") == STATUS_FOUND

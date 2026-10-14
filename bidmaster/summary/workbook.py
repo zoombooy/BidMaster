@@ -230,8 +230,8 @@ def _req_sheet(wb, report, target_lot: str) -> None:
             grouped.setdefault(t, []).append(text)
     lots = report.lot_info or []
     lot_name = lots[0].get("lot", "") if lots else ""
-    caveat = ("要求按全部分标汇总（要求条目尚未按包归属区分），"
-              "适用范围请人工确认" if len(lots) > 1 else "")
+    caveat = ("要求按全部分标汇总（条目尚未按包归属区分），"
+              "适用范围请人工确认" if (report.requirements or []) else "")
     if caveat:
         ws.cell(row=3, column=1, value=caveat).font = Font(color="C27803")
     _row(ws, 4, ["", _fv(report.fields, "project_name"),
@@ -277,7 +277,8 @@ def _outline_sheet(wb, report) -> None:
         r += 1
         for it in bucket["items"]:
             seq += 1
-            note = "评分项补充" if it.get("generated") else ""
+            note = ("评分项补充·适用范围待确认" if it.get("pending")
+                    else "评分项补充" if it.get("generated") else "")
             _row(ws, r, [seq, it.get("level", ""), it.get("name", ""), note])
             if it.get("generated"):
                 ws.cell(row=r, column=4).font = Font(color="C27803")

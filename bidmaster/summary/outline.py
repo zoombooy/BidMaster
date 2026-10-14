@@ -91,7 +91,8 @@ def _walk(node) -> list[dict]:
 
 
 def extract_bid_format_outline(parsed: ParsedDocument,
-                               scores: list | None = None) -> dict:
+                               scores: list | None = None,
+                               pending_ids: set | None = None) -> dict:
     """从解析文档提取投标文件格式目录；找不到章节时按评分项兜底生成。"""
     tops = build_section_tree(parsed)
     node, _anc = _find_format_section(tops)
@@ -121,7 +122,8 @@ def extract_bid_format_outline(parsed: ParsedDocument,
         source_title = "未找到'投标文件格式'章节"
 
     # 评分项补目录：该桶已有条目且评分项名已覆盖 → 不补；否则按名称生成
-    supplemented = _supplement_from_scores(buckets, scores or [])
+    supplemented = _supplement_from_scores(buckets, scores or [],
+                                           pending_ids or set())
 
     result = {
         "found": found,
@@ -163,7 +165,8 @@ def _attr(s, key: str, default: str = "") -> str:
     return getattr(s, key, default) or default
 
 
-def _supplement_from_scores(buckets: dict, scores: list) -> int:
+def _supplement_from_scores(buckets: dict, scores: list,
+                            pending_ids: set) -> int:
     added = 0
     cat_bucket = {"technical": "technical", "commercial": "commercial"}
     for cat, bucket in cat_bucket.items():
@@ -177,7 +180,8 @@ def _supplement_from_scores(buckets: dict, scores: list) -> int:
                 continue
             buckets[bucket].append({
                 "no": "", "name": name, "level": 2,
-                "title": name, "generated": True})
+                "title": name, "generated": True,
+                "pending": _attr(s, "score_id") in pending_ids})
             joined += name
             added += 1
     return added
