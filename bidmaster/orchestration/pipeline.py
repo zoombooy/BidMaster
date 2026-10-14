@@ -30,6 +30,15 @@ from bidmaster.storage.json_store import read_json, write_json, workspace_for
 from bidmaster.structure.anchors import find_anchor_zones
 from bidmaster.structure.toc import build_section_tree, flatten
 
+def _fe_get(f, key: str) -> str:
+    """字段对象/dict 统一取值（模型对象与 stage JSON 两态兼容）——模块级，
+    供 _stage_fields 与 _stage_report 共用（局部函数曾导致越界 NameError）。"""
+    if f is None:
+        return ""
+    v = f.get(key) if isinstance(f, dict) else getattr(f, key, "")
+    return v or ""
+
+
 STAGE_FILES = {
     "intake": "01_intake.json",
     "parse": "02_parsed.json",
@@ -40,7 +49,7 @@ STAGE_FILES = {
 }
 # 产物格式版本：解析/评分逻辑升级导致旧缓存不兼容时必须 bump，
 # 管线启动时检测版本不符会自动级联失效全部缓存（防止新旧逻辑结果混杂）。
-CODE_VERSION = "0.5.4"
+CODE_VERSION = "0.5.5"
 _DOWNSTREAM = {  # 级联失效表
     "intake": ["parse", "structure", "fields", "scoring", "report"],
     "parse": ["structure", "fields", "scoring", "report"],
@@ -435,15 +444,9 @@ class Pipeline:
         import re as _re
 
         def _lot_num(lot: str) -> int | None:
-            bare = (lot or "").split("::", 1)[-1]
-            m = _re.search(r"包?0*(\d+)", bare)
-            return int(m.group(1)) if m else None
-
-        def _fe_get(f, key: str) -> str:
-            if f is None:
-                return ""
-            v = f.get(key) if isinstance(f, dict) else getattr(f, key, "")
-            return v or ""
+            from bidmaster.summary.scope import package_numbers, split_fenbiao
+            ns = package_numbers(split_fenbiao(lot)[1])
+            return min(ns) if ns else None
 
         def _canonical(lot: str) -> str | None:
             num = _lot_num(lot)
@@ -453,8 +456,9 @@ class Pipeline:
                 if lot == nm:
                     return nm
                 nfb = (nm or "").split("::", 1)[0] if "::" in (nm or "") else ""
-                # 双方都带分标前缀时必须同分标；缺分标依据时不凭包号数字合并
-                if fb and nfb and fb != nfb:
+                # 只要一方带分标：分标不同或对方缺失都不合并（缺分标依据，
+                # 凭包号数字合并会让跨分标同号包互相覆盖字段）
+                if (fb or nfb) and fb != nfb:
                     continue
                 if num is not None and _lot_num(nm) == num:
                     return nm

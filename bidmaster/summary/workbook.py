@@ -330,11 +330,13 @@ def _score_sheet(wb, report, category: str, sheet: str,
         head_row = 2  # 说明行与表头/数据行分开，避免覆盖
     _head(ws, head_row, ["序号", "评分项", "分值", "评分标准", "状态", "适用范围"])
     for i, s in enumerate(items, 1):
-        _, label = classify(read_lot(s), target_lot) if target_lot \
-            else ("", "待确认" if not read_lot(s) else read_lot(s))
+        if target_lot:
+            scope, label = classify(read_lot(s), target_lot)
+        else:
+            scope, label = "unknown", (read_lot(s) or "待确认")
         _row(ws, head_row + i, [i, _attr(s, "name"), _attr(s, "max_score"),
                                 _attr(s, "rule_text"), _attr(s, "status"),
-                                label], target=(label == target_lot))
+                                label], target=(scope == "target"))
     if not items:
         _row(ws, head_row + 1, ["—", "—", "—",
                                 "未识别到该类评分项" + ("（或已全部被单包过滤）"

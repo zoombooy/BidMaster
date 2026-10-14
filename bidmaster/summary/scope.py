@@ -23,7 +23,7 @@ _PKG_PATTERNS = [
     re.compile(r"(\d+)\s*号包"),
     re.compile(r"标段\s*0*(\d+)"),
 ]
-# 包号区间："包1-包3" / "包1~包3" / "包1至包3"
+# 包号区间："包1-包3" / "包1~包3" / "包1至包3"（可出现多个，全部收集）
 _RANGE_RE = re.compile(r"包\s*0*(\d+)\s*[-~～至到]\s*(?:包\s*)?0*(\d+)")
 
 
@@ -33,18 +33,24 @@ def _full2half(s: str) -> str:
 
 
 def package_numbers(lot: str | None) -> set[int]:
-    """从明确的包号语法提取包号集合；区间展开；无包号语法返回空集。"""
+    """从明确的包号语法提取包号集合：全部区间 + 全部独立包号取并集；
+    提取不到包号语法返回空集（空集不作为排除依据）。"""
     s = _full2half(lot)
     if not s:
         return set()
-    m = _RANGE_RE.search(s)
-    if m:
+    nums: set[int] = set()
+    rest: list[str] = []
+    last = 0
+    for m in _RANGE_RE.finditer(s):
+        rest.append(s[last:m.start()])
         lo, hi = int(m.group(1)), int(m.group(2))
         if hi >= lo:
-            return set(range(lo, hi + 1))
-    nums: set[int] = set()
+            nums.update(range(lo, hi + 1))
+        last = m.end()
+    rest.append(s[last:])
+    remainder = " ".join(rest)
     for pat in _PKG_PATTERNS:
-        for m in pat.finditer(s):
+        for m in pat.finditer(remainder):
             nums.add(int(m.group(1)))
     return nums
 
@@ -64,37 +70,54 @@ def read_lot(item, attr: str = "parsed_rule") -> str:
     return str(v or "")
 
 
+def split_fenbiao(lot: str | None) -> tuple[str, str]:
+    """复合键 "分标::包号" 拆分；非复合键返回 ("", 原值)。"""
+    s = lot or ""
+    if "::" in s:
+        fb, bare = s.split("::", 1)
+        return fb.strip(), bare.strip()
+    return "", s.strip()
+
+
 def same_lot(a: str, b: str) -> bool:
-    """同包判定：字符串相等，或双方包号集合有交集（包01=包1≠包10）。"""
+    """同包判定：字符串相等；或分标一致（双方都无分标视为一致）且包号集合有交集。
+    分标明确冲突 → False。缺分标依据的场景请走 classify（返回待确认）。"""
     if not a or not b:
         return False
     if a == b:
         return True
-    na, nb = package_numbers(a), package_numbers(b)
+    fa, ba = split_fenbiao(a)
+    fb_, bb = split_fenbiao(b)
+    if (fa or fb_) and fa != fb_:
+        return False
+    na, nb = package_numbers(ba), package_numbers(bb)
     return bool(na and nb and na & nb)
 
 
 def classify(lot_str: str, target_lot: str) -> tuple[str, str]:
     """返回 (scope, label)。仅 other 可排除；unknown 保留并标待确认。
-    label 为面向用户的展示文本（含"待确认·"/"其他包·"前缀）。"""
+    分标三元判定：双方分标明确且不同 → other；仅一方有分标 → 依据不足
+    → unknown 待确认（不凭包号数字直接判目标包）。"""
     lot_str = (lot_str or "").strip()
     if not lot_str or lot_str == "-":
         return _UNKNOWN, "待确认"
+    fa, ba = split_fenbiao(lot_str)
+    fbt, bt = split_fenbiao(target_lot)
     if same_lot(lot_str, target_lot):
-        t_nums = package_numbers(target_lot)
-        l_nums = package_numbers(lot_str)
+        t_nums = package_numbers(bt)
+        l_nums = package_numbers(ba)
         if t_nums and l_nums and len(l_nums) > 1:  # 区间/列表覆盖多包
             return _UNIVERSAL, f"通用·含目标包（{lot_str[:14]}）"
         return _TARGET, "目标包"
-    t_nums = package_numbers(target_lot)
-    l_nums = package_numbers(lot_str)
-    if t_nums and l_nums:
-        if t_nums & l_nums:  # 区间/多包号覆盖目标包 → 通用
-            return _UNIVERSAL, f"通用·{lot_str[:16]}"
-        return _OTHER, f"其他包·{lot_str[:16]}"
-    # 无包号语法 → 分标通用或文字提示：与目标包标识有包含关系视为通用，否则待确认
-    if target_lot and (lot_str in target_lot or target_lot in lot_str):
-        return _UNIVERSAL, f"通用·{lot_str[:16]}"
+    if fa and fbt and fa != fbt:
+        # 双方分标明确不同：即使包号数字相同也不是同一个包
+        return _OTHER, f"其他分标·{lot_str[:12]}"
+    t_nums = package_numbers(bt)
+    l_nums = package_numbers(ba)
+    if t_nums and l_nums and not (t_nums & l_nums):
+        # 双方分标一致（或均无）且包号无交集 → 明确其他包
+        return _OTHER, f"其他包·{ba[:14]}"
+    # 分标依据不足 / 无包号语法 → 待确认保留
     return _UNKNOWN, f"待确认·{lot_str[:16]}"
 
 

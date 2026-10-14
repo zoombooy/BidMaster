@@ -127,16 +127,6 @@ def extract_lot_table_fields(parsed: ParsedDocument,
             continue
         unit_wan = is_price and "万" in header[price_ci]
 
-        # 一张表含多个分标时（不同分标都有"包01"），包号必须带分标前缀作键，
-        # 否则跨分标同号包共用一条字段记录互相覆盖
-        fb_values: set[str] = set()
-        if fb_ci is not None:
-            for row0 in tb.rows[1:]:
-                v0 = row0[fb_ci].strip() if fb_ci < len(row0) else ""
-                if v0:
-                    fb_values.add(v0)
-        multi_fb = len(fb_values) > 1
-
         def _cell(cells, ci):
             return cells[ci] if ci is not None and ci < len(cells) else ""
 
@@ -157,8 +147,8 @@ def extract_lot_table_fields(parsed: ParsedDocument,
             pkg_no_val = _cell(cells, pkgno_ci)
             fb_val = _cell(cells, fb_ci)
             if pkg_no_val:
-                lot_name = (f"{fb_val}::{pkg_no_val}"
-                            if multi_fb and fb_val else pkg_no_val)
+                # 识别到分标就纳入包身份（分标::包号）；无分标列用裸包号
+                lot_name = f"{fb_val}::{pkg_no_val}" if fb_val else pkg_no_val
             ev = store.add(make_evidence(
                 kind="table_cell", source="table",
                 page_no=(tb.page_nos[0] if tb.page_nos else 0),

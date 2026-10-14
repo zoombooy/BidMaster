@@ -371,7 +371,8 @@ function outlineHtml(){
       const indent=Math.max(0,(it.level-lastLevel))*18;
       html+=`<tr class="rowh"><td>${esc(it.no||"")}</td>
         <td style="padding-left:${14+indent}px">${esc(it.name||it.title)}
-        ${it.generated?'<span class="pill pending_review">评分项补充</span>':""}</td></tr>`;
+        ${it.pending?'<span class="pill pending_review">评分项补充·适用范围待确认</span>'
+          :(it.generated?'<span class="pill pending_review">评分项补充</span>':"")}</td></tr>`;
       lastLevel=it.level;
     });
     html+="</table>";
