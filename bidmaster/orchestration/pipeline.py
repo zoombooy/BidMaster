@@ -49,7 +49,7 @@ STAGE_FILES = {
 }
 # 产物格式版本：解析/评分逻辑升级导致旧缓存不兼容时必须 bump，
 # 管线启动时检测版本不符会自动级联失效全部缓存（防止新旧逻辑结果混杂）。
-CODE_VERSION = "0.5.6"
+CODE_VERSION = "0.5.7"
 _DOWNSTREAM = {  # 级联失效表
     "intake": ["parse", "structure", "fields", "scoring", "report"],
     "parse": ["structure", "fields", "scoring", "report"],
@@ -556,6 +556,7 @@ class Pipeline:
                        for s in scope_pending(score_items, target_lot)}
         bid_outline = extract_bid_format_outline(parsed, scores_for_outline,
                                                  pending_ids=pending_ids)
+        bid_outline["target_lot"] = target_lot  # 缓存目录的归属目标包
         # 置信度复核队列
         review = [k for k, v in fields.items()
                   if isinstance(v, dict) and v.get("status") == STATUS_FOUND

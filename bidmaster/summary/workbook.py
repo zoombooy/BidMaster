@@ -257,10 +257,28 @@ def _req_sheet(wb, report, target_lot: str) -> None:
 
 
 def _outline_for(report, target_lot: str, parsed=None) -> dict:
-    """目录视图：与本次导出目标包一致。无法重算时回退报告缓存结果。"""
-    outline = getattr(report, "bid_outline", None)
+    """目录视图：与本次导出目标包一致。
+    缓存目录仅在归属目标包一致（或本次未指定）时复用；切换目标包却无法
+    重算时，返回明确标注"目录不可用"的空视图，不无提示混入旧包目录。"""
+    outline = getattr(report, "bid_outline", None) or {}
+    cached_target = outline.get("target_lot", "")
+
+    def _mismatched() -> dict:
+        return {"found": False, "source_section": "", "buckets": [],
+                "others": [], "supplemented": 0,
+                "target_lot": target_lot,
+                "note": (f"本次导出目标包为 {target_lot}，与缓存目录归属"
+                         f"（{cached_target or '未记录'}）不一致且缺少解析产物"
+                         f"无法重算；本表不含评分补充目录，"
+                         f"请通过 /api/analyze（force）重新解析后导出")}
+
     if parsed is None:
-        return outline or {}
+        if not target_lot or (cached_target and cached_target == target_lot):
+            return outline
+        # 旧版缓存未记录归属：单包/未分标文档目录与包无关可复用；多包不混用
+        if not cached_target and len(getattr(report, "lot_info", []) or []) <= 1:
+            return outline
+        return _mismatched()
     try:
         from bidmaster.summary.outline import extract_bid_format_outline
         from bidmaster.summary.scope import filter_for_target, scope_pending
@@ -268,16 +286,24 @@ def _outline_for(report, target_lot: str, parsed=None) -> dict:
         if target_lot:
             keep, _dropped = filter_for_target(scores, target_lot)
             pending = {_attr(s, "score_id") for s in scope_pending(scores, target_lot)}
-            return extract_bid_format_outline(parsed, keep, pending_ids=pending)
-        return extract_bid_format_outline(parsed, scores)
-    except Exception:  # noqa: BLE001 重算失败回退缓存
-        return outline or {}
+            out = extract_bid_format_outline(parsed, keep, pending_ids=pending)
+        else:
+            out = extract_bid_format_outline(parsed, scores)
+        out["target_lot"] = target_lot
+        return out
+    except Exception:  # noqa: BLE001 重算失败：一致则回退缓存，不一致则明确标注
+        if not target_lot or not cached_target or cached_target == target_lot:
+            return outline
+        return _mismatched()
 
 
 # ------------------------------------------------------ 投标文件构成
-def _outline_sheet(wb, outline: dict) -> None:
+def _outline_sheet(wb, outline: dict, requirements: list | None = None) -> None:
+    """outline 为本次导出目标包的目录视图；requirements 为报告要求条目
+    （材料清单数据源）——两者显式传参，不依赖外层变量。"""
     ws = _sheet(wb, "投标文件构成", [10, 8, 74, 12])
     outline = outline or {}
+    requirements = requirements if requirements is not None else []
     ws.cell(row=1, column=1,
             value=f"目录来源：{outline.get('source_section') or '—'}"
             ).font = _TITLE_FONT
@@ -306,7 +332,7 @@ def _outline_sheet(wb, outline: dict) -> None:
         _row(ws, r, [seq, it.get("level", ""), it.get("name", ""), "其他"])
         r += 1
     # 标书资料清单：标书构成类要求（应附材料/格式）→ 编标备料核对单
-    doc_reqs = [rq for rq in (report.requirements or []) if _attr(rq, "usage_document")]
+    doc_reqs = [rq for rq in requirements if _attr(rq, "usage_document")]
     if doc_reqs:
         r += 1
         ws.cell(row=r, column=1,
@@ -374,7 +400,7 @@ def build_summary_xlsx(report, target_lot: str = "", parsed=None) -> bytes:
     _basic_sheet(wb, report, target_lot)
     _lot_sheet(wb, report, target_lot)
     _req_sheet(wb, report, target_lot)
-    _outline_sheet(wb, outline)
+    _outline_sheet(wb, outline, requirements=report.requirements or [])
     _rej_sheet(wb, report)
     _score_sheet(wb, report, "commercial", "商务评分标准", target_lot)
     _score_sheet(wb, report, "technical", "技术评分标准", target_lot)

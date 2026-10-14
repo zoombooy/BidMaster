@@ -151,7 +151,9 @@ def pick_target_lot(lot_info: list[dict]) -> str:
         fb, bare = split_fenbiao(name)
         ns = package_numbers(bare)
         num = min(ns) if ns else 10 ** 9
-        return (fb or name, num, name)
+        if fb:
+            return (1, fb, num, name)  # 有分标：分标名分组，组内包号数字
+        return (0, num, name)          # 无分标：包号数字优先（包2 < 包10）
 
     return sorted(lot_info, key=key)[0].get("lot", "")
 

@@ -42,18 +42,32 @@ def package_numbers(lot: str | None) -> set[int]:
 def parse_packages(lot: str | None) -> tuple[set[int], bool]:
     """解析包号表达式 → (包号集合, 是否完整解析)。
 
-    支持：包N / 第N包 / N号包 / 标段N / 区间"包N-包M"（可多段）/
-    共享前缀列表（"包1、2、3"、"包1-包3、5、7"）。
-    存在带数字但无法归类的片段时 complete=False——调用方不得据此排除评分
-    （如"500千伏线路工程"：数字是电压等级，解析不完整 → 待确认保留）。
+    区间语法在空白拆分**之前**于原串扫描（"包1 至 包3"、"监理包1-包3" 均可
+    完整识别为区间 {1,2,3}，不会被拆碎成 {1,3}）；其余按分隔符切分后
+    逐段匹配 包N / 第N包 / N号包 / 标段N / 共享前缀裸数字（"包1、2、3"）。
+    存在带数字但无法归类的片段 → complete=False——调用方不得据此排除评分
+    （如"500千伏线路工程"：数字是电压等级 → 待确认保留）。
     """
     s = _full2half(lot)
     if not s:
         return set(), True
     nums: set[int] = set()
     complete = True
-    segments = [seg for seg in _LIST_SEP_RE.split(s) if seg]
-    has_pkg_prefix = False
+    remainder: list[str] = []
+    last = 0
+    # 区间优先：原串直接扫描，容忍区间内空白（"包1 至 包3"）
+    for m in _RANGE_RE.finditer(s):
+        remainder.append(s[last:m.start()])
+        lo, hi = int(m.group(1)), int(m.group(2))
+        if hi >= lo:
+            nums.update(range(lo, hi + 1))
+        else:
+            complete = False
+        last = m.end()
+    remainder.append(s[last:])
+    rem = " ".join(remainder)
+    has_pkg_prefix = bool(nums)  # 已有区间 → 后续裸数字属于同一列表
+    segments = [seg for seg in _LIST_SEP_RE.split(rem) if seg]
     for seg in segments:
         seg = seg.strip()
         m = _RANGE_RE.fullmatch(seg)
@@ -165,20 +179,26 @@ def classify(lot_str: str, target_lot: str) -> tuple[str, str]:
     if (fa or fbt) and fa != fbt:
         # 仅一方有分标：归属依据不足，即便包号无交集也不据此排除
         return _UNKNOWN, f"待确认·{lot_str[:16]}"
-    # 范围表达式严格解析；不完整时回退搜索式提取（仍只认显式包号语法）——
-    # 如"监理包12"这类名称内嵌包号可判定，电压/年份依旧安全
+    # 范围表达式严格解析；不完整时搜索式提取只能提供"命中目标包"的正向证据，
+    # 不能作为排除依据——搜索不展开区间语义（"监理包1-包3"只会搜到 1 和 3）
     l_nums, l_complete = parse_packages(ba)
-    if not l_complete:
-        l_nums = search_numbers(ba)
     t_num = _embedded_pkg_num(bt)  # 目标是包名称 → 宽松内嵌提取
-    if not l_nums or t_num is None:
+    if t_num is None:
         return _UNKNOWN, f"待确认·{lot_str[:16]}"
-    if t_num in l_nums:
+    if not l_nums:
+        # 未提取到任何包号语法（如纯文字提示"换流站土建施工"）→ 待确认
+        return _UNKNOWN, f"待确认·{lot_str[:16]}"
+    if t_num in l_nums:  # 严格完整解析命中 → 强证据
         if len(l_nums) > 1:
             return _UNIVERSAL, f"通用·含目标包（{lot_str[:14]}）"
         return _TARGET, "目标包"
-    # 提取到明确包号且目标不在其中 → 明确其他包（唯一可排除）
-    return _OTHER, f"其他包·{ba[:14]}"
+    if l_complete:
+        # 完整解析且目标包号不在集合中 → 明确其他包（唯一可排除）
+        return _OTHER, f"其他包·{ba[:14]}"
+    if t_num in search_numbers(ba):
+        # 弱证据命中：可确认适用，但范围可能未读全（不标待确认以外的排除）
+        return _UNIVERSAL, f"通用·含目标包（{lot_str[:14]}）"
+    return _UNKNOWN, f"待确认·{lot_str[:16]}"
 
 
 def filter_for_target(items: list, target_lot: str):
