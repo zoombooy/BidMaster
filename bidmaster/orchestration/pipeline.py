@@ -49,7 +49,7 @@ STAGE_FILES = {
 }
 # 产物格式版本：解析/评分逻辑升级导致旧缓存不兼容时必须 bump，
 # 管线启动时检测版本不符会自动级联失效全部缓存（防止新旧逻辑结果混杂）。
-CODE_VERSION = "0.5.7"
+CODE_VERSION = "0.5.8"
 _DOWNSTREAM = {  # 级联失效表
     "intake": ["parse", "structure", "fields", "scoring", "report"],
     "parse": ["structure", "fields", "scoring", "report"],
@@ -444,9 +444,8 @@ class Pipeline:
         import re as _re
 
         def _lot_num(lot: str) -> int | None:
-            from bidmaster.summary.scope import package_numbers, split_fenbiao
-            ns = package_numbers(split_fenbiao(lot)[1])
-            return min(ns) if ns else None
+            from bidmaster.summary.scope import identity_number, split_fenbiao
+            return identity_number(split_fenbiao(lot)[1])
 
         def _canonical(lot: str) -> str | None:
             num = _lot_num(lot)

@@ -23,6 +23,8 @@ _PKG_PATTERNS = [
     re.compile(r"(\d+)\s*号包"),
     re.compile(r"标段\s*0*(\d+)"),
 ]
+# 限定/否定语义：出现即放弃自动判定（无法确定方向）
+_RESTRICT_RE = re.compile(r"除[^\n，。;；]{0,12}外|不含|不适用|仅限|只限")
 # 包号列表分隔符（顿号/逗号/分号/空白）
 _LIST_SEP_RE = re.compile(r"[、,，;；\s]+")
 # 包号区间："包1-包3" / "包1~包3" / "包1至包3"（可出现多个，全部收集）
@@ -136,11 +138,16 @@ def split_fenbiao(lot: str | None) -> tuple[str, str]:
     return "", s.strip()
 
 
-def _embedded_pkg_num(name: str) -> int | None:
-    """名称内嵌包号宽松提取（"结算审核包1"/"监理包12" → 1/12）。
-    用于包名称匹配；范围表达式请用 parse_packages（严格语法+完整性）。"""
+def identity_number(name: str) -> int | None:
+    """单包身份解析：名称中明确的包号（"结算审核包1"/"监理包12" → 1/12）。
+    包清单合并、默认选包等"包身份"场景统一使用本入口；
+    适用范围表达式（列表/区间/完整性）请用 parse_packages。"""
     m = re.search(r"包\s*0*(\d+)", _full2half(name or ""))
     return int(m.group(1)) if m else None
+
+
+# 兼容别名
+_embedded_pkg_num = identity_number
 
 
 def same_lot(a: str, b: str) -> bool:
@@ -165,6 +172,10 @@ def classify(lot_str: str, target_lot: str) -> tuple[str, str]:
     lot_str = (lot_str or "").strip()
     if not lot_str or lot_str == "-":
         return _UNKNOWN, "待确认"
+    if _RESTRICT_RE.search(_full2half(lot_str)):
+        # 限定语义（除…外/仅限/不含等）改变适用方向，当前不做自然语言
+        # 理解 → 一律待确认，避免"除包1-包3外"被当成已确认适用
+        return _UNKNOWN, f"待确认·含限定语义（{lot_str[:14]}）"
     fa, ba = split_fenbiao(lot_str)
     fbt, bt = split_fenbiao(target_lot)
     if same_lot(lot_str, target_lot):

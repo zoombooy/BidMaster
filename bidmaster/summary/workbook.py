@@ -256,6 +256,22 @@ def _req_sheet(wb, report, target_lot: str) -> None:
         _row(ws, r0 + 2, ["—", "—", "", "", "", "未识别到要求", ""])
 
 
+def _can_reuse_cached(report, target_lot: str, cached_target: str) -> bool:
+    """缓存目录能否复用于本次目标包：未指定目标包 → 可；归属一致 → 可；
+    旧缓存无归属但报告仅单包/未分标且与请求一致 → 可；其余一律不可。"""
+    if not target_lot:
+        return True
+    if cached_target and cached_target == target_lot:
+        return True
+    lots = getattr(report, "lot_info", []) or []
+    if cached_target:
+        return False  # 有归属但不同 → 跨包，不复用
+    if len(lots) <= 1:
+        single = lots[0].get("lot", "") if lots else ""
+        return not single or single == target_lot or target_lot in single
+    return False
+
+
 def _outline_for(report, target_lot: str, parsed=None) -> dict:
     """目录视图：与本次导出目标包一致。
     缓存目录仅在归属目标包一致（或本次未指定）时复用；切换目标包却无法
@@ -273,10 +289,7 @@ def _outline_for(report, target_lot: str, parsed=None) -> dict:
                          f"请通过 /api/analyze（force）重新解析后导出")}
 
     if parsed is None:
-        if not target_lot or (cached_target and cached_target == target_lot):
-            return outline
-        # 旧版缓存未记录归属：单包/未分标文档目录与包无关可复用；多包不混用
-        if not cached_target and len(getattr(report, "lot_info", []) or []) <= 1:
+        if _can_reuse_cached(report, target_lot, cached_target):
             return outline
         return _mismatched()
     try:
@@ -291,8 +304,8 @@ def _outline_for(report, target_lot: str, parsed=None) -> dict:
             out = extract_bid_format_outline(parsed, scores)
         out["target_lot"] = target_lot
         return out
-    except Exception:  # noqa: BLE001 重算失败：一致则回退缓存，不一致则明确标注
-        if not target_lot or not cached_target or cached_target == target_lot:
+    except Exception:  # noqa: BLE001 重算失败：归属可证一致才回退缓存
+        if _can_reuse_cached(report, target_lot, cached_target):
             return outline
         return _mismatched()
 
@@ -307,7 +320,16 @@ def _outline_sheet(wb, outline: dict, requirements: list | None = None) -> None:
     ws.cell(row=1, column=1,
             value=f"目录来源：{outline.get('source_section') or '—'}"
             ).font = _TITLE_FONT
+    # 状态与原因显式写入 Excel：识别不到 / 切包后无法重算 / 处理失败，用户可辨
     r = 2
+    if outline.get("note"):
+        ws.cell(row=r, column=1, value=outline["note"]).font = Font(color="D64545")
+        r += 1
+    if not outline.get("found", True):
+        ws.cell(row=r, column=1,
+                value="目录不可用：下方如出现材料清单，仅是全量备料参考，"
+                      "不能代替目标包目录").font = Font(color="D64545")
+        r += 1
     _head(ws, r, ["序", "层级", "目录条目", "备注"])
     r += 1
     seq = 0

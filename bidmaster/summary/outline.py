@@ -144,16 +144,15 @@ def pick_target_lot(lot_info: list[dict]) -> str:
     不再拿分标名里恰好出现的数字（如电压等级 500）当包号。"""
     if not lot_info:
         return ""
-    from bidmaster.summary.scope import package_numbers, split_fenbiao
+    from bidmaster.summary.scope import identity_number, split_fenbiao
 
     def key(li: dict):
         name = str(li.get("lot", ""))
         fb, bare = split_fenbiao(name)
-        ns = package_numbers(bare)
-        num = min(ns) if ns else 10 ** 9
+        num = identity_number(bare)   # 单包身份解析（名称内嵌包号）
         if fb:
-            return (1, fb, num, name)  # 有分标：分标名分组，组内包号数字
-        return (0, num, name)          # 无分标：包号数字优先（包2 < 包10）
+            return (1, fb, num if num is not None else 10 ** 9, name)
+        return (0, num if num is not None else 10 ** 9, name)
 
     return sorted(lot_info, key=key)[0].get("lot", "")
 
