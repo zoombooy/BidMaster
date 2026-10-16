@@ -65,6 +65,38 @@ TOOLS_SCHEMA: list[dict] = [
         },
     },
     {
+        "name": "get_bid_outline",
+        "description": (
+            "获取投标文件构成目录（商务/技术/价格三类）：来自招标文件"
+            "'第X章 投标文件格式'标题树；评分标准未覆盖的章节按评分项补充"
+            "（标 generated），适用范围未确认的条目标 pending。"
+            "多包项目建议先 list_lots 再用 lot 指定目标包。"),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "doc_id": {"type": "string"},
+                "lot": {"type": "string", "description": "目标包/分标名（可选）"},
+            },
+            "required": ["doc_id"],
+        },
+    },
+    {
+        "name": "get_summary_sheet",
+        "description": (
+            "获取投标要点汇总表内容（客户编写标书前的依据表）：基本信息、"
+            "分标/包级需求（限价/工期/地点/采购申请号/招标范围）、"
+            "专用资格要求（资质/业绩/人员）、要求分类清单（评分要求/标书要求）。"
+            "返回结构化数据 + Excel 下载 URL（/api/reports/{doc_id}/summary.xlsx）。"),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "doc_id": {"type": "string"},
+                "lot": {"type": "string", "description": "目标包（可选，默认报告目标包）"},
+            },
+            "required": ["doc_id"],
+        },
+    },
+    {
         "name": "get_report",
         "description": (
             "按 doc_id 获取解析报告，支持过滤与分页：lot（按分标）、category"
@@ -255,8 +287,97 @@ def _tool_get_report(args: dict) -> str:
     return json.dumps(out, ensure_ascii=False)
 
 
+def _tool_get_bid_outline(args: dict) -> str:
+    import json
+    from bidmaster.orchestration.pipeline import Pipeline
+    report = Pipeline(work_root=Path("work")).load_report(args["doc_id"])
+    if report is None:
+        raise ValueError(f"报告不存在: {args['doc_id']}")
+    outline = getattr(report, "bid_outline", None) or {}
+    lot = args.get("lot") or ""
+    out = {"doc_id": report.doc_id, "target_lot": lot or report.target_lot or "",
+           "source_section": outline.get("source_section", ""),
+           "found": outline.get("found", False),
+           "note": outline.get("note", "")}
+    if lot and outline.get("target_lot") and outline["target_lot"] != lot:
+        # 切换目标包：按新目标包重算（需要解析产物）
+        parsed_file = Path("work", report.doc_id, "02_parsed.json")
+        if parsed_file.exists():
+            from bidmaster.schemas.document import ParsedDocument
+            from bidmaster.storage.json_store import read_json
+            from bidmaster.summary.outline import extract_bid_format_outline
+            from bidmaster.summary.scope import filter_for_target, scope_pending
+            parsed = ParsedDocument.model_validate(read_json(parsed_file))
+            keep, _ = filter_for_target(report.scores or [], lot)
+            pending = {s.score_id for s in scope_pending(report.scores or [], lot)}
+            outline = extract_bid_format_outline(parsed, keep, pending_ids=pending)
+            out.update({"found": outline.get("found", False),
+                        "source_section": outline.get("source_section", ""),
+                        "note": outline.get("note", ""), "recomputed_for": lot})
+    buckets = []
+    for b in outline.get("buckets", []):
+        buckets.append({"label": b.get("label", ""), "items": [
+            {"no": it.get("no", ""), "name": it.get("name", ""),
+             "generated": bool(it.get("generated")),
+             "pending": bool(it.get("pending"))} for it in b.get("items", [])]})
+    out["buckets"] = buckets
+    out["others"] = [{"name": it.get("name", "")} for it in outline.get("others", [])]
+    return json.dumps(out, ensure_ascii=False)
+
+
+def _tool_get_summary_sheet(args: dict) -> str:
+    import json
+    from bidmaster.orchestration.pipeline import Pipeline
+    from bidmaster.config import get_settings
+    report = Pipeline(work_root=Path("work")).load_report(args["doc_id"])
+    if report is None:
+        raise ValueError(f"报告不存在: {args['doc_id']}")
+    lot = args.get("lot") or report.target_lot or ""
+    lf = report.lot_fields or {}
+    def _v(bucket, key):
+        f = bucket.get(key)
+        if f and getattr(f, "status", "") == "found":
+            return getattr(f, "value_normalized", "") or getattr(f, "value_raw", "")
+        return ""
+    lots_out = []
+    for info in (report.lot_info or []):
+        name = info.get("lot", "")
+        bucket = lf.get(name, {})
+        if lot and name != lot:
+            continue
+        lots_out.append({
+            "lot": name, "project": info.get("project", ""),
+            "package_name": _v(bucket, "package_name"),
+            "apply_no": _v(bucket, "apply_no"), "scope": _v(bucket, "scope"),
+            "site": _v(bucket, "site"), "duration": _v(bucket, "duration"),
+            "price_limit_yuan": _v(bucket, "price_limit"),
+            "unit_price_limit_yuan": _v(bucket, "unit_price_limit"),
+            "lot_price_limit_yuan": _v(bucket, "lot_price_limit")})
+    reqs = []
+    for r in (report.requirements or [])[:60]:
+        usage = []
+        if getattr(r, "usage_scoring", False):
+            usage.append("评分要求")
+        if getattr(r, "usage_document", False):
+            usage.append("标书要求")
+        reqs.append({"req_id": r.req_id, "type": r.type,
+                     "usage": "/".join(usage), "constraint": (r.constraint or "")[:160]})
+    host = get_settings().public_base_url if hasattr(get_settings(), "public_base_url") else ""
+    base = host or "http://172.19.136.137:8200"
+    out = {"doc_id": report.doc_id, "target_lot": lot,
+           "excel_url": f"{base}/api/reports/{report.doc_id}/summary.xlsx"
+                        + (f"?lot={lot}" if lot else ""),
+           "basic": {k: (v.value_normalized if getattr(v, "status", "") == "found" else "")
+                     for k, v in (report.fields or {}).items()
+                     if k in ("project_name", "tender_no", "tenderer", "bid_deadline")},
+           "lots": lots_out, "requirements": reqs}
+    return json.dumps(out, ensure_ascii=False)
+
+
 _HANDLERS = {"analyze_tender": _tool_analyze_tender, "get_report": _tool_get_report,
-             "list_lots": _tool_list_lots}
+             "list_lots": _tool_list_lots,
+             "get_bid_outline": _tool_get_bid_outline,
+             "get_summary_sheet": _tool_get_summary_sheet}
 
 
 def _rpc_result(rpc_id: Any, result: dict) -> dict:
